@@ -465,6 +465,170 @@
 
   </div>
 <!-- hexo injector body_end start -->
+<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
+<style>
+  /* --- Toast 提示 --- */
+  .lanx-toast {
+    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
+    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lanx-toast.success { background: #38a169; }
+  .lanx-toast.error { background: #e53e3e; }
+
+  /* --- Twikoo 评论区整体容器 --- */
+  #twikoo-comments {
+    margin-top: 48px; padding: 28px 28px 20px;
+    background: #fff; border-radius: 14px;
+    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
+  }
+  #twikoo-comments > h3 {
+    margin: 0 0 20px 0; padding-bottom: 14px;
+    font-size: 16px; font-weight: 600; color: #333;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  /* 留言板:不同的标题和背景 */
+  body.page-guestbook #twikoo-comments {
+    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
+    border: 1px solid #dbeafe;
+  }
+  body.page-guestbook #twikoo-comments > h3 {
+    border-bottom-color: #dbeafe;
+    color: #2563eb;
+  }
+
+  /* --- Twikoo 内部组件美化 --- */
+  .tk-comment-box {
+    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
+    padding: 14px 16px !important; margin-bottom: 16px !important;
+    transition: border-color 0.2s !important;
+  }
+  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
+  .tk-comment-box .el-textarea__inner {
+    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
+    font-size: 14px !important; line-height: 1.6 !important;
+  }
+  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
+  .tk-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    border: none !important; border-radius: 20px !important;
+    padding: 8px 22px !important; font-weight: 500 !important;
+  }
+  .tk-btn-primary:hover { opacity: 0.9; }
+
+  /* 评论列表卡片化 */
+  .tk-comment-item {
+    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
+    padding: 16px 18px !important; margin-bottom: 12px !important;
+    background: #fafbfc !important; transition: box-shadow 0.2s !important;
+  }
+  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+  /* 博主标识 */
+  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
+
+  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
+  .tk-powered-by,
+  .tk-comment-powered,
+  [class*="powered-by"],
+  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
+
+  /* 评论区底部工具条 */
+  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
+
+  /* 点赞/踩按钮 */
+  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
+
+  /* 头像 */
+  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
+
+  /* --- 分享按钮改复制链接 --- */
+  .article-share-link { cursor: pointer; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
+
+<script>
+(function(){
+  var envId = 'https://twikoo-topaz-vercel.app';
+  var path = location.pathname;
+  var isPost = !!document.querySelector('.article');
+  var isGuestbook = path.indexOf('/guestbook') !== -1;
+
+  // ============ Toast 工具 ============
+  function showToast(msg, type) {
+    var t = document.createElement('div');
+    t.className = 'lanx-toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 1800);
+  }
+
+  // ============ 1. 分享按钮 → 一键复制链接 ============
+  function copyShareLink() {
+    var link = document.querySelector('.article-share-link');
+    if (!link) return;
+    var url = link.getAttribute('data-url') || location.href;
+    link.href = 'javascript:void(0)'; // 阻止默认 share.js 弹窗
+    link.addEventListener('click', function(e) {
+      e.preventDefault(); e.stopPropagation();
+      var text = this.getAttribute('data-title') + ' - ' + url;
+      // Clipboard API 优先
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function(){
+          showToast('📋 链接已复制到剪贴板');
+        }).catch(function(){ fallbackCopy(url); });
+      } else {
+        fallbackCopy(url);
+      }
+    }, true);
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
+    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
+    ta.remove();
+  }
+
+  // ============ 2. 文章页访问量 + 评论容器 ============
+  if (isGuestbook) document.body.classList.add('page-guestbook');
+
+  if (isPost) {
+    var visitors = document.createElement('span');
+    visitors.innerHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">👁️ 阅读 <span id="twikoo_visitors">0</span></span>';
+    var af = document.querySelector('.article-footer');
+    if (af) af.insertBefore(visitors.firstChild, af.querySelector('.article-comment-link') || null);
+    copyShareLink();
+  }
+
+  if (isPost || isGuestbook) {
+    var commentDiv = document.createElement('div');
+    commentDiv.id = 'twikoo-comments';
+    commentDiv.innerHTML = '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>';
+    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
+    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
+  }
+
+  // ============ 3. 初始化 Twikoo ============
+  function initTwikoo() {
+    if (typeof twikoo === 'undefined') { setTimeout(initTwikoo, 200); return; }
+    if (document.getElementById('tcomments')) {
+      twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
+        .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
+    }
+  }
+  initTwikoo();
+})();
+</script>
+  
 <style>
   .visitor-stats { margin-top: 10px; color: #999; font-size: 13px; text-align: center; }
   .visitor-stats .stat-item { display: inline-block; margin: 0 6px; }
@@ -503,49 +667,6 @@
 
 <!-- 不蒜子:站点总 PV/UV -->
 <script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
-  
-<!-- Twikoo CDN -->
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
-
-<script>
-(function(){
-  var envId = 'https://twikoo-topaz-vercel.app';
-  var path = location.pathname;
-  var isPost = !!document.querySelector('.article');
-  var isGuestbook = path.indexOf('/guestbook') !== -1;
-
-  // === 1. 注入评论容器 ===
-  if (isPost || isGuestbook) {
-    var commentDiv = document.createElement('div');
-    commentDiv.id = 'twikoo-comments';
-    commentDiv.style.cssText = 'margin-top:40px;padding:20px 0;border-top:1px solid #eee;clear:both;';
-    commentDiv.innerHTML = '<h3 style="margin-bottom:20px;">💬 评论</h3><div id="tcomments"></div>';
-    // 插到点赞按钮后面,没有的话插到 article-footer 后面
-    var target = document.querySelector('.like-wrap') || document.querySelector('.article-footer');
-    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
-  }
-
-  // === 2. 文章页访问量(Twikoo FAQ 方式) ===
-  if (isPost) {
-    var visitorsSpan = document.createElement('span');
-    visitorsSpan.innerHTML = '<span class="post-visitors">👁️ 阅读 <span id="twikoo_visitors">0</span></span>';
-    visitorsSpan.style.cssText = 'margin-left:12px;font-size:13px;color:#999;';
-    var af = document.querySelector('.article-footer');
-    if (af) af.querySelector('.article-share-link')?.after(visitorsSpan.firstElementChild) || af.appendChild(visitorsSpan);
-  }
-
-  // === 3. 初始化 Twikoo ===
-  function initTwikoo() {
-    if (typeof twikoo === 'undefined') { setTimeout(initTwikoo, 200); return; }
-    if (document.getElementById('tcomments') || document.getElementById('twikoo_visitors')) {
-      twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
-        .then(function() { console.log('[Twikoo] ready'); })
-        .catch(function(err) { console.warn('[Twikoo] init failed:', err.message || err); });
-    }
-  }
-  initTwikoo();
-})();
-</script>
   
 <style>
   .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
