@@ -6,20 +6,18 @@
   
   <title>OpenGL环境配置 | LANXone的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="OpenGL 入门：从零搭建 GLFW 开发环境（Windows + MinGW） 适合完全不懂编译链的新手，手把手教你把 GLFW 源码变成能跑的 exe。  前言刚入坑 OpenGL 的时候，网上的教程要么跳过环境搭建”假设你已经配好了”，要么三言两语”装个 GLFW 就行”。但实际上：  你下载的 GLFW 源码 .c 文件，电脑根本不认识 直接 #include &lt;GLFW&#x2F;glfw">
+  <meta name="description" content="OpenGL 入门：从零搭建 GLFW 开发环境（Windows + MinGW）  适合完全不懂编译链的新手，手把手教你把 GLFW 源码变成能跑的 exe。  前言 刚入坑 OpenGL 的时候，网上的教程要么跳过环境搭建&quot;假设你已经配好了&quot;，要么三言两语&quot;装个 GLFW 就行&quot;。但实际上：  你下载的 GLFW 源码 .c 文件，电脑根本不认识 直接">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OpenGL环境配置">
 <meta property="og:url" content="http://example.com/2026/09/18/OpenGL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/index.html">
 <meta property="og:site_name" content="LANXone的博客">
-<meta property="og:description" content="OpenGL 入门：从零搭建 GLFW 开发环境（Windows + MinGW） 适合完全不懂编译链的新手，手把手教你把 GLFW 源码变成能跑的 exe。  前言刚入坑 OpenGL 的时候，网上的教程要么跳过环境搭建”假设你已经配好了”，要么三言两语”装个 GLFW 就行”。但实际上：  你下载的 GLFW 源码 .c 文件，电脑根本不认识 直接 #include &lt;GLFW&#x2F;glfw">
+<meta property="og:description" content="OpenGL 入门：从零搭建 GLFW 开发环境（Windows + MinGW）  适合完全不懂编译链的新手，手把手教你把 GLFW 源码变成能跑的 exe。  前言 刚入坑 OpenGL 的时候，网上的教程要么跳过环境搭建&quot;假设你已经配好了&quot;，要么三言两语&quot;装个 GLFW 就行&quot;。但实际上：  你下载的 GLFW 源码 .c 文件，电脑根本不认识 直接">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-09-18T09:30:05.000Z">
 <meta property="article:modified_time" content="2026-09-18T09:31:14.643Z">
 <meta property="article:author" content="LANXone">
 <meta property="article:tag" content="OpenGL">
 <meta name="twitter:card" content="summary">
-  
-    <link rel="alternate" href="/atom.xml" title="LANXone的博客" type="application/atom+xml">
   
   
     <link rel="shortcut icon" href="/favicon.png">
@@ -62,11 +60,13 @@
         
           <a class="main-nav-link" href="/archives">Archives</a>
         
+          <a class="main-nav-link" href="/about">关于我</a>
+        
+          <a class="main-nav-link" href="/guestbook">留言板</a>
+        
       </nav>
       <nav id="sub-nav">
         
-        
-          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
         
         <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
       </nav>
@@ -100,18 +100,21 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h1 id="OpenGL-入门：从零搭建-GLFW-开发环境（Windows-MinGW）"><a href="#OpenGL-入门：从零搭建-GLFW-开发环境（Windows-MinGW）" class="headerlink" title="OpenGL 入门：从零搭建 GLFW 开发环境（Windows + MinGW）"></a>OpenGL 入门：从零搭建 GLFW 开发环境（Windows + MinGW）</h1><blockquote>
+        <h1>OpenGL 入门：从零搭建 GLFW 开发环境（Windows + MinGW）</h1>
+<blockquote>
 <p>适合完全不懂编译链的新手，手把手教你把 GLFW 源码变成能跑的 exe。</p>
 </blockquote>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>刚入坑 OpenGL 的时候，网上的教程要么跳过环境搭建”假设你已经配好了”，要么三言两语”装个 GLFW 就行”。但实际上：</p>
+<h2 id="前言">前言</h2>
+<p>刚入坑 OpenGL 的时候，网上的教程要么跳过环境搭建&quot;假设你已经配好了&quot;，要么三言两语&quot;装个 GLFW 就行&quot;。但实际上：</p>
 <ul>
 <li>你下载的 GLFW 源码 <code>.c</code> 文件，电脑根本不认识</li>
-<li>直接 <code>#include &lt;GLFW/glfw3.h&gt;</code> 会报”找不到头文件”</li>
+<li>直接 <code>#include &lt;GLFW/glfw3.h&gt;</code> 会报&quot;找不到头文件&quot;</li>
 <li>就算头文件能找到，链接阶段还会报一堆 undefined reference</li>
 </ul>
-<p>这篇文章记录我从零到跑通第一个 GLFW 窗口的完整过程，每一步都解释”为什么要这么干”。</p>
+<p>这篇文章记录我从零到跑通第一个 GLFW 窗口的完整过程，每一步都解释&quot;为什么要这么干&quot;。</p>
 <hr>
-<h2 id="一、准备工作：你需要这-3-样东西"><a href="#一、准备工作：你需要这-3-样东西" class="headerlink" title="一、准备工作：你需要这 3 样东西"></a>一、准备工作：你需要这 3 样东西</h2><table>
+<h2 id="一、准备工作：你需要这-3-样东西">一、准备工作：你需要这 3 样东西</h2>
+<table>
 <thead>
 <tr>
 <th>东西</th>
@@ -119,42 +122,44 @@
 <th>获取方式</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><strong>MinGW-w64</strong></td>
-<td>GCC&#x2F;G++ 编译器，把 C++ 代码变成 exe</td>
+<td>GCC/G++ 编译器，把 C++ 代码变成 exe</td>
 <td>搜 <code>w64devkit</code> 下载解压，免安装</td>
 </tr>
 <tr>
 <td><strong>CMake</strong></td>
-<td>帮你编译 GLFW 源码的”自动化脚本生成器”</td>
-<td>w64devkit 里自带，或 cmake.org 单独下</td>
+<td>帮你编译 GLFW 源码的&quot;自动化脚本生成器&quot;</td>
+<td>w64devkit 里自带，或 <a target="_blank" rel="noopener" href="http://cmake.org">cmake.org</a> 单独下</td>
 </tr>
 <tr>
 <td><strong>GLFW 源码</strong></td>
-<td>glfw.org 下载 Source 包（不是 binary 包）</td>
+<td><a target="_blank" rel="noopener" href="http://glfw.org">glfw.org</a> 下载 Source 包（不是 binary 包）</td>
 <td>解压到你的项目目录</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>我的目录结构：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">c:/ccccc/OpenGL/</span><br><span class="line">├── glfw-3.5.1/          ← GLFW 源码（你下载解压的）</span><br><span class="line">├── src/</span><br><span class="line">│   └── main.cpp         ← 你的代码</span><br><span class="line">└── .vscode/             ← VS Code 配置</span><br></pre></td></tr></table></figure>
-
 <p>编译器位置：<code>C:/ccccc/cppenviro/w64devkit/bin/</code>（里面有 gcc.exe、g++.exe、cmake.exe、make.exe）</p>
 <hr>
-<h2 id="二、为什么不能直接用-GLFW-源码？"><a href="#二、为什么不能直接用-GLFW-源码？" class="headerlink" title="二、为什么不能直接用 GLFW 源码？"></a>二、为什么不能直接用 GLFW 源码？</h2><p>你下载的 GLFW 源码是这样的：</p>
+<h2 id="二、为什么不能直接用-GLFW-源码？">二、为什么不能直接用 GLFW 源码？</h2>
+<p>你下载的 GLFW 源码是这样的：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">glfw-3.5.1/</span><br><span class="line">├── include/GLFW/glfw3.h   ← 头文件（人类看得懂的声明）</span><br><span class="line">└── src/*.c                ← 源码（人类看得懂的实现）</span><br></pre></td></tr></table></figure>
-
 <p>编译器需要的是<strong>机器码</strong>，不是 <code>.c</code> 源文件。所以你必须先把 GLFW 编译成一个 <code>.a</code> 库文件（把所有 GLFW 函数打包在一起），链接你的代码时用。</p>
 <hr>
-<h2 id="三、编译-GLFW-源码（4-条命令搞定）"><a href="#三、编译-GLFW-源码（4-条命令搞定）" class="headerlink" title="三、编译 GLFW 源码（4 条命令搞定）"></a>三、编译 GLFW 源码（4 条命令搞定）</h2><p>打开终端（VS Code 里 <code>Ctrl + ~</code>），依次执行：</p>
-<h3 id="1-进入-GLFW-目录"><a href="#1-进入-GLFW-目录" class="headerlink" title="1. 进入 GLFW 目录"></a>1. 进入 GLFW 目录</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> c:/ccccc/OpenGL/glfw<span class="literal">-3</span>.<span class="number">5.1</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-创建-build-目录"><a href="#2-创建-build-目录" class="headerlink" title="2. 创建 build 目录"></a>2. 创建 build 目录</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir build</span><br><span class="line"><span class="built_in">cd</span> build</span><br></pre></td></tr></table></figure>
-
+<h2 id="三、编译-GLFW-源码（4-条命令搞定）">三、编译 GLFW 源码（4 条命令搞定）</h2>
+<p>打开终端（VS Code 里 <code>Ctrl + ~</code>），依次执行：</p>
+<h3 id="1-进入-GLFW-目录">1. 进入 GLFW 目录</h3>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> c:/ccccc/OpenGL/glfw<span class="literal">-3</span>.<span class="number">5.1</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-创建-build-目录">2. 创建 build 目录</h3>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir build</span><br><span class="line"><span class="built_in">cd</span> build</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p><strong>为什么要单独建 build？</strong> GLFW 的 CMake 配置里要求编译中间文件和源码分离，保持源码目录干净。</p>
 </blockquote>
-<h3 id="3-CMake-生成编译脚本"><a href="#3-CMake-生成编译脚本" class="headerlink" title="3. CMake 生成编译脚本"></a>3. CMake 生成编译脚本</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:/ccccc/cppenviro/w64devkit/bin/cmake.exe <span class="literal">-G</span> <span class="string">&quot;MinGW Makefiles&quot;</span> <span class="literal">-DCMAKE_BUILD_TYPE</span>=Release <span class="literal">-DGLFW_BUILD_DOCS</span>=OFF <span class="literal">-DGLFW_BUILD_EXAMPLES</span>=OFF <span class="literal">-DGLFW_BUILD_TESTS</span>=OFF ..</span><br></pre></td></tr></table></figure>
-
+<h3 id="3-CMake-生成编译脚本">3. CMake 生成编译脚本</h3>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:/ccccc/cppenviro/w64devkit/bin/cmake.exe <span class="literal">-G</span> <span class="string">&quot;MinGW Makefiles&quot;</span> <span class="literal">-DCMAKE_BUILD_TYPE</span>=Release <span class="literal">-DGLFW_BUILD_DOCS</span>=OFF <span class="literal">-DGLFW_BUILD_EXAMPLES</span>=OFF <span class="literal">-DGLFW_BUILD_TESTS</span>=OFF ..</span><br></pre></td></tr></table></figure>
 <p>参数解释：</p>
 <table>
 <thead>
@@ -163,7 +168,8 @@
 <th>含义</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><code>-G &quot;MinGW Makefiles&quot;</code></td>
 <td>告诉 CMake 用 MinGW 工具链生成 Makefile</td>
 </tr>
@@ -187,49 +193,53 @@
 <td><code>..</code></td>
 <td>上一级目录，即 GLFW 源码目录</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>成功标志：最后一行显示 <code>-- Build files have been written to: ...</code></p>
-<h3 id="4-执行编译"><a href="#4-执行编译" class="headerlink" title="4. 执行编译"></a>4. 执行编译</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:/ccccc/cppenviro/w64devkit/bin/make.exe <span class="literal">-j4</span></span><br></pre></td></tr></table></figure>
-
+<h3 id="4-执行编译">4. 执行编译</h3>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:/ccccc/cppenviro/w64devkit/bin/make.exe <span class="literal">-j4</span></span><br></pre></td></tr></table></figure>
 <p><code>-j4</code> 表示用 4 线程并行编译，加速。成功标志：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[100%] Linking C static library libglfw3.a</span><br><span class="line">[100%] Built target glfw</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-确认产物"><a href="#5-确认产物" class="headerlink" title="5. 确认产物"></a>5. 确认产物</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> src/libglfw3.a</span><br></pre></td></tr></table></figure>
-
+<h3 id="5-确认产物">5. 确认产物</h3>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> src/libglfw3.a</span><br></pre></td></tr></table></figure>
 <p>看到这个文件就大功告成了！它就是编译好的静态库，大概 300KB。</p>
 <hr>
-<h2 id="四、写第一个-GLFW-程序"><a href="#四、写第一个-GLFW-程序" class="headerlink" title="四、写第一个 GLFW 程序"></a>四、写第一个 GLFW 程序</h2><p>在 <code>src/</code> 目录下新建 <code>main.cpp</code>：</p>
+<h2 id="四、写第一个-GLFW-程序">四、写第一个 GLFW 程序</h2>
+<p>在 <code>src/</code> 目录下新建 <code>main.cpp</code>：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;GLFW/glfw3.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 1. 初始化 GLFW</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">glfwInit</span>()) &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;GLFW 初始化失败！&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 创建 640x480 的窗口</span></span><br><span class="line">    GLFWwindow* window = <span class="built_in">glfwCreateWindow</span>(<span class="number">640</span>, <span class="number">480</span>, <span class="string">&quot;Hello GLFW&quot;</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span> (!window) &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;窗口创建失败！&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">        <span class="built_in">glfwTerminate</span>();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. 设置当前线程的 OpenGL 上下文</span></span><br><span class="line">    <span class="built_in">glfwMakeContextCurrent</span>(window);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4. 主循环</span></span><br><span class="line">    <span class="keyword">while</span> (!<span class="built_in">glfwWindowShouldClose</span>(window)) &#123;</span><br><span class="line">        <span class="built_in">glClear</span>(GL_COLOR_BUFFER_BIT);   <span class="comment">// 清屏</span></span><br><span class="line">        <span class="built_in">glfwSwapBuffers</span>(window);        <span class="comment">// 交换缓冲</span></span><br><span class="line">        <span class="built_in">glfwPollEvents</span>();               <span class="comment">// 处理事件</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 5. 清理退出</span></span><br><span class="line">    <span class="built_in">glfwTerminate</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>GLFW 程序的固定套路：<strong>初始化 → 创建窗口 → 设上下文 → 主循环 → 清理</strong>。</p>
 <hr>
-<h2 id="五、编译你的代码（核心重点！）"><a href="#五、编译你的代码（核心重点！）" class="headerlink" title="五、编译你的代码（核心重点！）"></a>五、编译你的代码（核心重点！）</h2><p>直接 <code>g++ main.cpp</code> 会报”找不到 GLFW&#x2F;glfw3.h”。你需要告诉编译器 3 件事：</p>
-<h3 id="完整编译命令"><a href="#完整编译命令" class="headerlink" title="完整编译命令"></a>完整编译命令</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:/ccccc/cppenviro/w64devkit/bin/g++.exe <span class="literal">-g</span> main.cpp <span class="literal">-o</span> main.exe <span class="literal">-I</span><span class="string">&quot;c:/ccccc/OpenGL/glfw-3.5.1/include&quot;</span> <span class="literal">-L</span><span class="string">&quot;c:/ccccc/OpenGL/glfw-3.5.1/build/src&quot;</span> <span class="literal">-lglfw3</span> <span class="literal">-lgdi32</span> <span class="literal">-lopengl32</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="逐段拆解"><a href="#逐段拆解" class="headerlink" title="逐段拆解"></a>逐段拆解</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">g++.exe -g main.cpp -o main.exe</span><br><span class="line">│       │ │          │</span><br><span class="line">│       │ │          └─ 输出文件名</span><br><span class="line">│       │ └─ 你的源码</span><br><span class="line">│       └─ 生成调试信息</span><br><span class="line">└─ 用 g++（编译 C++ 用 g++，不是 gcc）</span><br><span class="line"></span><br><span class="line">-I&quot;glfw-3.5.1/include&quot;     ← 头文件搜索路径（让编译器找到 glfw3.h）</span><br><span class="line">-L&quot;glfw-3.5.1/build/src&quot;   ← 库文件搜索路径（让编译器找到 libglfw3.a）</span><br><span class="line">-lglfw3                    ← 链接 GLFW 静态库</span><br><span class="line">-lgdi32                    ← Windows GDI 系统库（GLFW 依赖）</span><br><span class="line">-lopengl32                 ← Windows OpenGL 系统库（系统自带）</span><br></pre></td></tr></table></figure>
-
-<h3 id="为什么要加这么多东西？"><a href="#为什么要加这么多东西？" class="headerlink" title="为什么要加这么多东西？"></a>为什么要加这么多东西？</h3><p>编译器默认只在”标准位置”找头文件和库文件。它不知道：</p>
+<h2 id="五、编译你的代码（核心重点！）">五、编译你的代码（核心重点！）</h2>
+<p>直接 <code>g++ main.cpp</code> 会报&quot;找不到 GLFW/glfw3.h&quot;。你需要告诉编译器 3 件事：</p>
+<h3 id="完整编译命令">完整编译命令</h3>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:/ccccc/cppenviro/w64devkit/bin/g++.exe <span class="literal">-g</span> main.cpp <span class="literal">-o</span> main.exe <span class="literal">-I</span><span class="string">&quot;c:/ccccc/OpenGL/glfw-3.5.1/include&quot;</span> <span class="literal">-L</span><span class="string">&quot;c:/ccccc/OpenGL/glfw-3.5.1/build/src&quot;</span> <span class="literal">-lglfw3</span> <span class="literal">-lgdi32</span> <span class="literal">-lopengl32</span></span><br></pre></td></tr></table></figure>
+<h3 id="逐段拆解">逐段拆解</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">g++.exe -g main.cpp -o main.exe</span><br><span class="line">│       │ │          │</span><br><span class="line">│       │ │          └─ 输出文件名</span><br><span class="line">│       │ └─ 你的源码</span><br><span class="line">│       └─ 生成调试信息</span><br><span class="line">└─ 用 g++（编译 C++ 用 g++，不是 gcc）</span><br><span class="line"></span><br><span class="line">-I&quot;glfw-3.5.1/include&quot;     ← 头文件搜索路径（让编译器找到 glfw3.h）</span><br><span class="line">-L&quot;glfw-3.5.1/build/src&quot;   ← 库文件搜索路径（让编译器找到 libglfw3.a）</span><br><span class="line">-lglfw3                    ← 链接 GLFW 静态库</span><br><span class="line">-lgdi32                    ← Windows GDI 系统库（GLFW 依赖）</span><br><span class="line">-lopengl32                 ← Windows OpenGL 系统库（系统自带）</span><br></pre></td></tr></table></figure>
+<h3 id="为什么要加这么多东西？">为什么要加这么多东西？</h3>
+<p>编译器默认只在&quot;标准位置&quot;找头文件和库文件。它不知道：</p>
 <ol>
 <li><code>glfw3.h</code> 藏在你项目的 <code>glfw-3.5.1/include</code> 里 → 用 <code>-I</code> 告诉它</li>
 <li><code>libglfw3.a</code> 藏在 <code>glfw-3.5.1/build/src</code> 里 → 用 <code>-L</code> 告诉它</li>
 <li>你的代码里用了 GLFW 函数，需要链接 glfw3 → 用 <code>-lglfw3</code> 告诉它</li>
 <li>GLFW 在 Windows 上还依赖 gdi32 和 opengl32 → 这两个是系统库，也得加上</li>
 </ol>
-<h3 id="成功标志"><a href="#成功标志" class="headerlink" title="成功标志"></a>成功标志</h3><p>没报错，<code>ls main.exe</code> 能看到文件，双击弹出一个黑色窗口！</p>
+<h3 id="成功标志">成功标志</h3>
+<p>没报错，<code>ls main.exe</code> 能看到文件，双击弹出一个黑色窗口！</p>
 <hr>
-<h2 id="六、配置-VS-Code-一键编译"><a href="#六、配置-VS-Code-一键编译" class="headerlink" title="六、配置 VS Code 一键编译"></a>六、配置 VS Code 一键编译</h2><p>每次敲那么长一条命令太痛苦。配置好以后按 <code>Ctrl+Shift+B</code> 就能编。</p>
-<h3 id="配置-1：c-cpp-properties-json"><a href="#配置-1：c-cpp-properties-json" class="headerlink" title="配置 1：c_cpp_properties.json"></a>配置 1：<code>c_cpp_properties.json</code></h3><p>让 VS Code 的代码补全知道去哪找头文件：</p>
+<h2 id="六、配置-VS-Code-一键编译">六、配置 VS Code 一键编译</h2>
+<p>每次敲那么长一条命令太痛苦。配置好以后按 <code>Ctrl+Shift+B</code> 就能编。</p>
+<h3 id="配置-1：c-cpp-properties-json">配置 1：<code>c_cpp_properties.json</code></h3>
+<p>让 VS Code 的代码补全知道去哪找头文件：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;configurations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;windows-gcc-x64&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;includePath&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;$&#123;workspaceFolder&#125;/**&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;$&#123;workspaceFolder&#125;/glfw-3.5.1/include&quot;</span></span><br><span class="line">      <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;compilerPath&quot;</span><span class="punctuation">:</span> <span class="string">&quot;C:/ccccc/cppenviro/w64devkit/bin/g++.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;cStandard&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;default&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;cppStandard&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c++17&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;intelliSenseMode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;windows-gcc-x64&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;compilerArgs&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="number">4</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>关键改动：</p>
 <ul>
 <li><code>includePath</code> 加了 GLFW 的 include 目录（消除红线 + 补全能用）</li>
 <li><code>compilerPath</code> 改成 <code>g++.exe</code>（编译 C++）</li>
 <li><code>cppStandard</code> 设成 <code>c++17</code></li>
 </ul>
-<h3 id="配置-2：tasks-json"><a href="#配置-2：tasks-json" class="headerlink" title="配置 2：tasks.json"></a>配置 2：<code>tasks.json</code></h3><p>让 <code>Ctrl+Shift+B</code> 执行正确的编译命令：</p>
+<h3 id="配置-2：tasks-json">配置 2：<code>tasks.json</code></h3>
+<p>让 <code>Ctrl+Shift+B</code> 执行正确的编译命令：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;tasks&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cppbuild&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;label&quot;</span><span class="punctuation">:</span> <span class="string">&quot;C/C++: g++.exe 生成活动文件&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;C:/ccccc/cppenviro/w64devkit/bin/g++.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;-fdiagnostics-color=always&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;-g&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;$&#123;file&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;-o&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;$&#123;fileDirname&#125;\\$&#123;fileBasenameNoExtension&#125;.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;-I$&#123;workspaceFolder&#125;/glfw-3.5.1/include&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;-L$&#123;workspaceFolder&#125;/glfw-3.5.1/build/src&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;-lglfw3&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;-lgdi32&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;-lopengl32&quot;</span></span><br><span class="line">      <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;options&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;cwd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;fileDirname&#125;&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;problemMatcher&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;$gcc&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;group&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;kind&quot;</span><span class="punctuation">:</span> <span class="string">&quot;build&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;isDefault&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;detail&quot;</span><span class="punctuation">:</span> <span class="string">&quot;调试器生成的任务。&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2.0.0&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>关键改动：</p>
 <ul>
 <li><code>command</code> 从 <code>gcc.exe</code> 改为 <code>g++.exe</code></li>
@@ -237,15 +247,17 @@
 <li><code>cwd</code> 改为 <code>$&#123;fileDirname&#125;</code>（工作目录是源文件所在目录）</li>
 </ul>
 <hr>
-<h2 id="七、完整步骤一览"><a href="#七、完整步骤一览" class="headerlink" title="七、完整步骤一览"></a>七、完整步骤一览</h2><table>
+<h2 id="七、完整步骤一览">七、完整步骤一览</h2>
+<table>
 <thead>
 <tr>
 <th>步骤</th>
 <th>做什么</th>
-<th>命令 &#x2F; 操作</th>
+<th>命令 / 操作</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>①</td>
 <td>下载 MinGW-w64 和 CMake</td>
 <td>搜 <code>w64devkit</code> 下载解压</td>
@@ -253,7 +265,7 @@
 <tr>
 <td>②</td>
 <td>下载 GLFW 源码</td>
-<td>glfw.org → Download → Source package</td>
+<td><a target="_blank" rel="noopener" href="http://glfw.org">glfw.org</a> → Download → Source package</td>
 </tr>
 <tr>
 <td>③</td>
@@ -275,32 +287,38 @@
 <td>配置 VS Code</td>
 <td>改 <code>tasks.json</code> 和 <code>c_cpp_properties.json</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <hr>
-<h2 id="八、常见问题"><a href="#八、常见问题" class="headerlink" title="八、常见问题"></a>八、常见问题</h2><h3 id="Q-为什么不用-CMake-直接编译我的项目？"><a href="#Q-为什么不用-CMake-直接编译我的项目？" class="headerlink" title="Q: 为什么不用 CMake 直接编译我的项目？"></a>Q: 为什么不用 CMake 直接编译我的项目？</h3><p>可以，但 CMake 对新手来说更难学。直接用 g++ 命令能让你<strong>彻底搞懂</strong>编译器需要哪些信息。等项目变大了再切 CMake 也不迟。</p>
-<h3 id="Q-GLFW-编译时报找不到编译器？"><a href="#Q-GLFW-编译时报找不到编译器？" class="headerlink" title="Q: GLFW 编译时报找不到编译器？"></a>Q: GLFW 编译时报找不到编译器？</h3><p>CMake 需要知道 gcc&#x2F;g++ 在哪。确认 <code>w64devkit/bin/</code> 在 PATH 里，或者在 cmake 命令前加：</p>
+<h2 id="八、常见问题">八、常见问题</h2>
+<h3 id="Q-为什么不用-CMake-直接编译我的项目？">Q: 为什么不用 CMake 直接编译我的项目？</h3>
+<p>可以，但 CMake 对新手来说更难学。直接用 g++ 命令能让你<strong>彻底搞懂</strong>编译器需要哪些信息。等项目变大了再切 CMake 也不迟。</p>
+<h3 id="Q-GLFW-编译时报找不到编译器？">Q: GLFW 编译时报找不到编译器？</h3>
+<p>CMake 需要知道 gcc/g++ 在哪。确认 <code>w64devkit/bin/</code> 在 PATH 里，或者在 cmake 命令前加：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake <span class="literal">-G</span> <span class="string">&quot;MinGW Makefiles&quot;</span> <span class="literal">-DCMAKE_C_COMPILER</span>=path/to/gcc.exe <span class="literal">-DCMAKE_CXX_COMPILER</span>=path/to/g++.exe ..</span><br></pre></td></tr></table></figure>
-
-<h3 id="Q-编译运行后窗口是黑屏？"><a href="#Q-编译运行后窗口是黑屏？" class="headerlink" title="Q: 编译运行后窗口是黑屏？"></a>Q: 编译运行后窗口是黑屏？</h3><p>正常！我们的代码只做了 <code>glClear(GL_COLOR_BUFFER_BIT)</code> 用默认黑色清屏。等你学到着色器就能画彩色东西了。</p>
-<h3 id="Q-GLFW-和-OpenGL-是什么关系？"><a href="#Q-GLFW-和-OpenGL-是什么关系？" class="headerlink" title="Q: GLFW 和 OpenGL 是什么关系？"></a>Q: GLFW 和 OpenGL 是什么关系？</h3><ul>
+<h3 id="Q-编译运行后窗口是黑屏？">Q: 编译运行后窗口是黑屏？</h3>
+<p>正常！我们的代码只做了 <code>glClear(GL_COLOR_BUFFER_BIT)</code> 用默认黑色清屏。等你学到着色器就能画彩色东西了。</p>
+<h3 id="Q-GLFW-和-OpenGL-是什么关系？">Q: GLFW 和 OpenGL 是什么关系？</h3>
+<ul>
 <li><strong>OpenGL</strong>：图形 API（一套画东西的函数规范），显卡驱动实现</li>
 <li><strong>GLFW</strong>：窗口 + 输入管理库（创建窗口、处理鼠标键盘、管理 OpenGL 上下文）</li>
-<li><strong>GLAD&#x2F;GLEW</strong>：加载 OpenGL 函数指针（现代 OpenGL 3.3+ 核心模式需要）</li>
+<li><strong>GLAD/GLEW</strong>：加载 OpenGL 函数指针（现代 OpenGL 3.3+ 核心模式需要）</li>
 </ul>
-<p>简单说：OpenGL 负责”画”，GLFW 负责”给你一个能画的窗口”。</p>
+<p>简单说：OpenGL 负责&quot;画&quot;，GLFW 负责&quot;给你一个能画的窗口&quot;。</p>
 <hr>
-<h2 id="九、下一步"><a href="#九、下一步" class="headerlink" title="九、下一步"></a>九、下一步</h2><p>环境搭好了，接下来可以：</p>
+<h2 id="九、下一步">九、下一步</h2>
+<p>环境搭好了，接下来可以：</p>
 <ol>
 <li>改窗口标题、尺寸</li>
-<li>加键盘&#x2F;鼠标输入回调</li>
+<li>加键盘/鼠标输入回调</li>
 <li>引入 GLAD，进入现代 OpenGL 3.3+ 核心模式</li>
-<li>学 VAO&#x2F;VBO&#x2F;着色器，画第一个三角形</li>
+<li>学 VAO/VBO/着色器，画第一个三角形</li>
 </ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/18/OpenGL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" data-id="cmu6rehwz00006wma3pqd6zhz" data-title="OpenGL环境配置" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="http://example.com/2026/09/18/OpenGL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" data-id="cmuc8i6cy0001vcma7ta1b5ui" data-title="OpenGL环境配置" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -421,6 +439,10 @@
   
     <a href="/archives" class="mobile-nav-link">Archives</a>
   
+    <a href="/about" class="mobile-nav-link">关于我</a>
+  
+    <a href="/guestbook" class="mobile-nav-link">留言板</a>
+  
 </nav>
     
 
@@ -442,5 +464,153 @@
 
 
   </div>
-</body>
+<!-- hexo injector body_end start -->
+<!-- ========== 点赞按钮样式 ========== -->
+<style>
+  .like-btn-wrap {
+    text-align: center;
+    margin: 40px 0 20px;
+    padding: 24px 0;
+  }
+  .like-btn {
+    display: inline-block;
+    padding: 10px 28px;
+    font-size: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 24px;
+    background: #fff;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+  }
+  .like-btn:hover {
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+    box-shadow: 0 2px 10px rgba(255,107,107,0.15);
+  }
+  .like-btn.liked {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    border-color: #ff6b6b;
+    color: #fff;
+    pointer-events: none;
+  }
+  .like-btn .fa-heart {
+    margin-right: 6px;
+    transition: transform 0.3s ease;
+  }
+  .like-btn.liked .fa-heart {
+    animation: heartBeat 0.6s ease;
+  }
+  @keyframes heartBeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.4); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  .like-tip {
+    color: #999;
+    font-size: 13px;
+    margin-top: 10px;
+    display: none;
+  }
+</style>
+
+<!-- ========== 点赞按钮 (仅文章页显示) ========== -->
+<script>
+(function(){
+  if (!document.querySelector('.article')) return;
+  var path = window.location.pathname;
+  var key = 'liked_' + path;
+  var liked = localStorage.getItem(key);
+
+  var wrap = document.createElement('div');
+  wrap.className = 'like-btn-wrap';
+  wrap.innerHTML =
+    '<div class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
+      '<span class="fa ' + (liked ? 'fa-thumbs-up' : 'fa-hand-peace') + '"></span>' +
+      '<span id="likeText">' + (liked ? '已点赞,谢谢鼓励!' : '点个赞再走吧 ~') + '</span>' +
+    '</div>';
+  document.querySelector('.article-footer') && document.querySelector('.article-footer').after(wrap);
+
+  var btn = document.getElementById('likeBtn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('liked')) return;
+      btn.classList.add('liked');
+      btn.innerHTML = '<span class="fa fa-thumbs-up"></span><span id="likeText">已点赞,谢谢鼓励!</span>';
+      localStorage.setItem(key, '1');
+    });
+  }
+})();
+</script>
+  
+<!-- ========== 访客统计 ========== -->
+<style>
+  .visitor-stats {
+    margin-top: 10px;
+    color: #999;
+    font-size: 13px;
+    text-align: center;
+  }
+  .visitor-stats .stat-item {
+    display: inline-block;
+    margin: 0 6px;
+  }
+  .visitor-stats .stat-num {
+    color: #555;
+    font-weight: 600;
+  }
+  @media (max-width: 500px) {
+    .visitor-stats .stat-item { display: block; margin: 2px 0; }
+  }
+</style>
+
+<script>
+// === 今日 & 本月访问统计 (localStorage 自增,仅反映本机浏览器) ===
+(function(){
+  var today = new Date();
+  var todayKey = 'visit_' + today.toISOString().slice(0, 10); // visit_2026-09-22
+  var monthKey = 'visit_' + today.getFullYear() + '_' + (today.getMonth()+1); // visit_2026_9
+
+  var todayCount = (parseInt(localStorage.getItem(todayKey) || '0') + 1);
+  var monthCount = (parseInt(localStorage.getItem(monthKey) || '0') + 1);
+  localStorage.setItem(todayKey, todayCount);
+  localStorage.setItem(monthKey, monthCount);
+
+  // 清理旧月份数据
+  try {
+    var all = Object.keys(localStorage).filter(k => k.startsWith('visit_'));
+    all.forEach(k => {
+      if (k !== todayKey && k !== monthKey) localStorage.removeItem(k);
+    });
+  } catch(e){}
+
+  // 等 footer-info 出现后插入统计区
+  function injectStats() {
+    var footerInfo = document.querySelector('#footer-info');
+    if (!footerInfo) { setTimeout(injectStats, 300); return; }
+    if (footerInfo.querySelector('.visitor-stats')) return;
+
+    var div = document.createElement('div');
+    div.className = 'visitor-stats';
+    div.innerHTML =
+      '<span class="stat-item">📅 今日 <span id="visit_today" class="stat-num">0</span> 次</span>' +
+      '<span class="stat-item">📆 本月 <span id="visit_month" class="stat-num">0</span> 次</span>' +
+      '<span class="stat-item">👥 总访客 <span id="busuanzi_value_site_uv" class="stat-num">--</span></span>' +
+      '<span class="stat-item">📄 总浏览 <span id="busuanzi_value_site_pv" class="stat-num">--</span></span>';
+    footerInfo.appendChild(div);
+
+    // 立刻填入本地统计
+    var t = document.getElementById('visit_today'); if(t) t.textContent = todayCount;
+    var m = document.getElementById('visit_month'); if(m) m.textContent = monthCount;
+  }
+  injectStats();
+})();
+</script>
+
+<!-- 不蒜子(bsz)统计:站点总 UV/PV,自动填充上面带 id 的 span -->
+<script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
+  <!-- hexo injector body_end end --></body>
 </html>
