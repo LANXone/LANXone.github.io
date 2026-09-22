@@ -78,6 +78,82 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-链表环检测-快慢指针和数学的重要性" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/" class="article-date">
+  <time class="dt-published" datetime="2026-09-22T03:50:37.000Z" itemprop="datePublished">2026-09-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/">链表环检测:快慢指针和数学的重要性</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="LeetCode-142-环形链表Ⅱ-解题感悟"><a href="#LeetCode-142-环形链表Ⅱ-解题感悟" class="headerlink" title="LeetCode 142.环形链表Ⅱ 解题感悟"></a>LeetCode 142.环形链表Ⅱ 解题感悟</h1><h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>给定一个链表的头节点 <code>head</code>，返回链表开始入环的第一个节点。如果链表无环，则返回 <code>null</code>。</p>
+<blockquote>
+<p>不允许修改链表。</p>
+</blockquote>
+<h2 id="代码（C-快慢指针解法）"><a href="#代码（C-快慢指针解法）" class="headerlink" title="代码（C++ 快慢指针解法）"></a>代码（C++ 快慢指针解法）</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">ListNode *<span class="title">detectCycle</span><span class="params">(ListNode *head)</span> </span>&#123;</span><br><span class="line">        ListNode* fast = head;</span><br><span class="line">        ListNode* slow = head;</span><br><span class="line">        <span class="keyword">while</span>(fast != <span class="literal">NULL</span> &amp;&amp; fast-&gt;next != <span class="literal">NULL</span>)&#123;</span><br><span class="line">            slow = slow-&gt;next;</span><br><span class="line">            fast = fast-&gt;next-&gt;next;</span><br><span class="line">            <span class="keyword">if</span>(slow == fast)&#123;</span><br><span class="line">                <span class="comment">// 相遇后，一个指针从头，一个从相遇点同步走，交点就是环入口</span></span><br><span class="line">                ListNode* in1 = head;</span><br><span class="line">                ListNode* in2 = slow;</span><br><span class="line">                <span class="keyword">while</span>(in1 != in2)&#123;</span><br><span class="line">                    in1= in1-&gt;next;</span><br><span class="line">                    in2= in2-&gt;next;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> in1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="解题感悟"><a href="#解题感悟" class="headerlink" title="解题感悟"></a>解题感悟</h2><p>这题主要考察对双指针方法的熟练运用。有环的情况下快慢两指针迟早会相遇，所以单单判断<strong>是否存在环</strong>是很简单的。</p>
+<h3 id="只检测链表是否存在环的简化代码"><a href="#只检测链表是否存在环的简化代码" class="headerlink" title="只检测链表是否存在环的简化代码"></a>只检测链表是否存在环的简化代码</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">hasCycle</span><span class="params">(ListNode *head)</span> </span>&#123;</span><br><span class="line">    ListNode* fast = head;</span><br><span class="line">    ListNode* slow = head;</span><br><span class="line">    <span class="keyword">while</span>(fast != <span class="literal">nullptr</span> &amp;&amp; fast-&gt;next != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        slow = slow-&gt;next;</span><br><span class="line">        fast = fast-&gt;next-&gt;next;</span><br><span class="line">        <span class="keyword">if</span>(slow == fast) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>但是要找到<strong>环的入口节点</strong>就比较困难，需要一定的数学推导。数学可以说是从小学到大，但是真正到了需要运用的时候却总是想不到要用。其实很多时候提出问题比解决问题困难。</p>
+</blockquote>
+<h3 id="本题数学思路推导"><a href="#本题数学思路推导" class="headerlink" title="本题数学思路推导"></a>本题数学思路推导</h3><p>设：</p>
+<ul>
+<li><p>链表头节点到环入口的距离：$L$</p>
+</li>
+<li><p>环入口到快慢指针相遇点距离：$x$</p>
+</li>
+<li><p>环的总长度：$C$</p>
+</li>
+</ul>
+<p>慢指针走过距离：$S_{slow}&#x3D;L+x$<br>快指针速度是慢指针 2 倍，所以快指针走过距离：$S_{fast}&#x3D;L+x+nC$（$n$ 代表快指针在环内多跑的圈数，$n\ge1$）</p>
+<p>由 $S_{fast}&#x3D;2\times S_{slow}$：</p>
+<p>化简得到：</p>
+<p>这个式子含义：<strong>头节点到环入口的距离 L，等于相遇点继续往前走 n 圈，到达环入口的距离</strong>。</p>
+<p>所以当快慢指针相遇之后：</p>
+<ol>
+<li><p>一个指针从链表头 <code>head</code> 出发</p>
+</li>
+<li><p><strong>另一个指针从相遇点出发<br>两个指针保持相同速度，他们一定会在环入口相遇。</strong></p>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>不要把编程里的数学要求想得太简单。很多算法题本质是数学题，需要把数学模型转化成代码逻辑。<br>同时考虑到计算机的运算能力，很多暴力解法虽然直观，但时间复杂度高，在笔试、面试场景是无法通过的。暴力思路可以用来辅助理解，但想要高效解题，还是要挖掘问题背后的数学性质。</p>
+<blockquote>
+<p>（注：部分内容可能由 AI 生成）</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/" data-id="cmuc52xsj0000x8mahzd02gvj" data-title="链表环检测:快慢指针和数学的重要性" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-CSAPP读书笔记：计算机漫游" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/09/20/CSAPP%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%BC%AB%E6%B8%B8/" class="article-date">
@@ -476,7 +552,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGL/" rel="tag">OpenGL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" rel="tag">功能测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGL/" rel="tag">OpenGL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" rel="tag">功能测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
     </div>
   </div>
 
@@ -486,7 +562,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OpenGL/" style="font-size: 10px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 10px;">功能测试</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a>
+      <a href="/tags/OpenGL/" style="font-size: 10px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 10px;">功能测试</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 10px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a>
     </div>
   </div>
 
@@ -506,6 +582,10 @@
     <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/">链表环检测:快慢指针和数学的重要性</a>
+          </li>
         
           <li>
             <a href="/2026/09/20/CSAPP%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%BC%AB%E6%B8%B8/">CSAPP读书笔记：计算机漫游</a>
