@@ -153,7 +153,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/" data-id="cmuc8i6d30007vcma09nh1fq8" data-title="链表环检测:快慢指针和数学的重要性" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="http://example.com/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/" data-id="cmucca3n60001n0mae6dmalgb" data-title="链表环检测:快慢指针和数学的重要性" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -291,152 +291,130 @@
 
   </div>
 <!-- hexo injector body_end start -->
-<!-- ========== 点赞按钮样式 ========== -->
 <style>
-  .like-btn-wrap {
-    text-align: center;
-    margin: 40px 0 20px;
-    padding: 24px 0;
-  }
-  .like-btn {
-    display: inline-block;
-    padding: 10px 28px;
-    font-size: 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 24px;
-    background: #fff;
-    color: #555;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    user-select: none;
-  }
-  .like-btn:hover {
-    border-color: #ff6b6b;
-    color: #ff6b6b;
-    box-shadow: 0 2px 10px rgba(255,107,107,0.15);
-  }
-  .like-btn.liked {
-    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-    border-color: #ff6b6b;
-    color: #fff;
-    pointer-events: none;
-  }
-  .like-btn .fa-heart {
-    margin-right: 6px;
-    transition: transform 0.3s ease;
-  }
-  .like-btn.liked .fa-heart {
-    animation: heartBeat 0.6s ease;
-  }
-  @keyframes heartBeat {
-    0% { transform: scale(1); }
-    25% { transform: scale(1.4); }
-    50% { transform: scale(1); }
-    75% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-  }
-  .like-tip {
-    color: #999;
-    font-size: 13px;
-    margin-top: 10px;
-    display: none;
-  }
+  .visitor-stats { margin-top: 10px; color: #999; font-size: 13px; text-align: center; }
+  .visitor-stats .stat-item { display: inline-block; margin: 0 6px; }
+  .visitor-stats .stat-num { color: #555; font-weight: 600; }
+  @media (max-width: 500px) { .visitor-stats .stat-item { display: block; margin: 2px 0; } }
 </style>
 
-<!-- ========== 点赞按钮 (仅文章页显示) ========== -->
+<script>
+// === 今日 & 本月访问(localStorage,仅反映当前浏览器) ===
+(function(){
+  var now = new Date();
+  var todayKey = 'visit_' + now.toISOString().slice(0, 10);
+  var monthKey = 'visit_' + now.getFullYear() + '_' + (now.getMonth()+1);
+  var todayCount = parseInt(localStorage.getItem(todayKey) || '0') + 1;
+  var monthCount = parseInt(localStorage.getItem(monthKey) || '0') + 1;
+  localStorage.setItem(todayKey, todayCount);
+  localStorage.setItem(monthKey, monthCount);
+
+  // 插入页脚统计区
+  function inject() {
+    var fi = document.querySelector('#footer-info');
+    if (!fi) { setTimeout(inject, 300); return; }
+    if (fi.querySelector('.visitor-stats')) return;
+    var div = document.createElement('div');
+    div.className = 'visitor-stats';
+    div.innerHTML =
+      '<span class="stat-item">📅 今日 <span class="stat-num">' + todayCount + '</span></span>' +
+      '<span class="stat-item">📆 本月 <span class="stat-num">' + monthCount + '</span></span>' +
+      '<span class="stat-item">👥 访客 <span id="busuanzi_value_site_uv" class="stat-num">--</span></span>' +
+      '<span class="stat-item">📄 浏览 <span id="busuanzi_value_site_pv" class="stat-num">--</span></span>';
+    fi.appendChild(div);
+  }
+  inject();
+})();
+</script>
+
+<!-- 不蒜子:站点总 PV/UV -->
+<script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
+  
+<!-- Twikoo CDN -->
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
+
+<script>
+(function(){
+  var envId = 'https://twikoo-topaz-vercel.app';
+  var path = location.pathname;
+  var isPost = !!document.querySelector('.article');
+  var isGuestbook = path.indexOf('/guestbook') !== -1;
+
+  // === 1. 注入评论容器 ===
+  if (isPost || isGuestbook) {
+    var commentDiv = document.createElement('div');
+    commentDiv.id = 'twikoo-comments';
+    commentDiv.style.cssText = 'margin-top:40px;padding:20px 0;border-top:1px solid #eee;clear:both;';
+    commentDiv.innerHTML = '<h3 style="margin-bottom:20px;">💬 评论</h3><div id="tcomments"></div>';
+    // 插到点赞按钮后面,没有的话插到 article-footer 后面
+    var target = document.querySelector('.like-wrap') || document.querySelector('.article-footer');
+    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
+  }
+
+  // === 2. 文章页访问量(Twikoo FAQ 方式) ===
+  if (isPost) {
+    var visitorsSpan = document.createElement('span');
+    visitorsSpan.innerHTML = '<span class="post-visitors">👁️ 阅读 <span id="twikoo_visitors">0</span></span>';
+    visitorsSpan.style.cssText = 'margin-left:12px;font-size:13px;color:#999;';
+    var af = document.querySelector('.article-footer');
+    if (af) af.querySelector('.article-share-link')?.after(visitorsSpan.firstElementChild) || af.appendChild(visitorsSpan);
+  }
+
+  // === 3. 初始化 Twikoo ===
+  function initTwikoo() {
+    if (typeof twikoo === 'undefined') { setTimeout(initTwikoo, 200); return; }
+    if (document.getElementById('tcomments') || document.getElementById('twikoo_visitors')) {
+      twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
+        .then(function() { console.log('[Twikoo] ready'); })
+        .catch(function(err) { console.warn('[Twikoo] init failed:', err.message || err); });
+    }
+  }
+  initTwikoo();
+})();
+</script>
+  
+<style>
+  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
+  .like-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 24px; font-size: 15px;
+    border: 1px solid #e0e0e0; border-radius: 24px;
+    background: #fff; color: #555; cursor: pointer;
+    transition: all 0.25s ease; user-select: none;
+  }
+  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
+  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
+  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
+  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
+</style>
+
 <script>
 (function(){
   if (!document.querySelector('.article')) return;
-  var path = window.location.pathname;
+  var path = location.pathname;
   var key = 'liked_' + path;
   var liked = localStorage.getItem(key);
 
   var wrap = document.createElement('div');
-  wrap.className = 'like-btn-wrap';
+  wrap.className = 'like-wrap';
   wrap.innerHTML =
-    '<div class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
-      '<span class="fa ' + (liked ? 'fa-thumbs-up' : 'fa-hand-peace') + '"></span>' +
-      '<span id="likeText">' + (liked ? '已点赞,谢谢鼓励!' : '点个赞再走吧 ~') + '</span>' +
-    '</div>';
-  document.querySelector('.article-footer') && document.querySelector('.article-footer').after(wrap);
+    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
+      '<span class="fa fa-thumbs-up"></span>' +
+      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
+    '</button>';
+  var af = document.querySelector('.article-footer');
+  if (af) af.after(wrap);
 
   var btn = document.getElementById('likeBtn');
   if (btn) {
     btn.addEventListener('click', function() {
       if (btn.classList.contains('liked')) return;
       btn.classList.add('liked');
-      btn.innerHTML = '<span class="fa fa-thumbs-up"></span><span id="likeText">已点赞,谢谢鼓励!</span>';
+      btn.querySelector('span:last-child').textContent = '已点赞,谢谢!';
       localStorage.setItem(key, '1');
     });
   }
 })();
 </script>
-  
-<!-- ========== 访客统计 ========== -->
-<style>
-  .visitor-stats {
-    margin-top: 10px;
-    color: #999;
-    font-size: 13px;
-    text-align: center;
-  }
-  .visitor-stats .stat-item {
-    display: inline-block;
-    margin: 0 6px;
-  }
-  .visitor-stats .stat-num {
-    color: #555;
-    font-weight: 600;
-  }
-  @media (max-width: 500px) {
-    .visitor-stats .stat-item { display: block; margin: 2px 0; }
-  }
-</style>
-
-<script>
-// === 今日 & 本月访问统计 (localStorage 自增,仅反映本机浏览器) ===
-(function(){
-  var today = new Date();
-  var todayKey = 'visit_' + today.toISOString().slice(0, 10); // visit_2026-09-22
-  var monthKey = 'visit_' + today.getFullYear() + '_' + (today.getMonth()+1); // visit_2026_9
-
-  var todayCount = (parseInt(localStorage.getItem(todayKey) || '0') + 1);
-  var monthCount = (parseInt(localStorage.getItem(monthKey) || '0') + 1);
-  localStorage.setItem(todayKey, todayCount);
-  localStorage.setItem(monthKey, monthCount);
-
-  // 清理旧月份数据
-  try {
-    var all = Object.keys(localStorage).filter(k => k.startsWith('visit_'));
-    all.forEach(k => {
-      if (k !== todayKey && k !== monthKey) localStorage.removeItem(k);
-    });
-  } catch(e){}
-
-  // 等 footer-info 出现后插入统计区
-  function injectStats() {
-    var footerInfo = document.querySelector('#footer-info');
-    if (!footerInfo) { setTimeout(injectStats, 300); return; }
-    if (footerInfo.querySelector('.visitor-stats')) return;
-
-    var div = document.createElement('div');
-    div.className = 'visitor-stats';
-    div.innerHTML =
-      '<span class="stat-item">📅 今日 <span id="visit_today" class="stat-num">0</span> 次</span>' +
-      '<span class="stat-item">📆 本月 <span id="visit_month" class="stat-num">0</span> 次</span>' +
-      '<span class="stat-item">👥 总访客 <span id="busuanzi_value_site_uv" class="stat-num">--</span></span>' +
-      '<span class="stat-item">📄 总浏览 <span id="busuanzi_value_site_pv" class="stat-num">--</span></span>';
-    footerInfo.appendChild(div);
-
-    // 立刻填入本地统计
-    var t = document.getElementById('visit_today'); if(t) t.textContent = todayCount;
-    var m = document.getElementById('visit_month'); if(m) m.textContent = monthCount;
-  }
-  injectStats();
-})();
-</script>
-
-<!-- 不蒜子(bsz)统计:站点总 UV/PV,自动填充上面带 id 的 span -->
-<script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
   <!-- hexo injector body_end end --></body>
 </html>
