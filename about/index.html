@@ -252,6 +252,104 @@
 
   </div>
 <!-- hexo injector body_end start -->
+<style>
+  .visitor-stats { margin-top: 10px; color: #999; font-size: 13px; text-align: center; }
+  .visitor-stats .stat-item { display: inline-block; margin: 0 6px; }
+  .visitor-stats .stat-num { color: #555; font-weight: 600; }
+  @media (max-width: 500px) { .visitor-stats .stat-item { display: block; margin: 2px 0; } }
+</style>
+
+<script>
+// === 今日 & 本月访问(localStorage,仅反映当前浏览器) ===
+(function(){
+  var now = new Date();
+  var todayKey = 'visit_' + now.toISOString().slice(0, 10);
+  var monthKey = 'visit_' + now.getFullYear() + '_' + (now.getMonth()+1);
+  var todayCount = parseInt(localStorage.getItem(todayKey) || '0') + 1;
+  var monthCount = parseInt(localStorage.getItem(monthKey) || '0') + 1;
+  localStorage.setItem(todayKey, todayCount);
+  localStorage.setItem(monthKey, monthCount);
+
+  // 插入页脚统计区
+  function inject() {
+    var fi = document.querySelector('#footer-info');
+    if (!fi) { setTimeout(inject, 300); return; }
+    if (fi.querySelector('.visitor-stats')) return;
+    var div = document.createElement('div');
+    div.className = 'visitor-stats';
+    div.innerHTML =
+      '<span class="stat-item">📅 今日 <span class="stat-num">' + todayCount + '</span></span>' +
+      '<span class="stat-item">📆 本月 <span class="stat-num">' + monthCount + '</span></span>' +
+      '<span class="stat-item">👥 访客 <span id="busuanzi_value_site_uv" class="stat-num">--</span></span>' +
+      '<span class="stat-item">📄 浏览 <span id="busuanzi_value_site_pv" class="stat-num">--</span></span>';
+    fi.appendChild(div);
+  }
+  inject();
+})();
+</script>
+
+<!-- 不蒜子:站点总 PV/UV -->
+<script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
+  
+<style>
+  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
+  .like-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 24px; font-size: 15px;
+    border: 1px solid #e0e0e0; border-radius: 24px;
+    background: #fff; color: #555; cursor: pointer;
+    transition: all 0.25s ease; user-select: none;
+  }
+  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
+  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
+  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
+  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
+</style>
+
+<script>
+(function(){
+  if (!document.querySelector('.article')) return;
+  var path = location.pathname;
+  var likedKey = 'liked_' + path;
+  var countKey = 'likeCount_' + path;
+  var liked = localStorage.getItem(likedKey);
+  var count = parseInt(localStorage.getItem(countKey) || '0');
+
+  // 点赞按钮
+  var wrap = document.createElement('div');
+  wrap.className = 'like-wrap';
+  wrap.innerHTML =
+    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
+      '<span class="fa fa-thumbs-up"></span>' +
+      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
+      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
+    '</button>';
+  var af = document.querySelector('.article-footer');
+  if (af) af.after(wrap);
+
+  var btn = document.getElementById('likeBtn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('liked')) return;
+      btn.classList.add('liked');
+      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
+      localStorage.setItem(likedKey, '1');
+      count++;
+      localStorage.setItem(countKey, count);
+      // 同步更新两处显示(按钮 + 页脚内联)
+      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
+      btn.querySelector('#likeCountDisplay').style.display = '';
+      var inline = document.getElementById('lanx_like_inline');
+      if (inline) { inline.textContent = count; inline.style.display = ''; }
+    });
+  }
+
+  // 同步暴露给 twikoo.js 用来渲染页脚内联点赞数
+  window.__LANX_LIKE_COUNT__ = count;
+})();
+</script>
+  
 <!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
 <style>
   /* --- Toast 提示 --- */
@@ -466,104 +564,6 @@
   }
   // 留言板:立即初始化;文章页:等用户点展开按钮
   if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
-})();
-</script>
-  
-<style>
-  .visitor-stats { margin-top: 10px; color: #999; font-size: 13px; text-align: center; }
-  .visitor-stats .stat-item { display: inline-block; margin: 0 6px; }
-  .visitor-stats .stat-num { color: #555; font-weight: 600; }
-  @media (max-width: 500px) { .visitor-stats .stat-item { display: block; margin: 2px 0; } }
-</style>
-
-<script>
-// === 今日 & 本月访问(localStorage,仅反映当前浏览器) ===
-(function(){
-  var now = new Date();
-  var todayKey = 'visit_' + now.toISOString().slice(0, 10);
-  var monthKey = 'visit_' + now.getFullYear() + '_' + (now.getMonth()+1);
-  var todayCount = parseInt(localStorage.getItem(todayKey) || '0') + 1;
-  var monthCount = parseInt(localStorage.getItem(monthKey) || '0') + 1;
-  localStorage.setItem(todayKey, todayCount);
-  localStorage.setItem(monthKey, monthCount);
-
-  // 插入页脚统计区
-  function inject() {
-    var fi = document.querySelector('#footer-info');
-    if (!fi) { setTimeout(inject, 300); return; }
-    if (fi.querySelector('.visitor-stats')) return;
-    var div = document.createElement('div');
-    div.className = 'visitor-stats';
-    div.innerHTML =
-      '<span class="stat-item">📅 今日 <span class="stat-num">' + todayCount + '</span></span>' +
-      '<span class="stat-item">📆 本月 <span class="stat-num">' + monthCount + '</span></span>' +
-      '<span class="stat-item">👥 访客 <span id="busuanzi_value_site_uv" class="stat-num">--</span></span>' +
-      '<span class="stat-item">📄 浏览 <span id="busuanzi_value_site_pv" class="stat-num">--</span></span>';
-    fi.appendChild(div);
-  }
-  inject();
-})();
-</script>
-
-<!-- 不蒜子:站点总 PV/UV -->
-<script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
-  
-<style>
-  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
-  .like-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 24px; font-size: 15px;
-    border: 1px solid #e0e0e0; border-radius: 24px;
-    background: #fff; color: #555; cursor: pointer;
-    transition: all 0.25s ease; user-select: none;
-  }
-  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
-  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
-  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
-  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
-  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
-</style>
-
-<script>
-(function(){
-  if (!document.querySelector('.article')) return;
-  var path = location.pathname;
-  var likedKey = 'liked_' + path;
-  var countKey = 'likeCount_' + path;
-  var liked = localStorage.getItem(likedKey);
-  var count = parseInt(localStorage.getItem(countKey) || '0');
-
-  // 点赞按钮
-  var wrap = document.createElement('div');
-  wrap.className = 'like-wrap';
-  wrap.innerHTML =
-    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
-      '<span class="fa fa-thumbs-up"></span>' +
-      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
-      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
-    '</button>';
-  var af = document.querySelector('.article-footer');
-  if (af) af.after(wrap);
-
-  var btn = document.getElementById('likeBtn');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      if (btn.classList.contains('liked')) return;
-      btn.classList.add('liked');
-      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
-      localStorage.setItem(likedKey, '1');
-      count++;
-      localStorage.setItem(countKey, count);
-      // 同步更新两处显示(按钮 + 页脚内联)
-      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
-      btn.querySelector('#likeCountDisplay').style.display = '';
-      var inline = document.getElementById('lanx_like_inline');
-      if (inline) { inline.textContent = count; inline.style.display = ''; }
-    });
-  }
-
-  // 同步暴露给 twikoo.js 用来渲染页脚内联点赞数
-  window.__LANX_LIKE_COUNT__ = count;
 })();
 </script>
   <!-- hexo injector body_end end --></body>
