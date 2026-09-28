@@ -4,17 +4,19 @@
   <meta charset="utf-8">
   
   
-  <title>归档: 2026/8 | LANXone的博客</title>
+  <title>哈希表:数组交集 | LANXone的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="记录我的学习和心路历程">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LANXone的博客">
-<meta property="og:url" content="http://example.com/archives/2026/08/index.html">
+  <meta name="description" content="哈希表：两数组交集 暴力双循环 12345678910111213141516171819202122232425class Solution &#123;public:    vector&lt;int&gt; intersection(vector&lt;int&gt;&amp; nums1, vector&lt;int&gt;&amp; nums2) &#123;        int si">
+<meta property="og:type" content="article">
+<meta property="og:title" content="哈希表:数组交集">
+<meta property="og:url" content="http://example.com/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E6%95%B0%E7%BB%84%E4%BA%A4%E9%9B%86/index.html">
 <meta property="og:site_name" content="LANXone的博客">
-<meta property="og:description" content="记录我的学习和心路历程">
+<meta property="og:description" content="哈希表：两数组交集 暴力双循环 12345678910111213141516171819202122232425class Solution &#123;public:    vector&lt;int&gt; intersection(vector&lt;int&gt;&amp; nums1, vector&lt;int&gt;&amp; nums2) &#123;        int si">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-28T09:53:36.000Z">
+<meta property="article:modified_time" content="2026-09-28T09:55:25.326Z">
 <meta property="article:author" content="LANXone">
-<meta property="article:tag" content="编程,游戏,算法练习与感悟">
+<meta property="article:tag" content="算法感悟">
 <meta name="twitter:card" content="summary">
   
   
@@ -76,39 +78,126 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2026" class="archive-year">2026</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/08/18/hello-world/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-08-18T12:45:58.177Z" itemprop="datePublished">8月 18</time>
+        <section id="main"><article id="post-哈希表-数组交集" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E6%95%B0%E7%BB%84%E4%BA%A4%E9%9B%86/" class="article-date">
+  <time class="dt-published" datetime="2026-09-28T09:53:36.000Z" itemprop="datePublished">2026-09-28</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/08/18/hello-world/">Hello World</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      哈希表:数组交集
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>哈希表：两数组交集</h1>
+<h2 id="暴力双循环">暴力双循环</h2>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">intersection</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums1, vector&lt;<span class="type">int</span>&gt;&amp; nums2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> size1 = nums1.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> size2 = nums2.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> max1 = <span class="built_in">max</span>(size1,size2);</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; res;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i =<span class="number">0</span>; i&lt;size1; i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>;j&lt;size2; j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(nums1[i]==nums2[j])&#123;</span><br><span class="line">                    res.<span class="built_in">push_back</span>(nums1[i]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;res.<span class="built_in">size</span>();i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;res.<span class="built_in">size</span>();j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(res[i]==res[j]&amp;&amp;i!=j)&#123;</span><br><span class="line">                    res.<span class="built_in">erase</span>(res.<span class="built_in">begin</span>()+j);</span><br><span class="line">                    j--;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="哈希表法">哈希表法</h2>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">intersection</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums1, vector&lt;<span class="type">int</span>&gt;&amp; nums2)</span> </span>&#123;</span><br><span class="line">        unordered_set&lt;<span class="type">int</span>&gt; result_set; <span class="comment">// 存放结果，之所以用set是为了给结果集去重</span></span><br><span class="line">        <span class="function">unordered_set&lt;<span class="type">int</span>&gt; <span class="title">nums_set</span><span class="params">(nums1.begin(), nums1.end())</span></span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> num : nums2) &#123;</span><br><span class="line">            <span class="comment">// 发现nums2的元素 在nums_set里又出现过</span></span><br><span class="line">            <span class="keyword">if</span> (nums_set.<span class="built_in">find</span>(num) != nums_set.<span class="built_in">end</span>()) &#123;</span><br><span class="line">                result_set.<span class="built_in">insert</span>(num);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(result_set.<span class="built_in">begin</span>(), result_set.<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1>unordered_set 无序集合（C++）</h1>
+<p>底层：哈希表，元素无序，不重复。</p>
+<p>头文件：<code>#include &lt;unordered_set&gt;</code></p>
+<h2 id="✅-核心属性">✅ 核心属性</h2>
+<ol>
+<li><strong>元素唯一</strong>：不能存放重复的值，插入重复元素会直接忽略。</li>
+<li><strong>无序存储</strong>：遍历顺序不是插入顺序，也不是从小到大排序。（对比 <code>set</code>：红黑树，自动升序）</li>
+<li><strong>查找、插入、删除平均 O(1)</strong>，最坏 O(n)（哈希冲突）</li>
+</ol>
+<blockquote>
+<p>set（有序集合）增删查稳定 O(logn)</p>
+</blockquote>
+<h2 id="✅-常用成员函数">✅ 常用成员函数</h2>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">unordered_set&lt;<span class="type">int</span>&gt; st;</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">5</span>);        <span class="comment">// 插入元素</span></span><br><span class="line">st.<span class="built_in">erase</span>(<span class="number">5</span>);         <span class="comment">// 删除元素，可以传值/迭代器</span></span><br><span class="line">st.<span class="built_in">count</span>(<span class="number">5</span>);         <span class="comment">// 判断元素是否存在：存在返回1，不存在返回0</span></span><br><span class="line">st.<span class="built_in">find</span>(<span class="number">5</span>);          <span class="comment">// 找到返回迭代器；找不到返回 st.end()</span></span><br><span class="line">st.<span class="built_in">empty</span>();          <span class="comment">// 判断是否为空</span></span><br><span class="line">st.<span class="built_in">size</span>();           <span class="comment">// 返回元素个数</span></span><br><span class="line">st.<span class="built_in">clear</span>();          <span class="comment">// 清空全部元素</span></span><br></pre></td></tr></table></figure>
+<p>示例：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">unordered_set&lt;<span class="type">int</span>&gt; st;</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">1</span>);</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">2</span>);</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">2</span>); <span class="comment">// 重复，不会生效</span></span><br><span class="line">cout &lt;&lt; st.<span class="built_in">size</span>(); <span class="comment">// 输出2</span></span><br></pre></td></tr></table></figure>
+<h2 id="⚠️-高频坑（刷题考点）">⚠️ 高频坑（刷题考点）</h2>
+<ol>
+<li>不能用下标 <code>st[0]</code> 访问！没有 <code>[]</code> 运算符，和 vector/map 不一样。</li>
+<li>迭代器遍历顺序不确定，不要依赖顺序。</li>
+<li>自定义结构体不能直接放进 unordered_set，需要自己写哈希函数；普通int、string可以直接用。</li>
+<li><code>st.find(x) != st.end()</code> 用来判断元素存在；<code>st.count(x)</code> 也可以，返回0或1。</li>
+</ol>
+<h2 id="🆚-unordered-set-vs-set">🆚 unordered_set vs set</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>unordered_set</th>
+<th>set</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>底层</td>
+<td>哈希表</td>
+<td>红黑树</td>
+</tr>
+<tr>
+<td>顺序</td>
+<td>无序</td>
+<td>从小到大自动排序</td>
+</tr>
+<tr>
+<td>复杂度</td>
+<td>平均O(1)</td>
+<td>O(logn)</td>
+</tr>
+<tr>
+<td>重复元素</td>
+<td>不允许</td>
+<td>不允许</td>
+</tr>
+</tbody>
+</table>
+<h2 id="📌什么时候选unordered-set？">📌什么时候选unordered_set？</h2>
+<p>只需要去重 + 判断某个元素是否存在，不关心顺序 → 优先 unordered_set。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E6%95%B0%E7%BB%84%E4%BA%A4%E9%9B%86/" data-id="cmul32bhy0001g0ma0bz8h2ly" data-title="哈希表:数组交集" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E5%BF%AB%E4%B9%90%E6%95%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          哈希表:快乐数
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2026/09/22/CSAPP%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">CSAPP读书笔记:程序的编译</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 
 </section>
