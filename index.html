@@ -78,6 +78,218 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-自学规划" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/" class="article-date">
+  <time class="dt-published" datetime="2026-09-28T10:30:05.000Z" itemprop="datePublished">2026-09-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/">自学规划</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>从零手写同步回合制游戏（不使用成品引擎）学习规划笔记</h1>
+<blockquote>
+<p>对话整理：目标游戏玩法参考《紫色晶石》《节奏地牢》，<strong>自制底层引擎（仅使用SDL/SFML等基础底层库，不使用Unity/Godot/UE）</strong></p>
+</blockquote>
+<h2 id="需求概述">需求概述</h2>
+<p>目标：从零开发游戏，不依赖现成游戏引擎。核心玩法为同步回合制，网格地图，类似紫色晶石（玩家行动消耗AP，玩家一轮行动结束后所有敌人统一行动）、节奏地牢（回合驱动）。想了解需要学习的内容、技术栈，以及C++内存难点、配套学习教程。</p>
+<hr>
+<h1>一、技术方案选型</h1>
+<blockquote>
+<p>区分概念：不使用成品引擎 ≠ 不能用底层库；底层库仅负责窗口、渲染、输入、音频；回合逻辑、战斗、AI、地图全部手写。</p>
+</blockquote>
+<h2 id="两条路线">两条路线</h2>
+<h3 id="路线A：C-底层库（推荐，Stoneshard-使用C-）">路线A：C++ + 底层库（推荐，Stoneshard 使用C++）</h3>
+<ul>
+<li>图形库：<strong>SDL2（首选，跨平台2D像素）</strong>；备选 SFML（API更友好）</li>
+<li>音频：SDL_mixer / FMOD</li>
+<li>字体渲染：SDL_ttf</li>
+<li>构建工具：CMake</li>
+<li>数据解析：nlohmann/json（读取地图、配置）</li>
+<li>地图编辑器：Tiled，导出json，自行写解析器</li>
+</ul>
+<h3 id="路线B：Rust-Macroquad-Piston">路线B：Rust + Macroquad / Piston</h3>
+<p>优势：内存安全，编译期规避悬垂指针、内存泄漏；适合独立开发者快速原型。缺点是生态相对C++小。</p>
+<blockquote>
+<p>❌ 不推荐直接裸写Win32+原生OpenGL，前期大量精力消耗在图形底层，耽误回合玩法原型开发。</p>
+</blockquote>
+<h2 id="核心架构思想">核心架构思想</h2>
+<ol>
+<li><strong>游戏主循环</strong>：初始化 → 循环（读取输入 → 更新游戏逻辑 → 渲染画面 → 控制帧率）</li>
+<li><strong>同步回合状态拆分</strong>
+<ul>
+<li>WAIT_PLAYER：等待玩家输入，生成行动意图</li>
+<li>PLAYER_ACT：执行玩家行动，消耗行动点AP</li>
+<li>ENEMY_TURN：全部敌人依次执行AI行动</li>
+<li>ANIM_PLAY：播放动作动画，暂停逻辑</li>
+</ul>
+</li>
+<li><strong>逻辑与渲染严格分离</strong>：回合逻辑使用固定tick，渲染帧率不受限制，保证战斗逻辑稳定。</li>
+<li>推荐简易ECS（实体组件系统）：实体Entity，属性Hp/Ap/Position/Buff为Component；原型阶段可以先用结构体数组，后期重构。</li>
+</ol>
+<h2 id="核心模块清单">核心模块清单</h2>
+<ol>
+<li>网格Grid系统：格子坐标、世界坐标互转、可通行标记、墙壁</li>
+<li>FOV视野：Recursive Shadow Casting（紫色晶石黑暗视野）</li>
+<li>A*网格寻路：敌人寻路</li>
+<li>行动队列 Action Queue：行动入队，回合阶段顺序执行</li>
+<li>AP行动点系统：移动、攻击、技能消耗行动点</li>
+<li>Buff/状态系统：在【回合开始】【行动前】【受伤】【回合结束】触发</li>
+<li>伤害计算、命中判定</li>
+<li>AI逻辑：仅敌人回合执行，原型先用简单AI（靠近→可攻击则攻击）</li>
+<li>像素渲染、精灵表、相机视口</li>
+<li>输入解耦：输入只生成行动意图，不在输入回调直接修改游戏世界</li>
+<li>资源加载、存档序列化</li>
+</ol>
+<h2 id="开发迭代顺序（MVP优先，禁止先做美术）">开发迭代顺序（MVP优先，禁止先做美术）</h2>
+<ol>
+<li><strong>阶段1：最小引擎骨架（1~2周）</strong><br>
+SDL窗口，游戏循环，键盘输入，绘制方块，网格移动。目标：黑白方块地图，可以移动玩家方块。</li>
+<li><strong>阶段2：同步回合原型（核心MVP）</strong><br>
+修改为回合模式，移动消耗AP；玩家操作结束，全体敌人统一行动；实现状态机、行动队列。此时全是方块，但核心玩法跑通。</li>
+<li><strong>阶段3：战斗与实体系统</strong><br>
+血量、攻击判定，buff系统，A*敌人寻路。</li>
+<li><strong>阶段4：FOV视野、Tiled地图加载</strong><br>
+黑暗视野，解析Tiled地图json。</li>
+<li><strong>阶段5：动画、音效，替换方块为像素精灵</strong><br>
+帧动画、攻击音效，动画阻塞回合逻辑。</li>
+<li><strong>阶段6：UI、物品、存档、敌人种类、数值平衡</strong><br>
+血条、物品栏、拾取装备、存档读档。</li>
+<li><strong>阶段7：优化、打包发布</strong></li>
+</ol>
+<hr>
+<h1>二、C++内存管理难点（游戏开发场景）</h1>
+<blockquote>
+<p>C++没有GC，内存生命周期完全由程序员手动控制。错误常表现为间歇性bug，Debug正常Release随机崩溃。</p>
+</blockquote>
+<ol>
+<li><strong>栈 vs 堆</strong><br>
+栈：局部变量，函数退出自动销毁；栈空间很小，大数组容易栈溢出。<br>
+堆：<code>new</code>分配，<strong>必须手动delete</strong>；适合大量实体、地图数据。</li>
+</ol>
+<blockquote>
+<p>坑：保存栈对象指针到全局队列，函数退出对象销毁 → <strong>悬垂指针</strong>。</p>
+</blockquote>
+<ol start="2">
+<li><strong>悬垂指针（野指针）</strong><br>
+指针还存在，但指向内存已经释放。访问时属于未定义行为，可能乱数据、随机崩溃。回合行动队列极易踩坑。</li>
+<li><strong>内存泄漏</strong><code>new</code>之后忘记<code>delete</code>。敌人死亡不释放内存，长时间游玩内存持续上涨。程序不会报错，只会慢慢吃内存。</li>
+<li><strong>重复释放 double free</strong><br>
+一块内存delete后再次delete，破坏堆结构，随机崩溃。典型场景：ECS实体多处写删除逻辑。</li>
+<li><strong>浅拷贝陷阱</strong><br>
+默认拷贝仅复制指针，两个对象共用同一块堆内存；一个析构后另一个指针失效。角色、物品结构体高频踩坑。<br>
+解决：手写深拷贝，或禁用拷贝。</li>
+<li><strong>内存所有权问题</strong><br>
+谁负责释放内存？行动队列保存Action指针时，如果所有权约定不清，极易出现泄漏或double free。<br>
+现代C++方案：<code>std::unique_ptr</code>（单一所有权，优先推荐）；谨慎使用<code>std::shared_ptr</code>（循环引用会泄漏）。</li>
+<li><strong>new[] / delete[] 必须配对</strong><br>
+数组分配<code>new[]</code>，释放必须用<code>delete[]</code>，混用为未定义行为。</li>
+<li><strong>未定义行为 UB</strong><br>
+内存错误没有固定报错表现：可能正常运行、随机崩溃、只在打包后出错，bug根源和崩溃位置不在一起。</li>
+</ol>
+<h2 id="✅-降低C-内存风险的工程规范（回合引擎推荐）">✅ 降低C++内存风险的工程规范（回合引擎推荐）</h2>
+<ol>
+<li>优先栈对象，临时Action、小结构体尽量栈分配。</li>
+<li>容器优先值语义：<code>std::vector&lt;Entity&gt;</code>，而不是<code>vector&lt;Entity*&gt;</code>，vector自动管理内存。ECS组件数组推荐这种写法。</li>
+<li>堆对象优先<code>std::unique_ptr</code>，少用shared_ptr。</li>
+<li><strong>实体用ID代替裸指针（强烈推荐）</strong><br>
+实体使用uint64_t整数ID；维护<code>unordered_map&lt;uint64_t, Entity&gt;</code>。所有Action、buff、AI只存实体ID，访问实体通过ID查找。实体销毁直接删除map条目，<strong>直接消灭悬垂指针</strong>。</li>
+</ol>
+<blockquote>
+<p>一句话总结：C++内存难不在于语法，而在于<strong>手动管理生命周期与所有权；错误行为飘忽，难以定位</strong>。</p>
+</blockquote>
+<hr>
+<h1>三、推荐教程资源（不使用成品引擎，SDL底层 + Roguelike同步回合）</h1>
+<h2 id="首选教程">首选教程</h2>
+<ol>
+<li><strong>Game Code School Traditional Roguelike（最匹配你的项目）</strong>
+<ul>
+<li>SDL3 + C++，不使用游戏引擎，从零搭建roguelike</li>
+<li>覆盖：窗口、网格地图、<strong>同步回合循环、RSC FOV视野、A*寻路、怪物AI、buff、存档、HUD</strong></li>
+<li>配套书籍 <em>Using C++ to Build a Traditional Roguelike</em>，每章独立工程，源码可下载</li>
+<li>特点：现代C++，专门讲解内存组织，规避裸指针坑</li>
+<li>链接：<a target="_blank" rel="noopener" href="https://gamecodeschool.com/roguelikes/">https://gamecodeschool.com/roguelikes/</a></li>
+<li>缺点：英文文档</li>
+</ul>
+</li>
+<li><strong>Parallel Realities C Roguelike Tutorial</strong>
+<ul>
+<li>C语言 + SDL2，极简代码，学习底层内存原理；思路可以移植C++</li>
+<li>链接：<a target="_blank" rel="noopener" href="https://www.parallelrealities.co.uk/tutorials/rogue/rogue.php">https://www.parallelrealities.co.uk/tutorials/rogue/rogue.php</a></li>
+</ul>
+</li>
+</ol>
+<h2 id="算法参考网站">算法参考网站</h2>
+<ol>
+<li><strong>RogueBasin（Roguelike维基宝库）</strong><br>
+大量roguelike经典算法：RSC视野、A*、回合时序、地图生成<br>
+Python libtcod教程：架构完全可迁移到C++，适合学习回合系统思想。<br>
+<a target="_blank" rel="noopener" href="https://roguebasin.com/">https://roguebasin.com/</a></li>
+<li><strong>Red Blob Games</strong><br>
+A*、网格坐标可视化教程，敌人寻路必看<br>
+<a target="_blank" rel="noopener" href="https://www.redblobgames.com/">https://www.redblobgames.com/</a></li>
+</ol>
+<h2 id="书籍">书籍</h2>
+<ol>
+<li><strong>Game Programming Patterns（游戏编程模式，免费在线阅读）</strong><br>
+核心：状态机、事件队列、组件模式、ECS、事件总线；学习游戏架构，设计内存所有权。<br>
+<a target="_blank" rel="noopener" href="https://gameprogrammingpatterns.com/">https://gameprogrammingpatterns.com/</a></li>
+<li>2D Game Engine Programming with C（SDL3自制引擎）</li>
+<li>Dragonfly（大学自制引擎教材）</li>
+</ol>
+<h2 id="视频教程">视频教程</h2>
+<ol>
+<li>Handmade Hero：C从零写引擎，学习内存管理、数据导向编程；不包含回合制，底层思想极强。</li>
+<li>Lazy Foo' SDL2 Tutorials：SDL入门，窗口、贴图、输入、音频，搭建引擎骨架<br>
+<a target="_blank" rel="noopener" href="https://lazyfoo.net/tutorials/SDL/">https://lazyfoo.net/tutorials/SDL/</a></li>
+</ol>
+<h2 id="Rust备选教程（避开C-内存问题）">Rust备选教程（避开C++内存问题）</h2>
+<p>Gridbugs Roguelike 2020 教程：Rust + Macroquad，无引擎同步回合roguelike<br>
+<a target="_blank" rel="noopener" href="https://www.gridbugs.org/roguelike-tutorial-2020/">https://www.gridbugs.org/roguelike-tutorial-2020/</a></p>
+<h2 id="❌-需要避开的教程">❌ 需要避开的教程</h2>
+<ul>
+<li>Unity/Godot写roguelike教程：属于引擎脚本开发，<strong>不是从零写引擎</strong>，不符合需求</li>
+<li>老libtcod教程：libtcod封装渲染底层，只能借鉴逻辑，不要依赖它的渲染模块</li>
+</ul>
+<h2 id="推荐学习顺序">推荐学习顺序</h2>
+<ol>
+<li>Lazy Foo SDL2 → SDL基础，搭建窗口、输入、渲染骨架</li>
+<li>Game Code School Roguelike，跟着实现方块原型、同步回合、FOV</li>
+<li>Game Programming Patterns，学习状态机、Action队列，优化内存所有权，实体ID方案</li>
+<li>RogueBasin、Red Blob Games补充A*、地图生成</li>
+<li>Handmade Hero选看内存、数据导向章节</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/" data-id="cmul3xyvl00008cmacfc8a3t7" data-title="自学规划" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" rel="tag">学习规划</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-哈希表-快乐数" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E5%BF%AB%E4%B9%90%E6%95%B0/" class="article-date">
@@ -972,95 +1184,6 @@
 
 
   
-    <article id="post-链表环检测-快慢指针和数学的重要性" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/" class="article-date">
-  <time class="dt-published" datetime="2026-09-22T03:50:37.000Z" itemprop="datePublished">2026-09-22</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/">链表环检测:快慢指针和数学的重要性</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1>LeetCode 142.环形链表Ⅱ 解题感悟</h1>
-<h2 id="题目描述">题目描述</h2>
-<p>给定一个链表的头节点 <code>head</code>，返回链表开始入环的第一个节点。如果链表无环，则返回 <code>null</code>。</p>
-<blockquote>
-<p>不允许修改链表。</p>
-</blockquote>
-<h2 id="代码（C-快慢指针解法）">代码（C++ 快慢指针解法）</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">ListNode *<span class="title">detectCycle</span><span class="params">(ListNode *head)</span> </span>&#123;</span><br><span class="line">        ListNode* fast = head;</span><br><span class="line">        ListNode* slow = head;</span><br><span class="line">        <span class="keyword">while</span>(fast != <span class="literal">NULL</span> &amp;&amp; fast-&gt;next != <span class="literal">NULL</span>)&#123;</span><br><span class="line">            slow = slow-&gt;next;</span><br><span class="line">            fast = fast-&gt;next-&gt;next;</span><br><span class="line">            <span class="keyword">if</span>(slow == fast)&#123;</span><br><span class="line">                <span class="comment">// 相遇后，一个指针从头，一个从相遇点同步走，交点就是环入口</span></span><br><span class="line">                ListNode* in1 = head;</span><br><span class="line">                ListNode* in2 = slow;</span><br><span class="line">                <span class="keyword">while</span>(in1 != in2)&#123;</span><br><span class="line">                    in1= in1-&gt;next;</span><br><span class="line">                    in2= in2-&gt;next;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> in1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="解题感悟">解题感悟</h2>
-<p>这题主要考察对双指针方法的熟练运用。有环的情况下快慢两指针迟早会相遇，所以单单判断<strong>是否存在环</strong>是很简单的。</p>
-<h3 id="只检测链表是否存在环的简化代码">只检测链表是否存在环的简化代码</h3>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">hasCycle</span><span class="params">(ListNode *head)</span> </span>&#123;</span><br><span class="line">    ListNode* fast = head;</span><br><span class="line">    ListNode* slow = head;</span><br><span class="line">    <span class="keyword">while</span>(fast != <span class="literal">nullptr</span> &amp;&amp; fast-&gt;next != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        slow = slow-&gt;next;</span><br><span class="line">        fast = fast-&gt;next-&gt;next;</span><br><span class="line">        <span class="keyword">if</span>(slow == fast) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>但是要找到<strong>环的入口节点</strong>就比较困难，需要一定的数学推导。数学可以说是从小学到大，但是真正到了需要运用的时候却总是想不到要用。其实很多时候提出问题比解决问题困难。</p>
-</blockquote>
-<h3 id="本题数学思路推导">本题数学思路推导</h3>
-<p>设：</p>
-<ul>
-<li>
-<p>链表头节点到环入口的距离：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">L</span></span></span></span></p>
-</li>
-<li>
-<p>环入口到快慢指针相遇点距离：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">x</span></span></span></span></p>
-</li>
-<li>
-<p>环的总长度：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>C</mi></mrow><annotation encoding="application/x-tex">C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.07153em;">C</span></span></span></span></p>
-</li>
-</ul>
-<p>慢指针走过距离：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mrow><mi>s</mi><mi>l</mi><mi>o</mi><mi>w</mi></mrow></msub><mo>=</mo><mi>L</mi><mo>+</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">S_{slow}=L+x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.05764em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">s</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mord mathit">o</span><span class="mord mathit" style="margin-right:0.02691em;">w</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">L</span><span class="mbin">+</span><span class="mord mathit">x</span></span></span></span><br>
-快指针速度是慢指针 2 倍，所以快指针走过距离：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mrow><mi>f</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub><mo>=</mo><mi>L</mi><mo>+</mo><mi>x</mi><mo>+</mo><mi>n</mi><mi>C</mi></mrow><annotation encoding="application/x-tex">S_{fast}=L+x+nC</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.05764em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.10764em;">f</span><span class="mord mathit">a</span><span class="mord mathit">s</span><span class="mord mathit">t</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">L</span><span class="mbin">+</span><span class="mord mathit">x</span><span class="mbin">+</span><span class="mord mathit">n</span><span class="mord mathit" style="margin-right:0.07153em;">C</span></span></span></span>（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">n</span></span></span></span> 代表快指针在环内多跑的圈数，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mo>≥</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n\ge1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.78041em;vertical-align:-0.13597em;"></span><span class="base textstyle uncramped"><span class="mord mathit">n</span><span class="mrel">≥</span><span class="mord mathrm">1</span></span></span></span>）</p>
-<p>由 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mrow><mi>f</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub><mo>=</mo><mn>2</mn><mo>×</mo><msub><mi>S</mi><mrow><mi>s</mi><mi>l</mi><mi>o</mi><mi>w</mi></mrow></msub></mrow><annotation encoding="application/x-tex">S_{fast}=2\times S_{slow}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.05764em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.10764em;">f</span><span class="mord mathit">a</span><span class="mord mathit">s</span><span class="mord mathit">t</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathrm">2</span><span class="mbin">×</span><span class="mord"><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.05764em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">s</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mord mathit">o</span><span class="mord mathit" style="margin-right:0.02691em;">w</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>：</p>
-<p>化简得到：</p>
-<p>这个式子含义：<strong>头节点到环入口的距离 L，等于相遇点继续往前走 n 圈，到达环入口的距离</strong>。</p>
-<p>所以当快慢指针相遇之后：</p>
-<ol>
-<li>
-<p>一个指针从链表头 <code>head</code> 出发</p>
-</li>
-<li>
-<p><strong>另一个指针从相遇点出发<br>
-两个指针保持相同速度，他们一定会在环入口相遇。</strong></p>
-</li>
-</ol>
-<h2 id="总结">总结</h2>
-<p>不要把编程里的数学要求想得太简单。很多算法题本质是数学题，需要把数学模型转化成代码逻辑。<br>
-同时考虑到计算机的运算能力，很多暴力解法虽然直观，但时间复杂度高，在笔试、面试场景是无法通过的。暴力思路可以用来辅助理解，但想要高效解题，还是要挖掘问题背后的数学性质。</p>
-<blockquote>
-<p>（注：部分内容可能由 AI 生成）</p>
-</blockquote>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/" data-id="cmucmr2ku0007lcma5kx007e3" data-title="链表环检测:快慢指针和数学的重要性" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
@@ -1079,7 +1202,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGL/" rel="tag">OpenGL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" rel="tag">功能测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGL/" rel="tag">OpenGL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" rel="tag">功能测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" rel="tag">学习规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
     </div>
   </div>
 
@@ -1089,7 +1212,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OpenGL/" style="font-size: 10px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 15px;">功能测试</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a>
+      <a href="/tags/OpenGL/" style="font-size: 10px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 15px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 10px;">学习规划</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a>
     </div>
   </div>
 
@@ -1111,6 +1234,10 @@
       <ul>
         
           <li>
+            <a href="/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/">自学规划</a>
+          </li>
+        
+          <li>
             <a href="/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E5%BF%AB%E4%B9%90%E6%95%B0/">哈希表:快乐数</a>
           </li>
         
@@ -1124,10 +1251,6 @@
         
           <li>
             <a href="/2026/09/22/Hexo/">Hexo?</a>
-          </li>
-        
-          <li>
-            <a href="/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/">链表环检测:快慢指针和数学的重要性</a>
           </li>
         
       </ul>
