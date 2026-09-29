@@ -78,6 +78,87 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-C-游戏开发-储备知识" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/09/29/C-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86/" class="article-date">
+  <time class="dt-published" datetime="2026-09-29T14:41:23.000Z" itemprop="datePublished">2026-09-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/09/29/C-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86/">C++游戏开发:储备知识</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>classes, templates, smart pointers, and the STL（C++）简单介绍</h1>
+<h2 id="1-Classes-类">1. Classes 类</h2>
+<p>C++面向对象的核心，<strong>封装数据与操作数据的函数</strong>。</p>
+<ul>
+<li>把成员变量（属性）、成员函数（行为）打包成一个类型。</li>
+<li>支持访问控制：<code>public</code>/<code>private</code>/<code>protected</code>，实现封装；还支持继承、多态。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class Person &#123;</span><br><span class="line">private:</span><br><span class="line">    int age;</span><br><span class="line">public:</span><br><span class="line">    void setAge(int a) &#123; age = a; &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="2-Templates-模板">2. Templates 模板</h2>
+<p><strong>泛型编程工具</strong>，让函数/类不绑定具体类型，一份代码可以适配多种数据类型。</p>
+<ul>
+<li>函数模板：同一个函数可以处理 int、double、string 等。</li>
+<li>类模板：最典型就是 <code>std::vector&lt;T&gt;</code>，<code>T</code> 就是模板参数。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename T&gt;</span><br><span class="line">T maxVal(T a, T b) &#123; return a&gt;b ? a : b; &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-Smart-pointers-智能指针">3. Smart pointers 智能指针</h2>
+<p><strong>自动管理堆内存的指针</strong>，替代裸指针，解决内存泄漏问题，本质是RAII（资源获取即初始化）。</p>
+<ul>
+<li><code>std::unique_ptr</code>：独占所有权，不能拷贝，只能移动；开销最小。</li>
+<li><code>std::shared_ptr</code>：共享所有权，引用计数，计数归零自动释放内存。</li>
+<li><code>std::weak_ptr</code>：配合 shared_ptr，解决循环引用，不增加引用计数。</li>
+</ul>
+<blockquote>
+<p>核心：<strong>离开作用域时自动析构释放内存，不用手动 <code>delete</code></strong>。</p>
+</blockquote>
+<h2 id="4-STL（Standard-Template-Library）标准模板库">4. STL（Standard Template Library）标准模板库</h2>
+<p>C++标准库的泛型组件集合，<strong>全部基于模板实现</strong>，分4大块：</p>
+<ol>
+<li><strong>容器 Containers</strong>：存放数据。<code>vector</code>、<code>string</code>、<code>map</code>、<code>unordered_map</code>、<code>set</code>、<code>deque</code>、<code>list</code>。</li>
+<li><strong>迭代器 Iterators</strong>：容器的“指针”，统一遍历不同容器。</li>
+<li><strong>算法 Algorithms</strong>：通用函数，<code>sort</code>、<code>find</code>、<code>for_each</code>，通过迭代器操作容器。</li>
+<li><strong>函数对象 Functors</strong>：可调用对象，用于算法自定义行为。</li>
+</ol>
+<hr>
+<h3 id="一句话总结">一句话总结</h3>
+<ul>
+<li><strong>Class</strong>：面向对象，封装；</li>
+<li><strong>Template</strong>：泛型，类型无关代码；</li>
+<li><strong>Smart pointer</strong>：安全自动内存管理；</li>
+<li><strong>STL</strong>：一套现成模板容器+算法库，日常C++开发主力。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/09/29/C-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86/" data-id="cmumsdosm0000egma661scqqe" data-title="C++游戏开发:储备知识" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" rel="tag">学习规划</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-自学规划" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/" class="article-date">
@@ -523,672 +604,11 @@ A*、网格坐标可视化教程，敌人寻路必看<br>
 
 
   
-    <article id="how-Hexo" class="h-entry article article-type-how" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/09/22/Hexo/" class="article-date">
-  <time class="dt-published" datetime="2026-09-22T08:16:53.000Z" itemprop="datePublished">2026-09-22</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/09/22/Hexo/">Hexo?</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1>🚀 Hexo 博客折腾全纪录 —— 从零到上线的踩坑与解决</h1>
-<blockquote>
-<p><strong>写给谁看</strong>:完全没接触过 Hexo、Node.js、前端的小白,想知道&quot;我的博客是怎么变成这样的&quot;。<br>
-<strong>更新日期</strong>:2026-09-22<br>
-<strong>博客地址</strong>:<a target="_blank" rel="noopener" href="https://lanxone.github.io">https://lanxone.github.io</a></p>
-</blockquote>
-<hr>
-<h2 id="📖-目录">📖 目录</h2>
-<ul>
-<li><a href="#%E4%B8%80%E5%85%88%E6%90%9E%E6%87%82%E8%BF%99%E5%A0%86%E5%90%8D%E8%AF%8D%E9%83%BD%E6%98%AF%E5%95%A5">一、先搞懂这堆名词都是啥</a></li>
-<li><a href="#%E4%BA%8C%E5%88%9D%E5%A7%8B%E5%8D%9A%E5%AE%A2%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7">二、初始博客长什么样</a></li>
-<li><a href="#%E4%B8%89%E9%97%AE%E9%A2%98-1%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E6%98%BE%E7%A4%BA%E4%B9%B1%E7%A0%81">三、问题 1:数学公式显示乱码</a></li>
-<li><a href="#%E5%9B%9B%E9%97%AE%E9%A2%98-2%E6%94%B9%E5%AF%BC%E8%88%AA%E6%A0%8F--%E5%88%A0-rss">四、问题 2:改导航栏 + 删 RSS</a></li>
-<li><a href="#%E4%BA%94%E9%97%AE%E9%A2%98-3%E5%8A%A0%E5%85%B3%E4%BA%8E%E6%88%91%E9%A1%B5%E9%9D%A2">五、问题 3:加关于我页面</a></li>
-<li><a href="#%E5%85%AD%E9%97%AE%E9%A2%98-4%E5%8A%A0%E7%95%99%E8%A8%80%E6%9D%BF--%E8%AF%84%E8%AE%BA%E7%B3%BB%E7%BB%9F%E9%80%89%E5%93%AA%E4%B8%AA">六、问题 4:加留言板 + 评论系统选哪个</a></li>
-<li><a href="#%E4%B8%83%E9%97%AE%E9%A2%98-5%E9%83%A8%E7%BD%B2%E8%AF%84%E8%AE%BA%E5%90%8E%E7%AB%AFvercel--mongodb">七、问题 5:部署评论后端(Vercel + MongoDB)</a></li>
-<li><a href="#%E5%85%AB%E9%97%AE%E9%A2%98-6%E8%AF%84%E8%AE%BA-ui-%E5%A4%AA%E4%B8%91--powered-by-%E9%9A%90%E8%97%8F">八、问题 6:评论 UI 太丑 + Powered by 隐藏</a></li>
-<li><a href="#%E4%B9%9D%E9%97%AE%E9%A2%98-7%E8%AF%84%E8%AE%BA%E5%A4%B1%E8%B4%A5--%E7%82%B9%E8%B5%9E%E6%95%B0--%E9%98%85%E8%AF%BB%E6%95%B0">九、问题 7:评论失败 + 点赞数 + 阅读数</a></li>
-<li><a href="#%E5%8D%81%E9%97%AE%E9%A2%98-8%E5%88%86%E4%BA%AB%E9%93%BE%E6%8E%A5%E9%94%99%E4%BA%86--%E8%AF%84%E8%AE%BA%E5%8C%BA%E9%BB%98%E8%AE%A4%E6%94%B6%E8%B5%B7">十、问题 8:分享链接错了 + 评论区默认收起</a></li>
-<li><a href="#%E5%8D%81%E4%B8%80%E9%97%AE%E9%A2%98-9%E4%B8%BB%E9%A1%B5%E5%88%86%E9%A1%B5">十一、问题 9:主页分页</a></li>
-<li><a href="#%E5%8D%81%E4%BA%8C%E5%AE%8C%E6%95%B4%E6%96%87%E4%BB%B6%E6%B8%85%E5%8D%95">十二、完整文件清单</a></li>
-<li><a href="#%E5%8D%81%E4%B8%89%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5">十三、部署命令速查</a></li>
-</ul>
-<hr>
-<h2 id="一、先搞懂这堆名词都是啥">一、先搞懂这堆名词都是啥</h2>
-<p>在开始之前,先把所有会提到的英文名词翻成大白话,后面看到就不会懵了:</p>
-<table>
-<thead>
-<tr>
-<th>名词</th>
-<th>是什么</th>
-<th>大白话解释</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Hexo</strong></td>
-<td>静态博客框架</td>
-<td>一种<strong>工具</strong>,你写 Markdown 文章,它帮你变成漂亮的网页,最后直接扔到 GitHub Pages 就能看</td>
-</tr>
-<tr>
-<td><strong>GitHub Pages</strong></td>
-<td>GitHub 免费静态网站托管</td>
-<td>GitHub 提供的<strong>免费空间</strong>,专门放网页,每个人都有一个 <code>xxx.github.io</code> 的地址</td>
-</tr>
-<tr>
-<td><strong>Node.js</strong></td>
-<td>JavaScript 运行环境</td>
-<td>让 JS 能在电脑上跑的程序,类似 Python,装了它才能跑 Hexo</td>
-</tr>
-<tr>
-<td><strong>Markdown</strong></td>
-<td>轻量级标记语言</td>
-<td>一种写文章的格式,用 <code>#</code> 表示标题,<code>-</code> 表示列表,比 Word 简单</td>
-</tr>
-<tr>
-<td><strong>CSS</strong></td>
-<td>层叠样式表</td>
-<td>控制网页&quot;长什么样&quot;的语言,比如颜色、字体大小、圆角</td>
-</tr>
-<tr>
-<td><strong>JavaScript (JS)</strong></td>
-<td>网页交互语言</td>
-<td>控制网页&quot;做什么事&quot;的语言,比如点按钮弹出提示、复制链接</td>
-</tr>
-<tr>
-<td><strong>CDN</strong></td>
-<td>内容分发网络</td>
-<td>全球分布的文件服务器,加速用户下载。比如你加载 KaTeX 样式,CDN 帮你从最近的服务器取文件</td>
-</tr>
-<tr>
-<td><strong>DNS</strong></td>
-<td>域名系统</td>
-<td>把 <code>lanxone.github.io</code> 翻译成电脑能懂的 IP 地址。DNS 同步 = 全世界的服务器都知道这个新地址了</td>
-</tr>
-<tr>
-<td><strong>环境变量</strong></td>
-<td>配置项</td>
-<td>存密码、API Key 这类敏感信息的地方,<strong>不会</strong>被写进代码里推到 GitHub 上</td>
-</tr>
-</tbody>
-</table>
-<h3 id="后端和数据库相关名词">后端和数据库相关名词</h3>
-<table>
-<thead>
-<tr>
-<th>名词</th>
-<th>是什么</th>
-<th>大白话解释</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>后端 (Backend)</strong></td>
-<td>跑在服务器上的程序</td>
-<td>浏览器和数据库之间的<strong>中间商</strong>。浏览器说&quot;我要发评论&quot;,后端说&quot;好的我存起来了&quot;</td>
-</tr>
-<tr>
-<td><strong>数据库 (Database)</strong></td>
-<td>存数据的程序</td>
-<td>专门存东西的仓库,比如评论、点赞数、访客计数</td>
-</tr>
-<tr>
-<td><strong>MongoDB</strong></td>
-<td>一种流行的数据库</td>
-<td>像一个巨大的 JSON 文件仓库,存东西很灵活,不需要提前定义格式</td>
-</tr>
-<tr>
-<td><strong>MongoDB Atlas</strong></td>
-<td>MongoDB 官方提供的云服务</td>
-<td>MongoDB 官方帮你把数据库存在他们的服务器上,免费额度够用</td>
-</tr>
-<tr>
-<td><strong>Vercel</strong></td>
-<td>云函数/静态网站平台</td>
-<td>一个部署后端和前端的平台,和 GitHub 集成很方便,免费额度够用</td>
-</tr>
-<tr>
-<td><strong>Netlify</strong></td>
-<td>Vercel 的竞争对手</td>
-<td>功能几乎一样,但<strong>国内访问比 Vercel 快很多</strong>。当时差点选它</td>
-</tr>
-<tr>
-<td><strong>Twikoo</strong></td>
-<td>评论系统</td>
-<td>我们选的评论系统,<strong>只有前端(React)没有后端</strong>,后端要我们自己部署</td>
-</tr>
-<tr>
-<td><strong>Valine</strong></td>
-<td>另一个评论系统</td>
-<td>Twikoo 的竞争对手,后端用 LeanCloud,但<strong>国内的 LeanCloud 已经废了</strong></td>
-</tr>
-<tr>
-<td><strong>Giscus</strong></td>
-<td>基于 GitHub Discussions 的评论</td>
-<td>最简单的评论方案,评论数据直接存在你 GitHub 的 Discussions 里,但读者<strong>必须有 GitHub 账号</strong>才能留言</td>
-</tr>
-<tr>
-<td><strong>LeanCloud</strong></td>
-<td>国内的 BaaS 平台</td>
-<td>曾经是 Valine 的后端,但国际版已经停服,国内版要收费</td>
-</tr>
-<tr>
-<td><strong>busuanzi (不蒜子)</strong></td>
-<td>国内的访客统计服务</td>
-<td>免费的 PV/UV 统计,就是我加在页脚的&quot;总访客/总浏览&quot;</td>
-</tr>
-</tbody>
-</table>
-<h3 id="为什么选-Twikoo-Vercel-MongoDB">为什么选 Twikoo + Vercel + MongoDB?</h3>
-<p>这个组合是当时筛选了至少 3 个方案后定下来的,对比一下:</p>
-<table>
-<thead>
-<tr>
-<th>方案</th>
-<th>后端</th>
-<th>数据库</th>
-<th>优点</th>
-<th>缺点</th>
-<th>为啥没选</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>A. Giscus</strong></td>
-<td>无(用 GitHub)</td>
-<td>GitHub Discussions</td>
-<td>零后端,最省心</td>
-<td>读者必须有 GitHub 账号</td>
-<td>❌ 访客门槛太高,体验差</td>
-</tr>
-<tr>
-<td><strong>B. Valine</strong></td>
-<td>LeanCloud</td>
-<td>LeanCloud MongoDB</td>
-<td>老牌、教程多</td>
-<td>LeanCloud 国际版已死,国内版收费</td>
-<td>❌ 后端用不了</td>
-</tr>
-<tr>
-<td><strong>C. Twikoo + Vercel + MongoDB Atlas</strong></td>
-<td>Vercel (免费)</td>
-<td>MongoDB Atlas (免费 512MB)</td>
-<td>读者<strong>不需要账号</strong>就能留言,点赞/访客也有</td>
-<td>Vercel 默认域名国内可能慢</td>
-<td>✅ 综合最优,免费 + 无门槛</td>
-</tr>
-<tr>
-<td><strong>D. Twikoo + Netlify</strong></td>
-<td>Netlify (免费)</td>
-<td>MongoDB Atlas</td>
-<td>和 C 一样,但<strong>国内更快</strong></td>
-<td>和 C 一样</td>
-<td>⚠️ 备选,Vercel 太慢就换这个</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="二、初始博客长什么样">二、初始博客长什么样</h2>
-<p>刚装好 Hexo + landscape 主题的时候:</p>
-<ul>
-<li>✅ 首页有文章列表</li>
-<li>✅ 有 Home 和 Archives 导航</li>
-<li>❌ 数学公式全是乱码(CSS 没加载)</li>
-<li>❌ 右上角有 RSS 图标</li>
-<li>❌ 没有关于我、留言板页面</li>
-<li>❌ 没有点赞、评论、访客统计</li>
-<li>❌ 分享功能是弹窗,不直观</li>
-</ul>
-<hr>
-<h2 id="三、问题-1-数学公式显示乱码">三、问题 1:数学公式显示乱码</h2>
-<h3 id="现象">现象</h3>
-<p>文章里写的 LaTeX 公式(比如 <code>$L$</code>、<code>$C$</code>),渲染出来是一堆纯 HTML 标签,没有样式。</p>
-<h3 id="根因">根因</h3>
-<ul>
-<li>Markdown 渲染成功了(页面里已经有 <code>&lt;span class=&quot;katex&quot;&gt;...&lt;/span&gt;</code> 结构)</li>
-<li>但 KaTeX 的 <strong>CSS 样式文件没加载</strong>,就像 HTML 骨架没穿衣服</li>
-</ul>
-<h3 id="解决方案">解决方案</h3>
-<p>用 Hexo 官方的 <code>injector</code> API,在每个页面的 <code>&lt;head&gt;</code> 末尾注入 KaTeX 的 CDN 样式:</p>
-<p><strong>文件</strong>:<code>scripts/katex.js</code>(新建)</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 简单到爆的脚本:给每个页面加上 KaTeX 的 CSS</span></span><br><span class="line">hexo.<span class="property">extend</span>.<span class="property">injector</span>.<span class="title function_">register</span>(<span class="string">&#x27;head_end&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&#x27;&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css&quot;&gt;&#x27;</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="为什么不用其他方案">为什么不用其他方案</h3>
-<table>
-<thead>
-<tr>
-<th>方案</th>
-<th>为什么没选</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>在 <code>_config.yml</code> 里配 <code>markdown-it-katex</code></td>
-<td>你已经装了,它只负责生成 HTML,不负责 CSS</td>
-</tr>
-<tr>
-<td>主题目录覆盖 <code>landscape/layout/_partial/head.ejs</code></td>
-<td>会覆盖主题文件,升级主题时可能冲突</td>
-</tr>
-<tr>
-<td><code>injector</code> API</td>
-<td>Hexo 官方推荐,一行代码搞定,不碰主题文件</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="四、问题-2-改导航栏-删-RSS">四、问题 2:改导航栏 + 删 RSS</h2>
-<h3 id="改导航栏">改导航栏</h3>
-<p><strong>文件</strong>:<code>_config.landscape.yml</code>(这是 landscape 主题的独立配置文件,比改 <code>_config.yml</code> 更安全)</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 原来只有 Home 和 Archives</span></span><br><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="attr">Home:</span> <span class="string">/</span></span><br><span class="line">  <span class="attr">Archives:</span> <span class="string">/archives</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 改成 4 个</span></span><br><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="attr">Home:</span> <span class="string">/</span></span><br><span class="line">  <span class="attr">Archives:</span> <span class="string">/archives</span></span><br><span class="line">  <span class="string">关于我:</span> <span class="string">/about</span></span><br><span class="line">  <span class="string">留言板:</span> <span class="string">/guestbook</span></span><br></pre></td></tr></table></figure>
-<h3 id="删-RSS">删 RSS</h3>
-<p>同一个文件里,把 <code>rss:</code> 置空:</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 原来</span></span><br><span class="line"><span class="attr">rss:</span> <span class="string">/atom.xml</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 改成空字符串</span></span><br><span class="line"><span class="attr">rss:</span></span><br></pre></td></tr></table></figure>
-<h3 id="为什么这样就行">为什么这样就行</h3>
-<p>Hexo 主题的导航栏是从配置文件<strong>读出来的</strong>,不是写死在 HTML 里的。RSS 同理,置空后主题的模板就不渲染那个图标了。</p>
-<hr>
-<h2 id="五、问题-3-加关于我页面">五、问题 3:加关于我页面</h2>
-<p>Hexo 的 <code>hexo new page</code> 命令能自动创建页面。</p>
-<h3 id="步骤">步骤</h3>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在项目根目录执行</span></span><br><span class="line">hexo new page about     <span class="comment"># 自动创建 source/about/index.md</span></span><br><span class="line">hexo new page guestbook <span class="comment"># 自动创建 source/guestbook/index.md</span></span><br></pre></td></tr></table></figure>
-<p>然后编辑生成的文件,写你的自我介绍。这两个页面天然支持 Markdown 语法。</p>
-<hr>
-<h2 id="六、问题-4-加留言板-评论系统选哪个">六、问题 4:加留言板 + 评论系统选哪个</h2>
-<h3 id="需求梳理">需求梳理</h3>
-<p>我想要:</p>
-<ol>
-<li><strong>留言板页面</strong>(专门给访客留言的地方)</li>
-<li>每篇文章底部有<strong>评论区</strong></li>
-<li>文章底部有<strong>点赞按钮</strong></li>
-<li>页脚有<strong>访客统计</strong></li>
-<li>最好都<strong>免费</strong></li>
-</ol>
-<h3 id="筛选过程">筛选过程</h3>
-<p><strong>❌ 淘汰方案 A:Valine</strong></p>
-<ul>
-<li>后端用 LeanCloud,国际版已经停服了(访问 <code>leancloud.cn</code> 会报错)</li>
-<li>国内版虽然还在,但要实名、要绑定银行卡,门槛太高</li>
-</ul>
-<p><strong>❌ 淘汰方案 B:Giscus</strong></p>
-<ul>
-<li>后端是 GitHub Discussions,零后端,简单</li>
-<li>但读者<strong>必须有 GitHub 账号</strong>才能留言,普通人没有 GitHub,体验差</li>
-</ul>
-<p><strong>✅ 选中方案:Twikoo + Vercel + MongoDB Atlas</strong></p>
-<ul>
-<li>Twikoo 前端 + 自己部署 Vercel 后端 + MongoDB Atlas 数据库</li>
-<li>读者<strong>无需注册、无需账号</strong>,填昵称和邮箱就能留言</li>
-<li>三个都是免费的,加起来零成本</li>
-</ul>
-<h3 id="Twikoo-有啥-API">Twikoo 有啥 API?</h3>
-<p>Twikoo 官方文档里列的独立 API:</p>
-<table>
-<thead>
-<tr>
-<th>API</th>
-<th>功能</th>
-<th>我们用了吗</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>twikoo.init()</code></td>
-<td>初始化评论组件</td>
-<td>✅ 用了,嵌入留言板和文章底部</td>
-</tr>
-<tr>
-<td><code>twikoo.getVisitorCount()</code></td>
-<td>获取 PV/UV 访客计数</td>
-<td>❌ 没用在独立站点统计上(返回的数据格式不确定)</td>
-</tr>
-<tr>
-<td><code>&lt;span id=&quot;twikoo_visitors&quot;&gt;</code></td>
-<td><strong>单篇文章</strong>的阅读数</td>
-<td>✅ 用了,放在文章 footer</td>
-</tr>
-<tr>
-<td>评论里的点赞</td>
-<td>每条评论自带点赞按钮</td>
-<td>✅ 自动有,不用写代码</td>
-</tr>
-</tbody>
-</table>
-<p><strong>⚠️ Twikoo 没有独立的&quot;文章点赞&quot;API</strong>,所以点赞功能只能存 localStorage(见下面第 9 节)。</p>
-<hr>
-<h2 id="七、问题-5-部署评论后端-Vercel-MongoDB">七、问题 5:部署评论后端(Vercel + MongoDB)</h2>
-<p>这是最折腾的一步,分两部分:先建数据库,再部署后端。</p>
-<h3 id="7-1-建-MongoDB-Atlas-数据库">7.1 建 MongoDB Atlas 数据库</h3>
-<p><strong>MongoDB Atlas</strong> = MongoDB 官方提供的云数据库服务,永久免费,512MB 存储够几千条评论用了。</p>
-<h4 id="步骤-已实际走过">步骤(已实际走过)</h4>
-<p><strong>第 1 步</strong>:打开 <a target="_blank" rel="noopener" href="https://www.mongodb.com/cloud/atlas">https://www.mongodb.com/cloud/atlas</a> ,用邮箱或 GitHub 账号注册登录</p>
-<p><strong>第 2 步</strong>:点 <strong>Build your first database</strong>,选 <strong>M0</strong>(免费套餐),地域选 <strong>Singapore</strong> 或 <strong>N. Virginia</strong>(不要选中国,免费层没有中国节点)</p>
-<p><strong>第 3 步</strong>:配置网络访问 —— 默认情况下数据库不让外部连接,需要手动放行。左侧菜单 <strong>Security → Network Access → Add IP Address</strong> → 填 <code>0.0.0.0/0</code>(意思是&quot;任何 IP 都能连&quot;)→ Confirm</p>
-<p><strong>第 4 步</strong>:创建数据库用户 —— <strong>Security → Database Access → Add New Database User</strong>,权限选 <strong>Atlas admin</strong>(超级管理员,简单),用户名随便起(比如 <code>twikoo</code>),密码点那个🔑方块自动生成 → <strong>复制保存密码,只显示一次!</strong></p>
-<p><strong>第 5 步</strong>:复制连接字符串 —— 回到集群页面,点 <strong>Connect → Drivers</strong>,选 Node.js,Version 4.1+,复制那个 <code>mongodb+srv://...</code> 开头的字符串,<strong>把里面的 <code>&lt;db_username&gt;:&lt;db_password&gt;</code> 换成你刚才的真实用户名和密码</strong></p>
-<blockquote>
-<p>⚠️ <strong>密码里有特殊字符怎么办?</strong><br>
-如果密码里有 <code>@</code> <code>:</code> <code>/</code> <code>#</code> 这些符号,需要 <strong>URL 编码</strong>(<code>@</code> 变成 <code>%40</code>,<code>:</code> 变成 <code>%3A</code>)。自动生成的强密码经常有,如果不确定就手动换成纯字母数字的密码。</p>
-</blockquote>
-<h3 id="7-2-部署-Vercel-后端">7.2 部署 Vercel 后端</h3>
-<p><strong>Vercel</strong> = 部署后端和前端的平台,和 GitHub 集成很方便。</p>
-<h4 id="步骤-已实际走过-2">步骤(已实际走过)</h4>
-<p><strong>第 1 步</strong>:打开 <a target="_blank" rel="noopener" href="https://vercel.com">https://vercel.com</a> ,用 <strong>GitHub 账号一键登录</strong></p>
-<p><strong>第 2 步</strong>:点这个官方模板一键部署 Twikoo:</p>
-<p>👉 <a target="_blank" rel="noopener" href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftwikoojs%2Ftwikoo-vercel"><img src="https://vercel.com/button" alt="Deploy with Vercel"></a></p>
-<p><strong>第 3 步</strong>:会跳转到 Vercel 的 Import Project 页面,Git Scope 选你的账号,Repository Name 随便起(比如 <code>twikoo</code>),点 <strong>Create</strong></p>
-<p><strong>第 4 步</strong>:进入部署页面,往下滚找到 <strong>Environment Variables</strong>,Key 填 <code>MONGODB_URI</code>,Value 填<strong>你刚才替换好用户名密码的完整连接串</strong>,勾上 <strong>Production</strong>,Deploy</p>
-<p><strong>第 5 步</strong>:等 1-2 分钟,状态变成 <strong>Ready</strong> ✅,在 Project → Overview 页面复制那个 <code>https://xxx.vercel.app</code> 的地址 —— 这就是你的 Twikoo 后端地址(envId)</p>
-<h4 id="中间踩的坑">中间踩的坑</h4>
-<table>
-<thead>
-<tr>
-<th>坑</th>
-<th>原因</th>
-<th>怎么解决</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>第一次 Deploy 报错 <code>&#123;&quot;code&quot;:1000,&quot;message&quot;:&quot;MONGODB_URI&quot;&#125;</code></td>
-<td>没填环境变量</td>
-<td>Settings → Environment Variables → Add,Key=<code>MONGODB_URI</code>,Value=连接串,Save 后去 Deployments → Redeploy</td>
-</tr>
-<tr>
-<td>拿到的域名是 <code>twikoo-topaz-ten.vercel.app</code>,不是预期的 <code>twikoo-topaz-vercel.app</code></td>
-<td>Vercel 自动分配的域名后缀可能带 <code>-ten</code>、<code>-fifteen</code> 等随机后缀</td>
-<td><strong>看 Vercel Domains 页面显示的真实域名</strong>,不要自己猜</td>
-</tr>
-<tr>
-<td>绑定自定义域名 <code>twikoo.lanxone.github.io</code> 报 Invalid Configuration</td>
-<td><code>.github.io</code> 是 GitHub 管理的域名,你没有权限在上面创建 CNAME 记录</td>
-<td><strong>放弃绑自定义域名</strong>,或者买一个真·域名(比如 <code>lanxone.com</code>)再绑</td>
-</tr>
-<tr>
-<td>电脑上打不开 Vercel 默认域名 <code>ERR_NAME_NOT_RESOLVED</code> / <code>ERR_CONNECTION_TIMED_OUT</code></td>
-<td>Vercel 默认域名的 DNS 全球传播需要时间;且 Vercel 在国内访问普遍较慢</td>
-<td>等 DNS 同步(几小时);或者用手机流量试试(不同运营商缓存);实在不行换 Netlify</td>
-</tr>
-</tbody>
-</table>
-<h3 id="7-3-后端地址写进代码">7.3 后端地址写进代码</h3>
-<p>拿到正确的后端地址后,在 <code>scripts/twikoo.js</code> 最上面有一个变量:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 把 envId 改成 Vercel 上真实显示的那个地址</span></span><br><span class="line"><span class="keyword">var</span> <span class="variable constant_">TWIKOO_ENV_ID</span> = <span class="string">&#x27;https://twikoo-topaz-ten.vercel.app&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<p><strong>改完就别乱改了</strong>,代码里所有地方都引用这个变量。</p>
-<hr>
-<h2 id="八、问题-6-评论-UI-太丑-Powered-by-隐藏">八、问题 6:评论 UI 太丑 + Powered by 隐藏</h2>
-<p>Twikoo 自带的 UI 是 Element Plus 的默认样式,比较朴素,而且底部有个 &quot;Powered by Twikoo&quot; 链接想藏起来。</p>
-<h3 id="解决方案-纯-CSS-覆盖">解决方案:纯 CSS 覆盖</h3>
-<p>所有样式写在 <code>scripts/twikoo.js</code> 里,用 <code>&lt;style&gt;</code> 标签注入。为什么不写单独的 CSS 文件?因为 Hexo 的 injector API 支持这样注入,一个文件搞定,不用额外管静态资源路径。</p>
-<h3 id="具体改了什么">具体改了什么</h3>
-<table>
-<thead>
-<tr>
-<th>改动</th>
-<th>CSS 选择器</th>
-<th>效果</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>评论区加圆角卡片容器</td>
-<td><code>#twikoo-comments</code></td>
-<td>白底、圆角 14px、轻微阴影</td>
-</tr>
-<tr>
-<td>留言板特殊样式</td>
-<td><code>body.page-guestbook #twikoo-comments</code></td>
-<td>蓝色渐变背景,和文章页区分</td>
-</tr>
-<tr>
-<td>提交按钮渐变色</td>
-<td><code>.tk-btn-primary</code></td>
-<td>紫色渐变 <code>#6366f1 → #8b5cf6</code>、圆角 20px</td>
-</tr>
-<tr>
-<td>评论卡片化</td>
-<td><code>.tk-comment-item</code></td>
-<td>每条评论加浅灰边框、浅灰背景、hover 微阴影</td>
-</tr>
-<tr>
-<td>隐藏 Powered by</td>
-<td><code>#twikoo-comments a[href*=&quot;twikoo&quot;]</code></td>
-<td><code>display:none !important</code></td>
-</tr>
-<tr>
-<td>头像圆形化</td>
-<td><code>.tk-avatar img</code></td>
-<td><code>border-radius: 50%</code></td>
-</tr>
-<tr>
-<td>Toast 提示</td>
-<td><code>.lanx-toast</code></td>
-<td>复制链接成功时顶部弹出的小气泡</td>
-</tr>
-</tbody>
-</table>
-<h3 id="隐藏-Powered-by-踩的坑">隐藏 Powered by 踩的坑</h3>
-<p>第一次 CSS 选择器写了 <code>.tk-comment-footer a[href*=&quot;twikoo&quot;]</code>,但 Twikoo 渲染出来的结构里那个 <code>&lt;a&gt;</code> 不在 footer 里,是个裸的 <code>&lt;a href=&quot;https://twikoo.js.org&quot;&gt;Twikoo&lt;/a&gt;</code>。</p>
-<p><strong>正确选择器</strong>:<code>#twikoo-comments a[href*=&quot;twikoo&quot;]</code> —— 更宽泛,只要在评论容器里、href 包含 &quot;twikoo&quot; 的全部藏起来。</p>
-<hr>
-<h2 id="九、问题-7-评论失败-点赞数-阅读数">九、问题 7:评论失败 + 点赞数 + 阅读数</h2>
-<h3 id="9-1-评论失败的原因">9.1 评论失败的原因</h3>
-<p><strong>根本原因</strong>:浏览器打开评论区时,Twikoo 会立即向后端发请求。如果 Vercel 的 DNS 还没同步(国内电脑常见),请求就会报 <code>ERR_NAME_NOT_RESOLVED</code>,Twikoo 会显示红色错误提示。</p>
-<h3 id="解决方案-先-Ping-后端再渲染-Twikoo">解决方案:先 Ping 后端再渲染 Twikoo</h3>
-<p>不是一上来就调用 <code>twikoo.init()</code>,而是先发一个 <code>fetch(envId)</code> 请求试试后端能不能通:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 先试 ping 后端(5 秒超时)</span></span><br><span class="line"><span class="title function_">fetch</span>(envId, &#123; <span class="attr">method</span>: <span class="string">&#x27;GET&#x27;</span>, <span class="attr">mode</span>: <span class="string">&#x27;no-cors&#x27;</span>, <span class="attr">cache</span>: <span class="string">&#x27;no-cache&#x27;</span> &#125;)</span><br><span class="line">  .<span class="title function_">then</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123; <span class="comment">/* 后端通了 → init Twikoo */</span> &#125;)</span><br><span class="line">  .<span class="title function_">catch</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123; <span class="comment">/* 后端连不上 → 显示黄色降级提示 */</span> &#125;);</span><br></pre></td></tr></table></figure>
-<p><strong><code>mode: 'no-cors'</code> 是什么?</strong><br>
-跨域请求的一种模式,<code>fetch</code> 发出去后<strong>不关心返回内容</strong>,只要请求没报错就算成功。用来做&quot;连通性检测&quot;刚好,不需要解析返回值。</p>
-<p><strong>降级提示长啥样</strong>:一个黄色警告卡片 ⚠️,写着 &quot;评论服务暂时不可用,请稍后刷新页面再试~&quot;,比 Twikoo 默认的红色错误友好多了。</p>
-<h3 id="9-2-点赞功能">9.2 点赞功能</h3>
-<p>Twikoo <strong>没有独立的文章点赞 API</strong>,所以点赞只能存 localStorage。</p>
-<p><strong>localStorage 是什么?</strong><br>
-浏览器提供的&quot;小仓库&quot;,网页可以在里面存一些字符串,下次打开还在。和 cookie 类似,但不会随请求发送到服务器。缺点:<strong>换个浏览器/设备就清零了</strong>。</p>
-<p><strong>实现方案</strong>:</p>
-<ul>
-<li>点赞状态:<code>localStorage.getItem('liked_' + path)</code> → 存在 = 已点赞</li>
-<li>点赞计数:<code>localStorage.getItem('likeCount_' + path)</code> → 每次点赞 +1</li>
-<li>每次点赞,<strong>按钮上的数字</strong>和<strong>页脚里内联的数字</strong>实时同步</li>
-</ul>
-<h3 id="9-3-文章阅读数">9.3 文章阅读数</h3>
-<p>用 Twikoo 自带的 <code>#twikoo_visitors</code> span。Twikoo 初始化时会自动把这个 span 替换成当前文章的 PV(Page View,页面浏览量)。</p>
-<hr>
-<h2 id="十、问题-8-分享链接错了-评论区默认收起">十、问题 8:分享链接错了 + 评论区默认收起</h2>
-<h3 id="10-1-分享链接复制的是-example-com">10.1 分享链接复制的是 <code>example.com</code></h3>
-<p><strong>根因</strong>:<code>_config.yml</code> 里的 <code>url:</code> 还是占位符 <code>http://example.com</code>,模板渲染时把这个塞进了 <code>.article-share-link</code> 的 <code>data-url</code> 属性。</p>
-<p><strong>解决方案</strong>:不读 <code>data-url</code>,直接读浏览器当前地址:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错的:读模板里的值</span></span><br><span class="line"><span class="keyword">var</span> url = link.<span class="title function_">getAttribute</span>(<span class="string">&#x27;data-url&#x27;</span>) || location.<span class="property">href</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 对的:直接读浏览器地址栏</span></span><br><span class="line"><span class="keyword">var</span> url = location.<span class="property">origin</span> + location.<span class="property">pathname</span>;</span><br></pre></td></tr></table></figure>
-<p><strong><code>location.origin</code> 和 <code>location.pathname</code> 是什么?</strong></p>
-<ul>
-<li><code>location.origin</code> = <code>https://lanxone.github.io</code>(协议 + 域名 + 端口)</li>
-<li><code>location.pathname</code> = <code>/2026/09/22/链表环检测/</code>(路径)</li>
-<li>拼起来就是完整且准确的地址</li>
-</ul>
-<h3 id="10-2-评论区默认收起">10.2 评论区默认收起</h3>
-<p>用户反馈评论区太长,想隐藏起来,点一下才展开。</p>
-<p><strong>实现</strong>:</p>
-<ul>
-<li>文章页:评论区外层加一层 <code>&lt;div id=&quot;twikoo-comments-body&quot; style=&quot;display:none;&quot;&gt;</code>,上面放一个大按钮 <code>💬 展开评论区</code></li>
-<li>留言板:<strong>不折叠</strong>(本来就是专门来留言的,没必要藏)</li>
-<li>用户点展开时,把 <code>style.display</code> 改成空字符串,按钮文字变成 <code>🙈 收起评论区</code></li>
-<li>Twikoo 初始化也延迟到用户<strong>第一次点展开</strong>之后才调用(避免渲染隐藏元素的兼容性问题)</li>
-</ul>
-<hr>
-<h2 id="十一、问题-9-主页分页">十一、问题 9:主页分页</h2>
-<h3 id="为什么改完-per-page-5-没看到分页">为什么改完 <code>per_page: 5</code> 没看到分页</h3>
-<p>Hexo 只在<strong>需要翻页的时候</strong>才会渲染分页导航。你有 5 篇文章,<code>per_page: 5</code>,刚好一页装完,所以没分页。</p>
-<p><strong>当前配置</strong>(在 <code>_config.yml</code> 里):</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">index_generator:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="attr">per_page:</span> <span class="number">5</span>       <span class="comment"># 主页每页 5 篇</span></span><br><span class="line">  <span class="attr">order_by:</span> <span class="string">-date</span></span><br><span class="line"></span><br><span class="line"><span class="attr">per_page:</span> <span class="number">5</span>          <span class="comment"># 其他页面(分类页、标签页)也每页 5 篇</span></span><br><span class="line"><span class="attr">pagination_dir:</span> <span class="string">page</span> <span class="comment"># 分页目录叫 page,生成 /page/2/,/page/3/...</span></span><br></pre></td></tr></table></figure>
-<p>等你写到第 6 篇文章,Hexo 会自动生成 <code>/page/2/index.html</code>,底部自动出现 <code>&lt; 上一页 下一页 &gt;</code> 导航按钮。</p>
-<h3 id="其他方案对比">其他方案对比</h3>
-<table>
-<thead>
-<tr>
-<th>每页几篇</th>
-<th>会不会有分页</th>
-<th>适合场景</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>4</td>
-<td>5 篇分 2 页</td>
-<td>现在就能看到效果</td>
-</tr>
-<tr>
-<td><strong>5</strong> ✅</td>
-<td>5 篇刚好 1 页</td>
-<td>现在一页干净,以后自动分页</td>
-</tr>
-<tr>
-<td>10</td>
-<td>至少 11 篇才分页</td>
-<td>文章多了之后</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="十二、完整文件清单">十二、完整文件清单</h2>
-<h3 id="项目结构">项目结构</h3>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">LANXoneBlog/</span><br><span class="line">├── _config.yml                    ← Hexo 全局配置(改了 per_page)</span><br><span class="line">├── _config.landscape.yml          ← Landscape 主题配置(改了 menu、rss)</span><br><span class="line">├── scripts/                       ← 🆕 所有自定义脚本都放这</span><br><span class="line">│   ├── katex.js                   ← 注入 KaTeX CSS</span><br><span class="line">│   ├── twikoo.js                  ← Twikoo 评论 + 分享 + 样式美化 + 折叠</span><br><span class="line">│   ├── likes.js                   ← 点赞按钮(+ 持久化计数)</span><br><span class="line">│   └── busuanzi.js                ← 页脚访客统计</span><br><span class="line">├── source/</span><br><span class="line">│   ├── _posts/                    ← 你的文章(.md 文件)</span><br><span class="line">│   ├── about/index.md             ← 🆕 关于我页面</span><br><span class="line">│   └── guestbook/index.md         ← 🆕 留言板页面</span><br><span class="line">└── public/                        ← generate 后自动生成,不用改</span><br></pre></td></tr></table></figure>
-<h3 id="每个脚本做了什么">每个脚本做了什么</h3>
-<table>
-<thead>
-<tr>
-<th>脚本</th>
-<th>注入位置</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>katex.js</code></td>
-<td><code>head_end</code>(页面头部末尾)</td>
-<td>一行 <code>&lt;link&gt;</code> 引入 KaTeX CSS</td>
-</tr>
-<tr>
-<td><code>twikoo.js</code></td>
-<td><code>body_end</code>(页面底部末尾)</td>
-<td>Twikoo 评论系统 + CSS 美化 + Powered by 隐藏 + 留言板特殊样式 + 分享改复制链接 + Toast 提示 + 评论区折叠按钮 + 后端连通性检测</td>
-</tr>
-<tr>
-<td><code>likes.js</code></td>
-<td><code>body_end</code></td>
-<td>点赞按钮(居中圆形、hover 变红、localStorage 防重复、计数持久化 + 内联同步到页脚)</td>
-</tr>
-<tr>
-<td><code>busuanzi.js</code></td>
-<td><code>body_end</code></td>
-<td>不蒜子总访客/总浏览 + localStorage 今日/本月自增</td>
-</tr>
-</tbody>
-</table>
-<h3 id="injector-的三个选项">injector 的三个选项</h3>
-<p>Hexo 的 <code>injector</code> 有 3 个参数,常用的 <code>position</code> 选项:</p>
-<table>
-<thead>
-<tr>
-<th>position</th>
-<th>注入到哪里</th>
-<th>适合放什么</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>head_end</code></td>
-<td><code>&lt;/head&gt;</code> 之前</td>
-<td>CSS、Meta、CDN link</td>
-</tr>
-<tr>
-<td><code>body_start</code></td>
-<td><code>&lt;body&gt;</code> 之后</td>
-<td>页面一开始就要加载的东西</td>
-</tr>
-<tr>
-<td><code>body_end</code></td>
-<td><code>&lt;/body&gt;</code> 之前</td>
-<td>JS 脚本、页面底部元素</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="十三、部署命令速查">十三、部署命令速查</h2>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 清理旧文件 + 重新生成</span></span><br><span class="line">npx hexo clean &amp;&amp; npx hexo generate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 本地预览(默认 http://localhost:4000)</span></span><br><span class="line">npx hexo server</span><br><span class="line"></span><br><span class="line"><span class="comment"># 一键部署到 GitHub Pages</span></span><br><span class="line">npx hexo deploy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 组合拳:清理 + 生成 + 部署</span></span><br><span class="line">npx hexo clean &amp;&amp; npx hexo generate &amp;&amp; npx hexo deploy</span><br></pre></td></tr></table></figure>
-<h3 id="浏览器强制刷新-清缓存">浏览器强制刷新(清缓存)</h3>
-<p>部署完后如果看到的还是旧版本,按:</p>
-<ul>
-<li><strong>Windows</strong>: <code>Ctrl</code> + <code>Shift</code> + <code>R</code></li>
-<li><strong>Mac</strong>: <code>Cmd</code> + <code>Shift</code> + <code>R</code></li>
-</ul>
-<p>或者 <strong>F12 打开 DevTools → Network 面板 → 勾上 Disable cache → 刷新</strong></p>
-<hr>
-<h2 id="🔮-未来可能要动的事">🔮 未来可能要动的事</h2>
-<table>
-<thead>
-<tr>
-<th>什么时候</th>
-<th>做什么</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Vercel DNS 还是不同步</td>
-<td>换 Netlify 部署 Twikoo 后端,改 <code>twikoo.js</code> 里的 <code>TWIKOO_ENV_ID</code></td>
-</tr>
-<tr>
-<td>以后不想用 Twikoo 了</td>
-<td>换 Giscus 或其他系统,改 <code>twikoo.js</code> 里的初始化逻辑</td>
-</tr>
-<tr>
-<td>想换个真·域名</td>
-<td>买域名 → GitHub Pages 绑域名 → Vercel 绑子域名 → DNS 配置</td>
-</tr>
-<tr>
-<td>想备份评论数据</td>
-<td>MongoDB Atlas 有自带的 Export 功能,可以导出 JSON</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<blockquote>
-<p><strong>最后</strong>:这篇文档写的时候假定读者完全没接触过这些东西,所以名词解释特别多。如果你已经懂了,后面写新东西时可以直接引用链接。祝博客越写越好!📚</p>
-</blockquote>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/22/Hexo/" data-id="cmucmr2ku0006lcma155k3hi3" data-title="Hexo?" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" rel="tag">功能测试</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
     
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">下一页 &raquo;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">下一页 &raquo;</a>
   </nav>
 
 </section>
@@ -1212,7 +632,7 @@ A*、网格坐标可视化教程，敌人寻路必看<br>
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OpenGL/" style="font-size: 10px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 15px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 10px;">学习规划</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a>
+      <a href="/tags/OpenGL/" style="font-size: 10px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 15px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 15px;">学习规划</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a>
     </div>
   </div>
 
@@ -1234,6 +654,10 @@ A*、网格坐标可视化教程，敌人寻路必看<br>
       <ul>
         
           <li>
+            <a href="/2026/09/29/C-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86/">C++游戏开发:储备知识</a>
+          </li>
+        
+          <li>
             <a href="/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/">自学规划</a>
           </li>
         
@@ -1247,10 +671,6 @@ A*、网格坐标可视化教程，敌人寻路必看<br>
         
           <li>
             <a href="/2026/09/22/CSAPP%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91/">CSAPP读书笔记:程序的编译</a>
-          </li>
-        
-          <li>
-            <a href="/2026/09/22/Hexo/">Hexo?</a>
           </li>
         
       </ul>
@@ -1343,6 +763,65 @@ A*、网格坐标可视化教程，敌人寻路必看<br>
 
 <!-- 不蒜子:站点总 PV/UV -->
 <script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
+  
+<style>
+  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
+  .like-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 24px; font-size: 15px;
+    border: 1px solid #e0e0e0; border-radius: 24px;
+    background: #fff; color: #555; cursor: pointer;
+    transition: all 0.25s ease; user-select: none;
+  }
+  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
+  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
+  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
+  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
+</style>
+
+<script>
+(function(){
+  if (!document.querySelector('.article')) return;
+  var path = location.pathname;
+  var likedKey = 'liked_' + path;
+  var countKey = 'likeCount_' + path;
+  var liked = localStorage.getItem(likedKey);
+  var count = parseInt(localStorage.getItem(countKey) || '0');
+
+  // 点赞按钮
+  var wrap = document.createElement('div');
+  wrap.className = 'like-wrap';
+  wrap.innerHTML =
+    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
+      '<span class="fa fa-thumbs-up"></span>' +
+      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
+      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
+    '</button>';
+  var af = document.querySelector('.article-footer');
+  if (af) af.after(wrap);
+
+  var btn = document.getElementById('likeBtn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('liked')) return;
+      btn.classList.add('liked');
+      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
+      localStorage.setItem(likedKey, '1');
+      count++;
+      localStorage.setItem(countKey, count);
+      // 同步更新两处显示(按钮 + 页脚内联)
+      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
+      btn.querySelector('#likeCountDisplay').style.display = '';
+      var inline = document.getElementById('lanx_like_inline');
+      if (inline) { inline.textContent = count; inline.style.display = ''; }
+    });
+  }
+
+  // 同步暴露给 twikoo.js 用来渲染页脚内联点赞数
+  window.__LANX_LIKE_COUNT__ = count;
+})();
+</script>
   
 <!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
 <style>
@@ -1558,65 +1037,6 @@ A*、网格坐标可视化教程，敌人寻路必看<br>
   }
   // 留言板:立即初始化;文章页:等用户点展开按钮
   if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
-})();
-</script>
-  
-<style>
-  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
-  .like-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 24px; font-size: 15px;
-    border: 1px solid #e0e0e0; border-radius: 24px;
-    background: #fff; color: #555; cursor: pointer;
-    transition: all 0.25s ease; user-select: none;
-  }
-  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
-  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
-  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
-  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
-  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
-</style>
-
-<script>
-(function(){
-  if (!document.querySelector('.article')) return;
-  var path = location.pathname;
-  var likedKey = 'liked_' + path;
-  var countKey = 'likeCount_' + path;
-  var liked = localStorage.getItem(likedKey);
-  var count = parseInt(localStorage.getItem(countKey) || '0');
-
-  // 点赞按钮
-  var wrap = document.createElement('div');
-  wrap.className = 'like-wrap';
-  wrap.innerHTML =
-    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
-      '<span class="fa fa-thumbs-up"></span>' +
-      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
-      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
-    '</button>';
-  var af = document.querySelector('.article-footer');
-  if (af) af.after(wrap);
-
-  var btn = document.getElementById('likeBtn');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      if (btn.classList.contains('liked')) return;
-      btn.classList.add('liked');
-      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
-      localStorage.setItem(likedKey, '1');
-      count++;
-      localStorage.setItem(countKey, count);
-      // 同步更新两处显示(按钮 + 页脚内联)
-      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
-      btn.querySelector('#likeCountDisplay').style.display = '';
-      var inline = document.getElementById('lanx_like_inline');
-      if (inline) { inline.textContent = count; inline.style.display = ''; }
-    });
-  }
-
-  // 同步暴露给 twikoo.js 用来渲染页脚内联点赞数
-  window.__LANX_LIKE_COUNT__ = count;
 })();
 </script>
   <!-- hexo injector body_end end --></body>

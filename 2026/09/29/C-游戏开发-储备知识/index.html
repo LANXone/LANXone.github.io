@@ -4,17 +4,19 @@
   <meta charset="utf-8">
   
   
-  <title>归档: 2026/8 | LANXone的博客</title>
+  <title>C++游戏开发:储备知识 | LANXone的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="记录我的学习和心路历程">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LANXone的博客">
-<meta property="og:url" content="http://example.com/archives/2026/08/index.html">
+  <meta name="description" content="classes, templates, smart pointers, and the STL（C++）简单介绍 1. Classes 类 C++面向对象的核心，封装数据与操作数据的函数。  把成员变量（属性）、成员函数（行为）打包成一个类型。 支持访问控制：public&#x2F;private&#x2F;protected，实现封装；还支持继承、多态。  123456class Person &#123;priv">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++游戏开发:储备知识">
+<meta property="og:url" content="http://example.com/2026/09/29/C-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86/index.html">
 <meta property="og:site_name" content="LANXone的博客">
-<meta property="og:description" content="记录我的学习和心路历程">
+<meta property="og:description" content="classes, templates, smart pointers, and the STL（C++）简单介绍 1. Classes 类 C++面向对象的核心，封装数据与操作数据的函数。  把成员变量（属性）、成员函数（行为）打包成一个类型。 支持访问控制：public&#x2F;private&#x2F;protected，实现封装；还支持继承、多态。  123456class Person &#123;priv">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-29T14:41:23.000Z">
+<meta property="article:modified_time" content="2026-09-29T14:42:44.223Z">
 <meta property="article:author" content="LANXone">
-<meta property="article:tag" content="编程,游戏,算法练习与感悟">
+<meta property="article:tag" content="学习规划">
 <meta name="twitter:card" content="summary">
   
   
@@ -76,39 +78,95 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2026" class="archive-year">2026</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/08/18/hello-world/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-08-18T12:45:58.177Z" itemprop="datePublished">8月 18</time>
+        <section id="main"><article id="post-C-游戏开发-储备知识" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/09/29/C-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86/" class="article-date">
+  <time class="dt-published" datetime="2026-09-29T14:41:23.000Z" itemprop="datePublished">2026-09-29</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/08/18/hello-world/">Hello World</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      C++游戏开发:储备知识
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>classes, templates, smart pointers, and the STL（C++）简单介绍</h1>
+<h2 id="1-Classes-类">1. Classes 类</h2>
+<p>C++面向对象的核心，<strong>封装数据与操作数据的函数</strong>。</p>
+<ul>
+<li>把成员变量（属性）、成员函数（行为）打包成一个类型。</li>
+<li>支持访问控制：<code>public</code>/<code>private</code>/<code>protected</code>，实现封装；还支持继承、多态。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class Person &#123;</span><br><span class="line">private:</span><br><span class="line">    int age;</span><br><span class="line">public:</span><br><span class="line">    void setAge(int a) &#123; age = a; &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="2-Templates-模板">2. Templates 模板</h2>
+<p><strong>泛型编程工具</strong>，让函数/类不绑定具体类型，一份代码可以适配多种数据类型。</p>
+<ul>
+<li>函数模板：同一个函数可以处理 int、double、string 等。</li>
+<li>类模板：最典型就是 <code>std::vector&lt;T&gt;</code>，<code>T</code> 就是模板参数。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename T&gt;</span><br><span class="line">T maxVal(T a, T b) &#123; return a&gt;b ? a : b; &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-Smart-pointers-智能指针">3. Smart pointers 智能指针</h2>
+<p><strong>自动管理堆内存的指针</strong>，替代裸指针，解决内存泄漏问题，本质是RAII（资源获取即初始化）。</p>
+<ul>
+<li><code>std::unique_ptr</code>：独占所有权，不能拷贝，只能移动；开销最小。</li>
+<li><code>std::shared_ptr</code>：共享所有权，引用计数，计数归零自动释放内存。</li>
+<li><code>std::weak_ptr</code>：配合 shared_ptr，解决循环引用，不增加引用计数。</li>
+</ul>
+<blockquote>
+<p>核心：<strong>离开作用域时自动析构释放内存，不用手动 <code>delete</code></strong>。</p>
+</blockquote>
+<h2 id="4-STL（Standard-Template-Library）标准模板库">4. STL（Standard Template Library）标准模板库</h2>
+<p>C++标准库的泛型组件集合，<strong>全部基于模板实现</strong>，分4大块：</p>
+<ol>
+<li><strong>容器 Containers</strong>：存放数据。<code>vector</code>、<code>string</code>、<code>map</code>、<code>unordered_map</code>、<code>set</code>、<code>deque</code>、<code>list</code>。</li>
+<li><strong>迭代器 Iterators</strong>：容器的“指针”，统一遍历不同容器。</li>
+<li><strong>算法 Algorithms</strong>：通用函数，<code>sort</code>、<code>find</code>、<code>for_each</code>，通过迭代器操作容器。</li>
+<li><strong>函数对象 Functors</strong>：可调用对象，用于算法自定义行为。</li>
+</ol>
+<hr>
+<h3 id="一句话总结">一句话总结</h3>
+<ul>
+<li><strong>Class</strong>：面向对象，封装；</li>
+<li><strong>Template</strong>：泛型，类型无关代码；</li>
+<li><strong>Smart pointer</strong>：安全自动内存管理；</li>
+<li><strong>STL</strong>：一套现成模板容器+算法库，日常C++开发主力。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/09/29/C-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86/" data-id="cmumsdosm0000egma661scqqe" data-title="C++游戏开发:储备知识" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" rel="tag">学习规划</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">自学规划</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 
 </section>
