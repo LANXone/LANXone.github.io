@@ -245,6 +245,147 @@
   </div>
 <!-- hexo injector body_end start -->
 <style>
+  /* --- 详情页大号点赞按钮 --- */
+  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
+  .like-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 24px; font-size: 15px;
+    border: 1px solid #e0e0e0; border-radius: 24px;
+    background: #fff; color: #555; cursor: pointer;
+    transition: all 0.25s ease; user-select: none;
+  }
+  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
+  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
+  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
+  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
+
+  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
+  .article-footer .lanx-action {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-right: 10px; font-size: 13px;
+    color: #666; text-decoration: none; cursor: pointer;
+    padding: 0 2px; border-radius: 4px;
+    transition: color 0.2s;
+  }
+  .article-footer .lanx-action:hover { color: #ff6b6b; }
+  .article-footer .lanx-action.liked { color: #ff6b6b; }
+  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
+  .article-footer .lanx-action .lanx-count {
+    margin-left: 2px; font-size: 12px; color: #999;
+  }
+  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
+</style>
+
+<script>
+(function(){
+  var articles = document.querySelectorAll('article.article');
+  var isSinglePost = articles.length === 1;
+
+  // 提取文章路径:从 share-link 的 data-url 里拿
+  function getArticlePath(articleEl) {
+    var link = articleEl.querySelector('.article-share-link');
+    if (link && link.dataset.url) {
+      try {
+        var u = new URL(link.dataset.url, location.origin);
+        return u.pathname;
+      } catch(e) {}
+    }
+    // fallback:用标题链接的 href
+    var titleLink = articleEl.querySelector('.article-title');
+    if (titleLink) return titleLink.getAttribute('href');
+    return '';
+  }
+
+  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
+  if (!isSinglePost) {
+    articles.forEach(function(art) {
+      var af = art.querySelector('.article-footer');
+      var share = art.querySelector('.article-share-link');
+      var path = getArticlePath(art);
+      if (!af || !share || !path) return;
+
+      var likedKey = 'liked_' + path;
+      var countKey = 'likeCount_' + path;
+      var liked = !!localStorage.getItem(likedKey);
+      var count = parseInt(localStorage.getItem(countKey) || '0');
+
+      // 点赞按钮(小)
+      var likeHtml =
+        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
+          '<span class="fa fa-thumbs-up"></span>' +
+          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
+        '</a>';
+
+      // 评论按钮(小),跳到详情页评论区
+      var commentHtml =
+        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
+          '<span class="fa fa-comment"></span>' +
+        '</a>';
+
+      // 插入到分享按钮前面
+      var temp = document.createElement('span');
+      temp.innerHTML = likeHtml + commentHtml;
+      share.parentNode.insertBefore(temp.firstChild, share);
+      share.parentNode.insertBefore(temp.firstChild, share);
+
+      // 绑定点赞事件
+      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
+      if (likeBtn) {
+        likeBtn.addEventListener('click', function(e) {
+          e.preventDefault(); e.stopPropagation();
+          if (likeBtn.classList.contains('liked')) return;
+          likeBtn.classList.add('liked');
+          localStorage.setItem(likedKey, '1');
+          count++;
+          localStorage.setItem(countKey, count);
+          var c = likeBtn.querySelector('.lanx-count');
+          c.textContent = count; c.style.display = '';
+        });
+      }
+    });
+    return; // 多文章页到此为止
+  }
+
+  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
+  var path = location.pathname;
+  var likedKey = 'liked_' + path;
+  var countKey = 'likeCount_' + path;
+  var liked = localStorage.getItem(likedKey);
+  var count = parseInt(localStorage.getItem(countKey) || '0');
+
+  var wrap = document.createElement('div');
+  wrap.className = 'like-wrap';
+  wrap.innerHTML =
+    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
+      '<span class="fa fa-thumbs-up"></span>' +
+      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
+      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
+    '</button>';
+  var af = document.querySelector('.article-footer');
+  if (af) af.after(wrap);
+
+  var btn = document.getElementById('likeBtn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('liked')) return;
+      btn.classList.add('liked');
+      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
+      localStorage.setItem(likedKey, '1');
+      count++;
+      localStorage.setItem(countKey, count);
+      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
+      btn.querySelector('#likeCountDisplay').style.display = '';
+      var inline = document.getElementById('lanx_like_inline');
+      if (inline) { inline.textContent = count; inline.style.display = ''; }
+    });
+  }
+
+  window.__LANX_LIKE_COUNT__ = count;
+})();
+</script>
+  
+<style>
   .visitor-stats { margin-top: 10px; color: #999; font-size: 13px; text-align: center; }
   .visitor-stats .stat-item { display: inline-block; margin: 0 6px; }
   .visitor-stats .stat-num { color: #555; font-weight: 600; }
@@ -591,9 +732,9 @@ window.addEventListener('load', function(){
     var clock = document.createElement('div');
     clock.className = 'lanx-card lanx-clock';
     clock.innerHTML =
-      '<div id="lanx_clock_time">--:--:--</div>' +
-      '<div id="lanx_clock_date">----/--/--</div>' +
-      '<div id="lanx_clock_week">星期-</div>';
+      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
+      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
+      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
     wrap.appendChild(clock);
 
     // 语录(下)
@@ -644,147 +785,6 @@ window.addEventListener('load', function(){
     }
   }, 500);
 });
-</script>
-  
-<style>
-  /* --- 详情页大号点赞按钮 --- */
-  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
-  .like-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 24px; font-size: 15px;
-    border: 1px solid #e0e0e0; border-radius: 24px;
-    background: #fff; color: #555; cursor: pointer;
-    transition: all 0.25s ease; user-select: none;
-  }
-  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
-  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
-  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
-  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
-  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
-
-  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
-  .article-footer .lanx-action {
-    display: inline-flex; align-items: center; gap: 4px;
-    margin-right: 10px; font-size: 13px;
-    color: #666; text-decoration: none; cursor: pointer;
-    padding: 0 2px; border-radius: 4px;
-    transition: color 0.2s;
-  }
-  .article-footer .lanx-action:hover { color: #ff6b6b; }
-  .article-footer .lanx-action.liked { color: #ff6b6b; }
-  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
-  .article-footer .lanx-action .lanx-count {
-    margin-left: 2px; font-size: 12px; color: #999;
-  }
-  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
-</style>
-
-<script>
-(function(){
-  var articles = document.querySelectorAll('article.article');
-  var isSinglePost = articles.length === 1;
-
-  // 提取文章路径:从 share-link 的 data-url 里拿
-  function getArticlePath(articleEl) {
-    var link = articleEl.querySelector('.article-share-link');
-    if (link && link.dataset.url) {
-      try {
-        var u = new URL(link.dataset.url, location.origin);
-        return u.pathname;
-      } catch(e) {}
-    }
-    // fallback:用标题链接的 href
-    var titleLink = articleEl.querySelector('.article-title');
-    if (titleLink) return titleLink.getAttribute('href');
-    return '';
-  }
-
-  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
-  if (!isSinglePost) {
-    articles.forEach(function(art) {
-      var af = art.querySelector('.article-footer');
-      var share = art.querySelector('.article-share-link');
-      var path = getArticlePath(art);
-      if (!af || !share || !path) return;
-
-      var likedKey = 'liked_' + path;
-      var countKey = 'likeCount_' + path;
-      var liked = !!localStorage.getItem(likedKey);
-      var count = parseInt(localStorage.getItem(countKey) || '0');
-
-      // 点赞按钮(小)
-      var likeHtml =
-        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
-          '<span class="fa fa-thumbs-up"></span>' +
-          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
-        '</a>';
-
-      // 评论按钮(小),跳到详情页评论区
-      var commentHtml =
-        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
-          '<span class="fa fa-comment"></span>' +
-        '</a>';
-
-      // 插入到分享按钮前面
-      var temp = document.createElement('span');
-      temp.innerHTML = likeHtml + commentHtml;
-      share.parentNode.insertBefore(temp.firstChild, share);
-      share.parentNode.insertBefore(temp.firstChild, share);
-
-      // 绑定点赞事件
-      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
-      if (likeBtn) {
-        likeBtn.addEventListener('click', function(e) {
-          e.preventDefault(); e.stopPropagation();
-          if (likeBtn.classList.contains('liked')) return;
-          likeBtn.classList.add('liked');
-          localStorage.setItem(likedKey, '1');
-          count++;
-          localStorage.setItem(countKey, count);
-          var c = likeBtn.querySelector('.lanx-count');
-          c.textContent = count; c.style.display = '';
-        });
-      }
-    });
-    return; // 多文章页到此为止
-  }
-
-  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
-  var path = location.pathname;
-  var likedKey = 'liked_' + path;
-  var countKey = 'likeCount_' + path;
-  var liked = localStorage.getItem(likedKey);
-  var count = parseInt(localStorage.getItem(countKey) || '0');
-
-  var wrap = document.createElement('div');
-  wrap.className = 'like-wrap';
-  wrap.innerHTML =
-    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
-      '<span class="fa fa-thumbs-up"></span>' +
-      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
-      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
-    '</button>';
-  var af = document.querySelector('.article-footer');
-  if (af) af.after(wrap);
-
-  var btn = document.getElementById('likeBtn');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      if (btn.classList.contains('liked')) return;
-      btn.classList.add('liked');
-      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
-      localStorage.setItem(likedKey, '1');
-      count++;
-      localStorage.setItem(countKey, count);
-      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
-      btn.querySelector('#likeCountDisplay').style.display = '';
-      var inline = document.getElementById('lanx_like_inline');
-      if (inline) { inline.textContent = count; inline.style.display = ''; }
-    });
-  }
-
-  window.__LANX_LIKE_COUNT__ = count;
-})();
 </script>
   <!-- hexo injector body_end end --></body>
 </html>
