@@ -4,17 +4,19 @@
   <meta charset="utf-8">
   
   
-  <title>标签: OpenGL | LANXone的博客</title>
+  <title>为什么短短几行C++程序会有2~3MB这么大? | LANXone的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="记录我的学习和心路历程">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LANXone的博客">
-<meta property="og:url" content="http://example.com/tags/OpenGL/index.html">
+  <meta name="description" content="核心原因 你写的短短几行C++代码，编译出来exe达到2MB，不是你的代码本身大，是编译器默认把C++标准库（运行时库）打包进exe里面了，这个叫静态链接。 1. 静态链接（默认很多IDE：Dev-C++、MinGW） 举例子： 123456#include &lt;iostream&gt;using namespace std;int main()&#123;    cout &lt;&lt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为什么短短几行C++程序会有2~3MB这么大?">
+<meta property="og:url" content="http://example.com/2026/09/30/%E4%B8%BA%E4%BB%80%E4%B9%88%E7%9F%AD%E7%9F%AD%E5%87%A0%E8%A1%8CC-%E7%A8%8B%E5%BA%8F%E4%BC%9A%E6%9C%892-3MB%E8%BF%99%E4%B9%88%E5%A4%A7/index.html">
 <meta property="og:site_name" content="LANXone的博客">
-<meta property="og:description" content="记录我的学习和心路历程">
+<meta property="og:description" content="核心原因 你写的短短几行C++代码，编译出来exe达到2MB，不是你的代码本身大，是编译器默认把C++标准库（运行时库）打包进exe里面了，这个叫静态链接。 1. 静态链接（默认很多IDE：Dev-C++、MinGW） 举例子： 123456#include &lt;iostream&gt;using namespace std;int main()&#123;    cout &lt;&lt;">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-30T01:12:04.000Z">
+<meta property="article:modified_time" content="2026-09-30T01:16:48.358Z">
 <meta property="article:author" content="LANXone">
-<meta property="article:tag" content="编程,游戏,算法练习与感悟">
+<meta property="article:tag" content="C++开发笔记">
 <meta name="twitter:card" content="summary">
   
   
@@ -76,39 +78,98 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2026" class="archive-year">2026</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/09/18/OpenGL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-09-18T09:30:05.000Z" itemprop="datePublished">9月 18</time>
+        <section id="main"><article id="post-为什么短短几行C-程序会有2-3MB这么大" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/09/30/%E4%B8%BA%E4%BB%80%E4%B9%88%E7%9F%AD%E7%9F%AD%E5%87%A0%E8%A1%8CC-%E7%A8%8B%E5%BA%8F%E4%BC%9A%E6%9C%892-3MB%E8%BF%99%E4%B9%88%E5%A4%A7/" class="article-date">
+  <time class="dt-published" datetime="2026-09-30T01:12:04.000Z" itemprop="datePublished">2026-09-30</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/09/18/OpenGL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/">OpenGL环境配置</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      为什么短短几行C++程序会有2~3MB这么大?
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>核心原因</h1>
+<p>你写的短短几行C++代码，编译出来exe达到2MB，<strong>不是你的代码本身大，是编译器默认把C++标准库（运行时库）打包进exe里面了</strong>，这个叫<strong>静态链接</strong>。</p>
+<h2 id="1-静态链接（默认很多IDE：Dev-C-、MinGW）">1. 静态链接（默认很多IDE：Dev-C++、MinGW）</h2>
+<p>举例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">int main()&#123;</span><br><span class="line">    cout &lt;&lt; &quot;hi&quot;;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>你只写了输出一句话。<br>
+但是<code>cout</code>属于C++标准库，静态链接时：<br>
+✅ 编译器把<strong>整个libstdc++库里面你用到的代码，复制打包进exe</strong><br>
+哪怕只用了一点点cout，也要带上一大段底层IO、内存管理代码。<br>
+结果：exe 1~3MB很常见。</p>
+<blockquote>
+<p>就像：你只是想用一把螺丝刀，但是静态打包直接把整个工具箱一起塞给你。</p>
+</blockquote>
+<h2 id="2-动态链接（可以让exe很小，几十KB）">2. 动态链接（可以让exe很小，几十KB）</h2>
+<p>动态链接：<strong>不把库打包进exe</strong>，exe运行时去调用系统里单独存在的dll文件。<br>
+缺点：换一台电脑运行，如果缺少对应的dll，程序直接打不开。<br>
+所以MinGW默认静态打包，保证拷到别的电脑可以直接运行。</p>
+<h2 id="3-额外增大体积的其他因素">3. 额外增大体积的其他因素</h2>
+<ol>
+<li><strong>Debug调试模式（罪魁祸首！）</strong><br>
+Debug版本会额外嵌入大量调试信息、符号表。同样代码，Debug版体积远大于Release发布版。<br>
+👉 想缩小体积：切换到Release模式编译。</li>
+<li>没有开启代码优化，保留很多无用代码。</li>
+<li>如果你用的是64位编译器，生成的程序本身会比32位更大。</li>
+</ol>
+<h2 id="✅-怎么缩小exe体积（MinGW-g-）">✅ 怎么缩小exe体积（MinGW/g++）</h2>
+<ol>
+<li>切换到Release（关闭调试符号）</li>
+<li>编译时加优化参数：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ main.cpp -o main.exe -Os -s</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-Os</code>：体积优化</li>
+<li><code>-s</code>：删掉所有调试符号信息<br>
+加完，这个cout小程序，能压缩到几百KB。</li>
+</ul>
+<h2 id="一句话区分考点（应付考试）">一句话区分考点（应付考试）</h2>
+<ul>
+<li>静态链接：库代码复制进exe，文件大，<strong>可独立运行，不依赖外部dll</strong></li>
+<li>动态链接：库放在外部dll，exe很小，<strong>依赖系统dll文件</strong></li>
+</ul>
+<blockquote>
+<p>PS: <u>PE文件格式+CPU寻址机制限制&lt;\u&gt;exe大小应当在4GB以下</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/09/30/%E4%B8%BA%E4%BB%80%E4%B9%88%E7%9F%AD%E7%9F%AD%E5%87%A0%E8%A1%8CC-%E7%A8%8B%E5%BA%8F%E4%BC%9A%E6%9C%892-3MB%E8%BF%99%E4%B9%88%E5%A4%A7/" data-id="cmunf0w7h00008cma40j537m6" data-title="为什么短短几行C++程序会有2~3MB这么大?" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/09/29/C-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">C++游戏开发:储备知识</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 
 </section>
