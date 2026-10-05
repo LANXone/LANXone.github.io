@@ -9,7 +9,7 @@
   <meta name="description" content="记录我的学习和心路历程">
 <meta property="og:type" content="website">
 <meta property="og:title" content="LANXone的博客">
-<meta property="og:url" content="http://example.com/page/2/index.html">
+<meta property="og:url" content="http://example.com/page/4/index.html">
 <meta property="og:site_name" content="LANXone的博客">
 <meta property="og:description" content="记录我的学习和心路历程">
 <meta property="og:locale" content="zh_CN">
@@ -78,10 +78,10 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-C-游戏开发-储备知识" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <article id="post-hello-world" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2026/09/29/C-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86/" class="article-date">
-  <time class="dt-published" datetime="2026-09-29T14:41:23.000Z" itemprop="datePublished">2026-09-29</time>
+    <a href="/2026/08/18/hello-world/" class="article-date">
+  <time class="dt-published" datetime="2026-08-18T12:45:58.177Z" itemprop="datePublished">2026-08-18</time>
 </a>
     
   </div>
@@ -92,7 +92,7 @@
         
   
     <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/09/29/C-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86/">C++游戏开发:储备知识</a>
+      <a class="p-name article-title" href="/2026/08/18/hello-world/">Hello World</a>
     </h1>
   
 
@@ -100,499 +100,25 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h1>classes, templates, smart pointers, and the STL（C++）简单介绍</h1>
-<h2 id="1-Classes-类">1. Classes 类</h2>
-<p>C++面向对象的核心，<strong>封装数据与操作数据的函数</strong>。</p>
-<ul>
-<li>把成员变量（属性）、成员函数（行为）打包成一个类型。</li>
-<li>支持访问控制：<code>public</code>/<code>private</code>/<code>protected</code>，实现封装；还支持继承、多态。</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class Person &#123;</span><br><span class="line">private:</span><br><span class="line">    int age;</span><br><span class="line">public:</span><br><span class="line">    void setAge(int a) &#123; age = a; &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="2-Templates-模板">2. Templates 模板</h2>
-<p><strong>泛型编程工具</strong>，让函数/类不绑定具体类型，一份代码可以适配多种数据类型。</p>
-<ul>
-<li>函数模板：同一个函数可以处理 int、double、string 等。</li>
-<li>类模板：最典型就是 <code>std::vector&lt;T&gt;</code>，<code>T</code> 就是模板参数。</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename T&gt;</span><br><span class="line">T maxVal(T a, T b) &#123; return a&gt;b ? a : b; &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-Smart-pointers-智能指针">3. Smart pointers 智能指针</h2>
-<p><strong>自动管理堆内存的指针</strong>，替代裸指针，解决内存泄漏问题，本质是RAII（资源获取即初始化）。</p>
-<ul>
-<li><code>std::unique_ptr</code>：独占所有权，不能拷贝，只能移动；开销最小。</li>
-<li><code>std::shared_ptr</code>：共享所有权，引用计数，计数归零自动释放内存。</li>
-<li><code>std::weak_ptr</code>：配合 shared_ptr，解决循环引用，不增加引用计数。</li>
-</ul>
-<blockquote>
-<p>核心：<strong>离开作用域时自动析构释放内存，不用手动 <code>delete</code></strong>。</p>
-</blockquote>
-<h2 id="4-STL（Standard-Template-Library）标准模板库">4. STL（Standard Template Library）标准模板库</h2>
-<p>C++标准库的泛型组件集合，<strong>全部基于模板实现</strong>，分4大块：</p>
-<ol>
-<li><strong>容器 Containers</strong>：存放数据。<code>vector</code>、<code>string</code>、<code>map</code>、<code>unordered_map</code>、<code>set</code>、<code>deque</code>、<code>list</code>。</li>
-<li><strong>迭代器 Iterators</strong>：容器的“指针”，统一遍历不同容器。</li>
-<li><strong>算法 Algorithms</strong>：通用函数，<code>sort</code>、<code>find</code>、<code>for_each</code>，通过迭代器操作容器。</li>
-<li><strong>函数对象 Functors</strong>：可调用对象，用于算法自定义行为。</li>
-</ol>
-<hr>
-<h3 id="一句话总结">一句话总结</h3>
-<ul>
-<li><strong>Class</strong>：面向对象，封装；</li>
-<li><strong>Template</strong>：泛型，类型无关代码；</li>
-<li><strong>Smart pointer</strong>：安全自动内存管理；</li>
-<li><strong>STL</strong>：一套现成模板容器+算法库，日常C++开发主力。</li>
-</ul>
+        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start">Quick Start</h2>
+<h3 id="Create-a-new-post">Create a new post</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server">Run server</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files">Generate static files</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites">Deploy to remote sites</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/29/C-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86/" data-id="cmur4ohwr00034cmad995a7e9" data-title="C++游戏开发:储备知识" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" rel="tag">学习规划</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-自学规划" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/" class="article-date">
-  <time class="dt-published" datetime="2026-09-28T10:30:05.000Z" itemprop="datePublished">2026-09-28</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/">自学规划</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1>从零手写同步回合制游戏（不使用成品引擎）学习规划笔记</h1>
-<blockquote>
-<p>对话整理：目标游戏玩法参考《紫色晶石》《节奏地牢》，<strong>自制底层引擎（仅使用SDL/SFML等基础底层库，不使用Unity/Godot/UE）</strong></p>
-</blockquote>
-<h2 id="需求概述">需求概述</h2>
-<p>目标：从零开发游戏，不依赖现成游戏引擎。核心玩法为同步回合制，网格地图，类似紫色晶石（玩家行动消耗AP，玩家一轮行动结束后所有敌人统一行动）、节奏地牢（回合驱动）。想了解需要学习的内容、技术栈，以及C++内存难点、配套学习教程。</p>
-<hr>
-<h1>一、技术方案选型</h1>
-<blockquote>
-<p>区分概念：不使用成品引擎 ≠ 不能用底层库；底层库仅负责窗口、渲染、输入、音频；回合逻辑、战斗、AI、地图全部手写。</p>
-</blockquote>
-<h2 id="两条路线">两条路线</h2>
-<h3 id="路线A：C-底层库（推荐，Stoneshard-使用C-）">路线A：C++ + 底层库（推荐，Stoneshard 使用C++）</h3>
-<ul>
-<li>图形库：<strong>SDL2（首选，跨平台2D像素）</strong>；备选 SFML（API更友好）</li>
-<li>音频：SDL_mixer / FMOD</li>
-<li>字体渲染：SDL_ttf</li>
-<li>构建工具：CMake</li>
-<li>数据解析：nlohmann/json（读取地图、配置）</li>
-<li>地图编辑器：Tiled，导出json，自行写解析器</li>
-</ul>
-<h3 id="路线B：Rust-Macroquad-Piston">路线B：Rust + Macroquad / Piston</h3>
-<p>优势：内存安全，编译期规避悬垂指针、内存泄漏；适合独立开发者快速原型。缺点是生态相对C++小。</p>
-<blockquote>
-<p>❌ 不推荐直接裸写Win32+原生OpenGL，前期大量精力消耗在图形底层，耽误回合玩法原型开发。</p>
-</blockquote>
-<h2 id="核心架构思想">核心架构思想</h2>
-<ol>
-<li><strong>游戏主循环</strong>：初始化 → 循环（读取输入 → 更新游戏逻辑 → 渲染画面 → 控制帧率）</li>
-<li><strong>同步回合状态拆分</strong>
-<ul>
-<li>WAIT_PLAYER：等待玩家输入，生成行动意图</li>
-<li>PLAYER_ACT：执行玩家行动，消耗行动点AP</li>
-<li>ENEMY_TURN：全部敌人依次执行AI行动</li>
-<li>ANIM_PLAY：播放动作动画，暂停逻辑</li>
-</ul>
-</li>
-<li><strong>逻辑与渲染严格分离</strong>：回合逻辑使用固定tick，渲染帧率不受限制，保证战斗逻辑稳定。</li>
-<li>推荐简易ECS（实体组件系统）：实体Entity，属性Hp/Ap/Position/Buff为Component；原型阶段可以先用结构体数组，后期重构。</li>
-</ol>
-<h2 id="核心模块清单">核心模块清单</h2>
-<ol>
-<li>网格Grid系统：格子坐标、世界坐标互转、可通行标记、墙壁</li>
-<li>FOV视野：Recursive Shadow Casting（紫色晶石黑暗视野）</li>
-<li>A*网格寻路：敌人寻路</li>
-<li>行动队列 Action Queue：行动入队，回合阶段顺序执行</li>
-<li>AP行动点系统：移动、攻击、技能消耗行动点</li>
-<li>Buff/状态系统：在【回合开始】【行动前】【受伤】【回合结束】触发</li>
-<li>伤害计算、命中判定</li>
-<li>AI逻辑：仅敌人回合执行，原型先用简单AI（靠近→可攻击则攻击）</li>
-<li>像素渲染、精灵表、相机视口</li>
-<li>输入解耦：输入只生成行动意图，不在输入回调直接修改游戏世界</li>
-<li>资源加载、存档序列化</li>
-</ol>
-<h2 id="开发迭代顺序（MVP优先，禁止先做美术）">开发迭代顺序（MVP优先，禁止先做美术）</h2>
-<ol>
-<li><strong>阶段1：最小引擎骨架（1~2周）</strong><br>
-SDL窗口，游戏循环，键盘输入，绘制方块，网格移动。目标：黑白方块地图，可以移动玩家方块。</li>
-<li><strong>阶段2：同步回合原型（核心MVP）</strong><br>
-修改为回合模式，移动消耗AP；玩家操作结束，全体敌人统一行动；实现状态机、行动队列。此时全是方块，但核心玩法跑通。</li>
-<li><strong>阶段3：战斗与实体系统</strong><br>
-血量、攻击判定，buff系统，A*敌人寻路。</li>
-<li><strong>阶段4：FOV视野、Tiled地图加载</strong><br>
-黑暗视野，解析Tiled地图json。</li>
-<li><strong>阶段5：动画、音效，替换方块为像素精灵</strong><br>
-帧动画、攻击音效，动画阻塞回合逻辑。</li>
-<li><strong>阶段6：UI、物品、存档、敌人种类、数值平衡</strong><br>
-血条、物品栏、拾取装备、存档读档。</li>
-<li><strong>阶段7：优化、打包发布</strong></li>
-</ol>
-<hr>
-<h1>二、C++内存管理难点（游戏开发场景）</h1>
-<blockquote>
-<p>C++没有GC，内存生命周期完全由程序员手动控制。错误常表现为间歇性bug，Debug正常Release随机崩溃。</p>
-</blockquote>
-<ol>
-<li><strong>栈 vs 堆</strong><br>
-栈：局部变量，函数退出自动销毁；栈空间很小，大数组容易栈溢出。<br>
-堆：<code>new</code>分配，<strong>必须手动delete</strong>；适合大量实体、地图数据。</li>
-</ol>
-<blockquote>
-<p>坑：保存栈对象指针到全局队列，函数退出对象销毁 → <strong>悬垂指针</strong>。</p>
-</blockquote>
-<ol start="2">
-<li><strong>悬垂指针（野指针）</strong><br>
-指针还存在，但指向内存已经释放。访问时属于未定义行为，可能乱数据、随机崩溃。回合行动队列极易踩坑。</li>
-<li><strong>内存泄漏</strong><code>new</code>之后忘记<code>delete</code>。敌人死亡不释放内存，长时间游玩内存持续上涨。程序不会报错，只会慢慢吃内存。</li>
-<li><strong>重复释放 double free</strong><br>
-一块内存delete后再次delete，破坏堆结构，随机崩溃。典型场景：ECS实体多处写删除逻辑。</li>
-<li><strong>浅拷贝陷阱</strong><br>
-默认拷贝仅复制指针，两个对象共用同一块堆内存；一个析构后另一个指针失效。角色、物品结构体高频踩坑。<br>
-解决：手写深拷贝，或禁用拷贝。</li>
-<li><strong>内存所有权问题</strong><br>
-谁负责释放内存？行动队列保存Action指针时，如果所有权约定不清，极易出现泄漏或double free。<br>
-现代C++方案：<code>std::unique_ptr</code>（单一所有权，优先推荐）；谨慎使用<code>std::shared_ptr</code>（循环引用会泄漏）。</li>
-<li><strong>new[] / delete[] 必须配对</strong><br>
-数组分配<code>new[]</code>，释放必须用<code>delete[]</code>，混用为未定义行为。</li>
-<li><strong>未定义行为 UB</strong><br>
-内存错误没有固定报错表现：可能正常运行、随机崩溃、只在打包后出错，bug根源和崩溃位置不在一起。</li>
-</ol>
-<h2 id="✅-降低C-内存风险的工程规范（回合引擎推荐）">✅ 降低C++内存风险的工程规范（回合引擎推荐）</h2>
-<ol>
-<li>优先栈对象，临时Action、小结构体尽量栈分配。</li>
-<li>容器优先值语义：<code>std::vector&lt;Entity&gt;</code>，而不是<code>vector&lt;Entity*&gt;</code>，vector自动管理内存。ECS组件数组推荐这种写法。</li>
-<li>堆对象优先<code>std::unique_ptr</code>，少用shared_ptr。</li>
-<li><strong>实体用ID代替裸指针（强烈推荐）</strong><br>
-实体使用uint64_t整数ID；维护<code>unordered_map&lt;uint64_t, Entity&gt;</code>。所有Action、buff、AI只存实体ID，访问实体通过ID查找。实体销毁直接删除map条目，<strong>直接消灭悬垂指针</strong>。</li>
-</ol>
-<blockquote>
-<p>一句话总结：C++内存难不在于语法，而在于<strong>手动管理生命周期与所有权；错误行为飘忽，难以定位</strong>。</p>
-</blockquote>
-<hr>
-<h1>三、推荐教程资源（不使用成品引擎，SDL底层 + Roguelike同步回合）</h1>
-<h2 id="首选教程">首选教程</h2>
-<ol>
-<li><strong>Game Code School Traditional Roguelike（最匹配你的项目）</strong>
-<ul>
-<li>SDL3 + C++，不使用游戏引擎，从零搭建roguelike</li>
-<li>覆盖：窗口、网格地图、<strong>同步回合循环、RSC FOV视野、A*寻路、怪物AI、buff、存档、HUD</strong></li>
-<li>配套书籍 <em>Using C++ to Build a Traditional Roguelike</em>，每章独立工程，源码可下载</li>
-<li>特点：现代C++，专门讲解内存组织，规避裸指针坑</li>
-<li>链接：<a target="_blank" rel="noopener" href="https://gamecodeschool.com/roguelikes/">https://gamecodeschool.com/roguelikes/</a></li>
-<li>缺点：英文文档</li>
-</ul>
-</li>
-<li><strong>Parallel Realities C Roguelike Tutorial</strong>
-<ul>
-<li>C语言 + SDL2，极简代码，学习底层内存原理；思路可以移植C++</li>
-<li>链接：<a target="_blank" rel="noopener" href="https://www.parallelrealities.co.uk/tutorials/rogue/rogue.php">https://www.parallelrealities.co.uk/tutorials/rogue/rogue.php</a></li>
-</ul>
-</li>
-</ol>
-<h2 id="算法参考网站">算法参考网站</h2>
-<ol>
-<li><strong>RogueBasin（Roguelike维基宝库）</strong><br>
-大量roguelike经典算法：RSC视野、A*、回合时序、地图生成<br>
-Python libtcod教程：架构完全可迁移到C++，适合学习回合系统思想。<br>
-<a target="_blank" rel="noopener" href="https://roguebasin.com/">https://roguebasin.com/</a></li>
-<li><strong>Red Blob Games</strong><br>
-A*、网格坐标可视化教程，敌人寻路必看<br>
-<a target="_blank" rel="noopener" href="https://www.redblobgames.com/">https://www.redblobgames.com/</a></li>
-</ol>
-<h2 id="书籍">书籍</h2>
-<ol>
-<li><strong>Game Programming Patterns（游戏编程模式，免费在线阅读）</strong><br>
-核心：状态机、事件队列、组件模式、ECS、事件总线；学习游戏架构，设计内存所有权。<br>
-<a target="_blank" rel="noopener" href="https://gameprogrammingpatterns.com/">https://gameprogrammingpatterns.com/</a></li>
-<li>2D Game Engine Programming with C（SDL3自制引擎）</li>
-<li>Dragonfly（大学自制引擎教材）</li>
-</ol>
-<h2 id="视频教程">视频教程</h2>
-<ol>
-<li>Handmade Hero：C从零写引擎，学习内存管理、数据导向编程；不包含回合制，底层思想极强。</li>
-<li>Lazy Foo' SDL2 Tutorials：SDL入门，窗口、贴图、输入、音频，搭建引擎骨架<br>
-<a target="_blank" rel="noopener" href="https://lazyfoo.net/tutorials/SDL/">https://lazyfoo.net/tutorials/SDL/</a></li>
-</ol>
-<h2 id="Rust备选教程（避开C-内存问题）">Rust备选教程（避开C++内存问题）</h2>
-<p>Gridbugs Roguelike 2020 教程：Rust + Macroquad，无引擎同步回合roguelike<br>
-<a target="_blank" rel="noopener" href="https://www.gridbugs.org/roguelike-tutorial-2020/">https://www.gridbugs.org/roguelike-tutorial-2020/</a></p>
-<h2 id="❌-需要避开的教程">❌ 需要避开的教程</h2>
-<ul>
-<li>Unity/Godot写roguelike教程：属于引擎脚本开发，<strong>不是从零写引擎</strong>，不符合需求</li>
-<li>老libtcod教程：libtcod封装渲染底层，只能借鉴逻辑，不要依赖它的渲染模块</li>
-</ul>
-<h2 id="推荐学习顺序">推荐学习顺序</h2>
-<ol>
-<li>Lazy Foo SDL2 → SDL基础，搭建窗口、输入、渲染骨架</li>
-<li>Game Code School Roguelike，跟着实现方块原型、同步回合、FOV</li>
-<li>Game Programming Patterns，学习状态机、Action队列，优化内存所有权，实体ID方案</li>
-<li>RogueBasin、Red Blob Games补充A*、地图生成</li>
-<li>Handmade Hero选看内存、数据导向章节</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/" data-id="cmur4ohwy000x4cma29cn95zh" data-title="自学规划" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" rel="tag">学习规划</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-哈希表-快乐数" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E5%BF%AB%E4%B9%90%E6%95%B0/" class="article-date">
-  <time class="dt-published" datetime="2026-09-28T09:56:09.000Z" itemprop="datePublished">2026-09-28</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E5%BF%AB%E4%B9%90%E6%95%B0/">哈希表:快乐数</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1>哈希表：快乐数</h1>
-<h2 id="什么是快乐数？">什么是快乐数？</h2>
-<p>「快乐数」定义：对于一个正整数，每一次将该数替换为它<strong>每个位置上的数字的平方和</strong>。如果这个过程<strong>结果为 1</strong>，则这个数是快乐数；如果循环中<strong>永远变不到 1</strong>，就不是快乐数。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">示例 1：19 → 1² + 9² = 82 → 8² + 2² = 68 → 6² + 8² = 100 → 1² + 0 + 0 = 1 ✅ 快乐数</span><br><span class="line">示例 2：2 → 4 → 16 → 37 → 58 → 89 → 145 → 42 → 20 → 4 → 循环 ❌ 不是快乐数</span><br></pre></td></tr></table></figure>
-<h2 id="朴素解法（vector-find-检测循环）">朴素解法（vector + find 检测循环）</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">Happy</span><span class="params">(<span class="type">int</span> i)</span></span>&#123;</span><br><span class="line">        <span class="type">int</span> res = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span>(i/<span class="number">10</span>)&#123;</span><br><span class="line">            res += (i%<span class="number">10</span>)*(i%<span class="number">10</span>);</span><br><span class="line">            i = i/<span class="number">10</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        res += i*i;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isHappy</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">pingF</span><span class="params">(<span class="number">10</span>)</span></span>;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; res;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="number">10</span>;i++)&#123;</span><br><span class="line">            pingF[i] = i*i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> now = n;</span><br><span class="line">        <span class="keyword">auto</span> it = <span class="built_in">find</span>(res.<span class="built_in">begin</span>(),res.<span class="built_in">end</span>(),now);</span><br><span class="line">        <span class="keyword">while</span>(it==res.<span class="built_in">end</span>())&#123;</span><br><span class="line">            res.<span class="built_in">push_back</span>(now);</span><br><span class="line">            now =  <span class="built_in">Happy</span>(now);</span><br><span class="line">            <span class="keyword">if</span>(now == <span class="number">1</span>) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            it = <span class="built_in">find</span>(res.<span class="built_in">begin</span>(),res.<span class="built_in">end</span>(),now);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="哈希表解法（unordered-set-检测循环）🌟（推荐）">哈希表解法（unordered_set 检测循环）🌟（推荐）</h2>
-<p>上面用 <code>vector</code> + <code>find()</code> 查找是 <strong>O(n)</strong>，换成 <code>unordered_set</code> 可以把查找降到 <strong>O(1)</strong>。</p>
-<p>核心思路：如果数字重复出现，说明陷入循环，永远到不了 1。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unordered_set&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// 计算各位数字平方和</span></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">getSum</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> sum = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span>(n) &#123;</span><br><span class="line">            sum += (n % <span class="number">10</span>) * (n % <span class="number">10</span>);</span><br><span class="line">            n /= <span class="number">10</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sum;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isHappy</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        unordered_set&lt;<span class="type">int</span>&gt; visited;</span><br><span class="line">        <span class="type">int</span> cur = n;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>(cur != <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="comment">// 当前数已出现过，说明循环了</span></span><br><span class="line">            <span class="keyword">if</span>(visited.<span class="built_in">count</span>(cur)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            visited.<span class="built_in">insert</span>(cur);</span><br><span class="line">            cur = <span class="built_in">getSum</span>(cur);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p><strong>复杂度分析</strong>：</p>
-<ul>
-<li>时间复杂度：不确定上限，取决于是快乐数还是循环。但每次查找 O(1)</li>
-<li>空间复杂度：O(k)，k 为出现过的数字个数</li>
-</ul>
-<h2 id="快慢指针法（双指针，空间-O-1-）">快慢指针法（双指针，空间 O(1)）</h2>
-<p>不用哈希表也能检测循环 —— 和「判断链表有没有环」同一个思路：<strong>快指针每次走两步，慢指针每次走一步，相遇就说明有环</strong>。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">getSum</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> sum = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span>(n) &#123;</span><br><span class="line">            sum += (n % <span class="number">10</span>) * (n % <span class="number">10</span>);</span><br><span class="line">            n /= <span class="number">10</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sum;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isHappy</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> slow = n;</span><br><span class="line">        <span class="type">int</span> fast = <span class="built_in">getSum</span>(n);</span><br><span class="line">        <span class="comment">// fast 到达 1 说明是快乐数；fast 和 slow 相遇说明循环</span></span><br><span class="line">        <span class="keyword">while</span>(fast != <span class="number">1</span> &amp;&amp; slow != fast) &#123;</span><br><span class="line">            slow = <span class="built_in">getSum</span>(slow);          <span class="comment">// 慢：走一步</span></span><br><span class="line">            fast = <span class="built_in">getSum</span>(<span class="built_in">getSum</span>(fast));  <span class="comment">// 快：走两步</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> fast == <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<hr>
-<h1>总结</h1>
-<p>哈希表（hash）其实就是<strong>空间换时间</strong>，要是有强对应的话会很好用。</p>
-<p>熟悉 vector 的各种方法事半功倍，还有 <code>#include &lt;algorithm&gt;</code> 里的各种函数（如 <code>find()</code>）。</p>
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th>时间复杂度</th>
-<th>空间复杂度</th>
-<th>推荐度</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>vector + find</td>
-<td>查找 O(n)</td>
-<td>O(k)</td>
-<td>⭐⭐</td>
-</tr>
-<tr>
-<td>unordered_set</td>
-<td>查找 O(1)</td>
-<td>O(k)</td>
-<td>⭐⭐⭐⭐</td>
-</tr>
-<tr>
-<td>快慢指针</td>
-<td>—</td>
-<td>O(1)</td>
-<td>⭐⭐⭐⭐⭐</td>
-</tr>
-</tbody>
-</table>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E5%BF%AB%E4%B9%90%E6%95%B0/" data-id="cmur4ohwv000e4cma7g1uhfzz" data-title="哈希表:快乐数" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-哈希表-数组交集" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E6%95%B0%E7%BB%84%E4%BA%A4%E9%9B%86/" class="article-date">
-  <time class="dt-published" datetime="2026-09-28T09:53:36.000Z" itemprop="datePublished">2026-09-28</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E6%95%B0%E7%BB%84%E4%BA%A4%E9%9B%86/">哈希表:数组交集</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1>哈希表：两数组交集</h1>
-<h2 id="暴力双循环">暴力双循环</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">intersection</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums1, vector&lt;<span class="type">int</span>&gt;&amp; nums2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> size1 = nums1.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> size2 = nums2.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> max1 = <span class="built_in">max</span>(size1,size2);</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; res;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i =<span class="number">0</span>; i&lt;size1; i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>;j&lt;size2; j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(nums1[i]==nums2[j])&#123;</span><br><span class="line">                    res.<span class="built_in">push_back</span>(nums1[i]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;res.<span class="built_in">size</span>();i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;res.<span class="built_in">size</span>();j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(res[i]==res[j]&amp;&amp;i!=j)&#123;</span><br><span class="line">                    res.<span class="built_in">erase</span>(res.<span class="built_in">begin</span>()+j);</span><br><span class="line">                    j--;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="哈希表法">哈希表法</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">intersection</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums1, vector&lt;<span class="type">int</span>&gt;&amp; nums2)</span> </span>&#123;</span><br><span class="line">        unordered_set&lt;<span class="type">int</span>&gt; result_set; <span class="comment">// 存放结果，之所以用set是为了给结果集去重</span></span><br><span class="line">        <span class="function">unordered_set&lt;<span class="type">int</span>&gt; <span class="title">nums_set</span><span class="params">(nums1.begin(), nums1.end())</span></span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> num : nums2) &#123;</span><br><span class="line">            <span class="comment">// 发现nums2的元素 在nums_set里又出现过</span></span><br><span class="line">            <span class="keyword">if</span> (nums_set.<span class="built_in">find</span>(num) != nums_set.<span class="built_in">end</span>()) &#123;</span><br><span class="line">                result_set.<span class="built_in">insert</span>(num);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(result_set.<span class="built_in">begin</span>(), result_set.<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<hr>
-<h1>unordered_set 无序集合（C++）</h1>
-<p>底层：哈希表，元素无序，不重复。</p>
-<p>头文件：<code>#include &lt;unordered_set&gt;</code></p>
-<h2 id="✅-核心属性">✅ 核心属性</h2>
-<ol>
-<li><strong>元素唯一</strong>：不能存放重复的值，插入重复元素会直接忽略。</li>
-<li><strong>无序存储</strong>：遍历顺序不是插入顺序，也不是从小到大排序。（对比 <code>set</code>：红黑树，自动升序）</li>
-<li><strong>查找、插入、删除平均 O(1)</strong>，最坏 O(n)（哈希冲突）</li>
-</ol>
-<blockquote>
-<p>set（有序集合）增删查稳定 O(logn)</p>
-</blockquote>
-<h2 id="✅-常用成员函数">✅ 常用成员函数</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">unordered_set&lt;<span class="type">int</span>&gt; st;</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">5</span>);        <span class="comment">// 插入元素</span></span><br><span class="line">st.<span class="built_in">erase</span>(<span class="number">5</span>);         <span class="comment">// 删除元素，可以传值/迭代器</span></span><br><span class="line">st.<span class="built_in">count</span>(<span class="number">5</span>);         <span class="comment">// 判断元素是否存在：存在返回1，不存在返回0</span></span><br><span class="line">st.<span class="built_in">find</span>(<span class="number">5</span>);          <span class="comment">// 找到返回迭代器；找不到返回 st.end()</span></span><br><span class="line">st.<span class="built_in">empty</span>();          <span class="comment">// 判断是否为空</span></span><br><span class="line">st.<span class="built_in">size</span>();           <span class="comment">// 返回元素个数</span></span><br><span class="line">st.<span class="built_in">clear</span>();          <span class="comment">// 清空全部元素</span></span><br></pre></td></tr></table></figure>
-<p>示例：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">unordered_set&lt;<span class="type">int</span>&gt; st;</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">1</span>);</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">2</span>);</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">2</span>); <span class="comment">// 重复，不会生效</span></span><br><span class="line">cout &lt;&lt; st.<span class="built_in">size</span>(); <span class="comment">// 输出2</span></span><br></pre></td></tr></table></figure>
-<h2 id="⚠️-高频坑（刷题考点）">⚠️ 高频坑（刷题考点）</h2>
-<ol>
-<li>不能用下标 <code>st[0]</code> 访问！没有 <code>[]</code> 运算符，和 vector/map 不一样。</li>
-<li>迭代器遍历顺序不确定，不要依赖顺序。</li>
-<li>自定义结构体不能直接放进 unordered_set，需要自己写哈希函数；普通int、string可以直接用。</li>
-<li><code>st.find(x) != st.end()</code> 用来判断元素存在；<code>st.count(x)</code> 也可以，返回0或1。</li>
-</ol>
-<h2 id="🆚-unordered-set-vs-set">🆚 unordered_set vs set</h2>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>unordered_set</th>
-<th>set</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>底层</td>
-<td>哈希表</td>
-<td>红黑树</td>
-</tr>
-<tr>
-<td>顺序</td>
-<td>无序</td>
-<td>从小到大自动排序</td>
-</tr>
-<tr>
-<td>复杂度</td>
-<td>平均O(1)</td>
-<td>O(logn)</td>
-</tr>
-<tr>
-<td>重复元素</td>
-<td>不允许</td>
-<td>不允许</td>
-</tr>
-</tbody>
-</table>
-<h2 id="📌什么时候选unordered-set？">📌什么时候选unordered_set？</h2>
-<p>只需要去重 + 判断某个元素是否存在，不关心顺序 → 优先 unordered_set。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E6%95%B0%E7%BB%84%E4%BA%A4%E9%9B%86/" data-id="cmur4ohwv000g4cmabcuw56xj" data-title="哈希表:数组交集" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-CSAPP读书笔记-程序的编译" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/09/22/CSAPP%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91/" class="article-date">
-  <time class="dt-published" datetime="2026-09-22T11:45:30.000Z" itemprop="datePublished">2026-09-22</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/09/22/CSAPP%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91/">CSAPP读书笔记:程序的编译</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/22/CSAPP%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91/" data-id="cmur4ohwp00014cmabmzr49hl" data-title="CSAPP读书笔记:程序的编译" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="http://example.com/2026/08/18/hello-world/" data-id="cmur4ohwt00084cmaag402ijq" data-title="Hello World" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -608,7 +134,7 @@ A*、网格坐标可视化教程，敌人寻路必看<br>
 
   <nav id="page-nav">
     
-    <a class="extend prev" rel="prev" href="/">&laquo; 上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">下一页 &raquo;</a>
+    <a class="extend prev" rel="prev" href="/page/3/">&laquo; 上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
   </nav>
 
 </section>
