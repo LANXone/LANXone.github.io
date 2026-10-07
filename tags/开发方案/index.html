@@ -269,385 +269,6 @@
 <script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
   
 <style>
-  /* --- 详情页大号点赞按钮 --- */
-  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
-  .like-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 24px; font-size: 15px;
-    border: 1px solid #e0e0e0; border-radius: 24px;
-    background: #fff; color: #555; cursor: pointer;
-    transition: all 0.25s ease; user-select: none;
-  }
-  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
-  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
-  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
-  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
-  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
-
-  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
-  .article-footer .lanx-action {
-    display: inline-flex; align-items: center; gap: 4px;
-    margin-right: 10px; font-size: 13px;
-    color: #666; text-decoration: none; cursor: pointer;
-    padding: 0 2px; border-radius: 4px;
-    transition: color 0.2s;
-  }
-  .article-footer .lanx-action:hover { color: #ff6b6b; }
-  .article-footer .lanx-action.liked { color: #ff6b6b; }
-  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
-  .article-footer .lanx-action .lanx-count {
-    margin-left: 2px; font-size: 12px; color: #999;
-  }
-  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
-</style>
-
-<script>
-(function(){
-  var articles = document.querySelectorAll('article.article');
-  var isSinglePost = articles.length === 1;
-
-  // 提取文章路径:从 share-link 的 data-url 里拿
-  function getArticlePath(articleEl) {
-    var link = articleEl.querySelector('.article-share-link');
-    if (link && link.dataset.url) {
-      try {
-        var u = new URL(link.dataset.url, location.origin);
-        return u.pathname;
-      } catch(e) {}
-    }
-    // fallback:用标题链接的 href
-    var titleLink = articleEl.querySelector('.article-title');
-    if (titleLink) return titleLink.getAttribute('href');
-    return '';
-  }
-
-  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
-  if (!isSinglePost) {
-    articles.forEach(function(art) {
-      var af = art.querySelector('.article-footer');
-      var share = art.querySelector('.article-share-link');
-      var path = getArticlePath(art);
-      if (!af || !share || !path) return;
-
-      var likedKey = 'liked_' + path;
-      var countKey = 'likeCount_' + path;
-      var liked = !!localStorage.getItem(likedKey);
-      var count = parseInt(localStorage.getItem(countKey) || '0');
-
-      // 点赞按钮(小)
-      var likeHtml =
-        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
-          '<span class="fa fa-thumbs-up"></span>' +
-          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
-        '</a>';
-
-      // 评论按钮(小),跳到详情页评论区
-      var commentHtml =
-        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
-          '<span class="fa fa-comment"></span>' +
-        '</a>';
-
-      // 插入到分享按钮前面
-      var temp = document.createElement('span');
-      temp.innerHTML = likeHtml + commentHtml;
-      share.parentNode.insertBefore(temp.firstChild, share);
-      share.parentNode.insertBefore(temp.firstChild, share);
-
-      // 绑定点赞事件
-      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
-      if (likeBtn) {
-        likeBtn.addEventListener('click', function(e) {
-          e.preventDefault(); e.stopPropagation();
-          if (likeBtn.classList.contains('liked')) return;
-          likeBtn.classList.add('liked');
-          localStorage.setItem(likedKey, '1');
-          count++;
-          localStorage.setItem(countKey, count);
-          var c = likeBtn.querySelector('.lanx-count');
-          c.textContent = count; c.style.display = '';
-        });
-      }
-    });
-    return; // 多文章页到此为止
-  }
-
-  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
-  var path = location.pathname;
-  var likedKey = 'liked_' + path;
-  var countKey = 'likeCount_' + path;
-  var liked = localStorage.getItem(likedKey);
-  var count = parseInt(localStorage.getItem(countKey) || '0');
-
-  var wrap = document.createElement('div');
-  wrap.className = 'like-wrap';
-  wrap.innerHTML =
-    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
-      '<span class="fa fa-thumbs-up"></span>' +
-      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
-      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
-    '</button>';
-  var af = document.querySelector('.article-footer');
-  if (af) af.after(wrap);
-
-  var btn = document.getElementById('likeBtn');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      if (btn.classList.contains('liked')) return;
-      btn.classList.add('liked');
-      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
-      localStorage.setItem(likedKey, '1');
-      count++;
-      localStorage.setItem(countKey, count);
-      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
-      btn.querySelector('#likeCountDisplay').style.display = '';
-      var inline = document.getElementById('lanx_like_inline');
-      if (inline) { inline.textContent = count; inline.style.display = ''; }
-    });
-  }
-
-  window.__LANX_LIKE_COUNT__ = count;
-})();
-</script>
-  
-<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
-<style>
-  /* --- Toast 提示 --- */
-  .lanx-toast {
-    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
-    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
-    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  }
-  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .lanx-toast.success { background: #38a169; }
-  .lanx-toast.error { background: #e53e3e; }
-
-  /* --- Twikoo 评论区整体容器 --- */
-  #twikoo-comments {
-    margin-top: 48px; padding: 28px 28px 20px;
-    background: #fff; border-radius: 14px;
-    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
-  }
-  #twikoo-comments > h3 {
-    margin: 0 0 20px 0; padding-bottom: 14px;
-    font-size: 16px; font-weight: 600; color: #333;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  /* 留言板:不同的标题和背景 */
-  body.page-guestbook #twikoo-comments {
-    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
-    border: 1px solid #dbeafe;
-  }
-  body.page-guestbook #twikoo-comments > h3 {
-    border-bottom-color: #dbeafe;
-    color: #2563eb;
-  }
-
-  /* --- Twikoo 内部组件美化 --- */
-  .tk-comment-box {
-    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
-    padding: 14px 16px !important; margin-bottom: 16px !important;
-    transition: border-color 0.2s !important;
-  }
-  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
-  .tk-comment-box .el-textarea__inner {
-    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
-    font-size: 14px !important; line-height: 1.6 !important;
-  }
-  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
-  .tk-btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-    border: none !important; border-radius: 20px !important;
-    padding: 8px 22px !important; font-weight: 500 !important;
-  }
-  .tk-btn-primary:hover { opacity: 0.9; }
-
-  /* 评论列表卡片化 */
-  .tk-comment-item {
-    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
-    padding: 16px 18px !important; margin-bottom: 12px !important;
-    background: #fafbfc !important; transition: box-shadow 0.2s !important;
-  }
-  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-
-  /* 博主标识 */
-  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
-
-  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
-  .tk-powered-by,
-  .tk-comment-powered,
-  [class*="powered-by"],
-  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
-
-  /* 评论区底部工具条 */
-  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
-
-  /* 点赞/踩按钮 */
-  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
-
-  /* 头像 */
-  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
-
-  /* --- 分享按钮改复制链接 --- */
-  .article-share-link { cursor: pointer; }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
-
-<script>
-(function(){
-  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
-  var path = location.pathname;
-  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
-  var isPost = document.querySelectorAll('article.article').length === 1;
-  var isGuestbook = path.indexOf('/guestbook') !== -1;
-
-  // ============ Toast 工具 ============
-  function showToast(msg, type) {
-    var t = document.createElement('div');
-    t.className = 'lanx-toast' + (type ? ' ' + type : '');
-    t.textContent = msg;
-    document.body.appendChild(t);
-    requestAnimationFrame(function(){ t.classList.add('show'); });
-    setTimeout(function(){
-      t.classList.remove('show');
-      setTimeout(function(){ t.remove(); }, 300);
-    }, 1800);
-  }
-
-  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
-  function copyShareLink() {
-    var links = document.querySelectorAll('.article-share-link');
-    if (!links.length) return;
-    links.forEach(function(link) {
-      link.href = 'javascript:void(0)';
-      // 移除旧监听(防重复绑定)
-      link.replaceWith(link.cloneNode(true));
-    });
-    // 重新获取(因为 cloneNode 替换了)
-    links = document.querySelectorAll('.article-share-link');
-    links.forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault(); e.stopPropagation();
-        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
-        var url;
-        if (link.dataset.url) {
-          try { url = new URL(link.dataset.url, location.origin).href; }
-          catch(err) { url = location.origin + location.pathname; }
-        } else {
-          url = location.origin + location.pathname;
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(url).then(function(){
-            showToast('📋 链接已复制到剪贴板');
-          }).catch(function(){ fallbackCopy(url); });
-        } else {
-          fallbackCopy(url);
-        }
-      }, true);
-    });
-  }
-  function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
-    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
-    ta.remove();
-  }
-
-  // ============ 2. 文章页访问量 + 评论容器 ============
-  if (isGuestbook) document.body.classList.add('page-guestbook');
-
-  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
-  copyShareLink();
-
-  if (isPost) {
-    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
-    setTimeout(function(){
-      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
-      var af = document.querySelector('.article-footer');
-      if (!af) return;
-      // 👁️ 阅读 + 👍 点赞 内联显示
-      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
-        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
-        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
-      '</span>';
-      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
-      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
-    }, 200);
-  }
-
-  if (isPost || isGuestbook) {
-    var commentDiv = document.createElement('div');
-    commentDiv.id = 'twikoo-comments';
-    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
-    var collapsible = !isGuestbook;
-    commentDiv.innerHTML =
-      (collapsible
-        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
-        : ''
-      ) +
-      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
-        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
-      '</div>';
-    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
-    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
-
-    // 折叠按钮点击
-    if (collapsible) {
-      var btn = document.getElementById('twikoo-toggle-btn');
-      var body = document.getElementById('twikoo-comments-body');
-      btn.addEventListener('click', function() {
-        if (body.style.display === 'none') {
-          body.style.display = '';
-          btn.textContent = '🙈 收起评论区';
-          btn.style.background = '#f5f5f5';
-          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
-          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
-        } else {
-          body.style.display = 'none';
-          btn.textContent = '💬 展开评论区';
-          btn.style.background = '#fff';
-        }
-      });
-    }
-  }
-
-  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
-  function initTwikooBody() {
-    var commentBox = document.getElementById('tcomments');
-    if (!commentBox) return;
-    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
-    var pinger = new Promise(function(resolve){
-      var timer = setTimeout(function(){ resolve(false); }, 5000);
-      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
-        .then(function(){ clearTimeout(timer); resolve(true); })
-        .catch(function(){ clearTimeout(timer); resolve(false); });
-    });
-    pinger.then(function(ok){
-      if (!ok) {
-        commentBox.innerHTML =
-          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
-            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
-            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
-          '</div>';
-        return;
-      }
-      function waitTwikoo(){
-        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
-        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
-          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
-      }
-      waitTwikoo();
-    });
-  }
-  // 留言板:立即初始化;文章页:等用户点展开按钮
-  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
-})();
-</script>
-  
-<style>
   /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
   .lanx-sidebar-sticky {
     display: flex; flex-direction: column; gap: 12px;
@@ -2599,6 +2220,385 @@ function evaluate(pos){
   }
 
   mount();
+})();
+</script>
+  
+<style>
+  /* --- 详情页大号点赞按钮 --- */
+  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
+  .like-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 24px; font-size: 15px;
+    border: 1px solid #e0e0e0; border-radius: 24px;
+    background: #fff; color: #555; cursor: pointer;
+    transition: all 0.25s ease; user-select: none;
+  }
+  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
+  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
+  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
+  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
+
+  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
+  .article-footer .lanx-action {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-right: 10px; font-size: 13px;
+    color: #666; text-decoration: none; cursor: pointer;
+    padding: 0 2px; border-radius: 4px;
+    transition: color 0.2s;
+  }
+  .article-footer .lanx-action:hover { color: #ff6b6b; }
+  .article-footer .lanx-action.liked { color: #ff6b6b; }
+  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
+  .article-footer .lanx-action .lanx-count {
+    margin-left: 2px; font-size: 12px; color: #999;
+  }
+  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
+</style>
+
+<script>
+(function(){
+  var articles = document.querySelectorAll('article.article');
+  var isSinglePost = articles.length === 1;
+
+  // 提取文章路径:从 share-link 的 data-url 里拿
+  function getArticlePath(articleEl) {
+    var link = articleEl.querySelector('.article-share-link');
+    if (link && link.dataset.url) {
+      try {
+        var u = new URL(link.dataset.url, location.origin);
+        return u.pathname;
+      } catch(e) {}
+    }
+    // fallback:用标题链接的 href
+    var titleLink = articleEl.querySelector('.article-title');
+    if (titleLink) return titleLink.getAttribute('href');
+    return '';
+  }
+
+  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
+  if (!isSinglePost) {
+    articles.forEach(function(art) {
+      var af = art.querySelector('.article-footer');
+      var share = art.querySelector('.article-share-link');
+      var path = getArticlePath(art);
+      if (!af || !share || !path) return;
+
+      var likedKey = 'liked_' + path;
+      var countKey = 'likeCount_' + path;
+      var liked = !!localStorage.getItem(likedKey);
+      var count = parseInt(localStorage.getItem(countKey) || '0');
+
+      // 点赞按钮(小)
+      var likeHtml =
+        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
+          '<span class="fa fa-thumbs-up"></span>' +
+          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
+        '</a>';
+
+      // 评论按钮(小),跳到详情页评论区
+      var commentHtml =
+        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
+          '<span class="fa fa-comment"></span>' +
+        '</a>';
+
+      // 插入到分享按钮前面
+      var temp = document.createElement('span');
+      temp.innerHTML = likeHtml + commentHtml;
+      share.parentNode.insertBefore(temp.firstChild, share);
+      share.parentNode.insertBefore(temp.firstChild, share);
+
+      // 绑定点赞事件
+      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
+      if (likeBtn) {
+        likeBtn.addEventListener('click', function(e) {
+          e.preventDefault(); e.stopPropagation();
+          if (likeBtn.classList.contains('liked')) return;
+          likeBtn.classList.add('liked');
+          localStorage.setItem(likedKey, '1');
+          count++;
+          localStorage.setItem(countKey, count);
+          var c = likeBtn.querySelector('.lanx-count');
+          c.textContent = count; c.style.display = '';
+        });
+      }
+    });
+    return; // 多文章页到此为止
+  }
+
+  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
+  var path = location.pathname;
+  var likedKey = 'liked_' + path;
+  var countKey = 'likeCount_' + path;
+  var liked = localStorage.getItem(likedKey);
+  var count = parseInt(localStorage.getItem(countKey) || '0');
+
+  var wrap = document.createElement('div');
+  wrap.className = 'like-wrap';
+  wrap.innerHTML =
+    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
+      '<span class="fa fa-thumbs-up"></span>' +
+      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
+      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
+    '</button>';
+  var af = document.querySelector('.article-footer');
+  if (af) af.after(wrap);
+
+  var btn = document.getElementById('likeBtn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('liked')) return;
+      btn.classList.add('liked');
+      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
+      localStorage.setItem(likedKey, '1');
+      count++;
+      localStorage.setItem(countKey, count);
+      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
+      btn.querySelector('#likeCountDisplay').style.display = '';
+      var inline = document.getElementById('lanx_like_inline');
+      if (inline) { inline.textContent = count; inline.style.display = ''; }
+    });
+  }
+
+  window.__LANX_LIKE_COUNT__ = count;
+})();
+</script>
+  
+<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
+<style>
+  /* --- Toast 提示 --- */
+  .lanx-toast {
+    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
+    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lanx-toast.success { background: #38a169; }
+  .lanx-toast.error { background: #e53e3e; }
+
+  /* --- Twikoo 评论区整体容器 --- */
+  #twikoo-comments {
+    margin-top: 48px; padding: 28px 28px 20px;
+    background: #fff; border-radius: 14px;
+    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
+  }
+  #twikoo-comments > h3 {
+    margin: 0 0 20px 0; padding-bottom: 14px;
+    font-size: 16px; font-weight: 600; color: #333;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  /* 留言板:不同的标题和背景 */
+  body.page-guestbook #twikoo-comments {
+    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
+    border: 1px solid #dbeafe;
+  }
+  body.page-guestbook #twikoo-comments > h3 {
+    border-bottom-color: #dbeafe;
+    color: #2563eb;
+  }
+
+  /* --- Twikoo 内部组件美化 --- */
+  .tk-comment-box {
+    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
+    padding: 14px 16px !important; margin-bottom: 16px !important;
+    transition: border-color 0.2s !important;
+  }
+  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
+  .tk-comment-box .el-textarea__inner {
+    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
+    font-size: 14px !important; line-height: 1.6 !important;
+  }
+  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
+  .tk-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    border: none !important; border-radius: 20px !important;
+    padding: 8px 22px !important; font-weight: 500 !important;
+  }
+  .tk-btn-primary:hover { opacity: 0.9; }
+
+  /* 评论列表卡片化 */
+  .tk-comment-item {
+    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
+    padding: 16px 18px !important; margin-bottom: 12px !important;
+    background: #fafbfc !important; transition: box-shadow 0.2s !important;
+  }
+  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+  /* 博主标识 */
+  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
+
+  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
+  .tk-powered-by,
+  .tk-comment-powered,
+  [class*="powered-by"],
+  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
+
+  /* 评论区底部工具条 */
+  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
+
+  /* 点赞/踩按钮 */
+  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
+
+  /* 头像 */
+  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
+
+  /* --- 分享按钮改复制链接 --- */
+  .article-share-link { cursor: pointer; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
+
+<script>
+(function(){
+  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
+  var path = location.pathname;
+  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
+  var isPost = document.querySelectorAll('article.article').length === 1;
+  var isGuestbook = path.indexOf('/guestbook') !== -1;
+
+  // ============ Toast 工具 ============
+  function showToast(msg, type) {
+    var t = document.createElement('div');
+    t.className = 'lanx-toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 1800);
+  }
+
+  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
+  function copyShareLink() {
+    var links = document.querySelectorAll('.article-share-link');
+    if (!links.length) return;
+    links.forEach(function(link) {
+      link.href = 'javascript:void(0)';
+      // 移除旧监听(防重复绑定)
+      link.replaceWith(link.cloneNode(true));
+    });
+    // 重新获取(因为 cloneNode 替换了)
+    links = document.querySelectorAll('.article-share-link');
+    links.forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
+        var url;
+        if (link.dataset.url) {
+          try { url = new URL(link.dataset.url, location.origin).href; }
+          catch(err) { url = location.origin + location.pathname; }
+        } else {
+          url = location.origin + location.pathname;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function(){
+            showToast('📋 链接已复制到剪贴板');
+          }).catch(function(){ fallbackCopy(url); });
+        } else {
+          fallbackCopy(url);
+        }
+      }, true);
+    });
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
+    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
+    ta.remove();
+  }
+
+  // ============ 2. 文章页访问量 + 评论容器 ============
+  if (isGuestbook) document.body.classList.add('page-guestbook');
+
+  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
+  copyShareLink();
+
+  if (isPost) {
+    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
+    setTimeout(function(){
+      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
+      var af = document.querySelector('.article-footer');
+      if (!af) return;
+      // 👁️ 阅读 + 👍 点赞 内联显示
+      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
+        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
+        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
+      '</span>';
+      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
+      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
+    }, 200);
+  }
+
+  if (isPost || isGuestbook) {
+    var commentDiv = document.createElement('div');
+    commentDiv.id = 'twikoo-comments';
+    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
+    var collapsible = !isGuestbook;
+    commentDiv.innerHTML =
+      (collapsible
+        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
+        : ''
+      ) +
+      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
+        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
+      '</div>';
+    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
+    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
+
+    // 折叠按钮点击
+    if (collapsible) {
+      var btn = document.getElementById('twikoo-toggle-btn');
+      var body = document.getElementById('twikoo-comments-body');
+      btn.addEventListener('click', function() {
+        if (body.style.display === 'none') {
+          body.style.display = '';
+          btn.textContent = '🙈 收起评论区';
+          btn.style.background = '#f5f5f5';
+          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
+          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
+        } else {
+          body.style.display = 'none';
+          btn.textContent = '💬 展开评论区';
+          btn.style.background = '#fff';
+        }
+      });
+    }
+  }
+
+  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
+  function initTwikooBody() {
+    var commentBox = document.getElementById('tcomments');
+    if (!commentBox) return;
+    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
+    var pinger = new Promise(function(resolve){
+      var timer = setTimeout(function(){ resolve(false); }, 5000);
+      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
+        .then(function(){ clearTimeout(timer); resolve(true); })
+        .catch(function(){ clearTimeout(timer); resolve(false); });
+    });
+    pinger.then(function(ok){
+      if (!ok) {
+        commentBox.innerHTML =
+          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
+            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
+            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
+          '</div>';
+        return;
+      }
+      function waitTwikoo(){
+        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
+        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
+          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
+      }
+      waitTwikoo();
+    });
+  }
+  // 留言板:立即初始化;文章页:等用户点展开按钮
+  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
 })();
 </script>
   <!-- hexo injector body_end end --></body>
