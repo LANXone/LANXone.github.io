@@ -157,7 +157,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">C++开发笔记</a> <a href="/tags/OpenGL/" style="font-size: 15px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 15px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 20px;">学习规划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 10px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a>
+      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">C++开发笔记</a> <a href="/tags/OpenGL/" style="font-size: 13.33px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 13.33px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 16.67px;">学习规划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 10px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a>
     </div>
   </div>
 
@@ -179,6 +179,10 @@
       <ul>
         
           <li>
+            <a href="/2026/10/08/%E5%93%88%E5%B8%8C%E8%A1%A8-%E8%B5%8E%E9%87%91%E4%BF%A1/">哈希表:赎金信</a>
+          </li>
+        
+          <li>
             <a href="/2026/10/06/%E6%99%BA%E8%83%BD%E5%B0%8F%E8%BD%A6%E4%B8%8E%E4%BB%93%E5%82%A8%E6%96%B9%E6%A1%88/">智能小车与仓储方案</a>
           </li>
         
@@ -192,10 +196,6 @@
         
           <li>
             <a href="/2026/10/02/OpenGL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-SpaceBunny%E6%A8%A1%E5%9E%8B%E7%89%88/">OpenGL环境配置:SpaceBunny模型版</a>
-          </li>
-        
-          <li>
-            <a href="/2026/09/30/%E4%B8%BA%E4%BB%80%E4%B9%88%E7%9F%AD%E7%9F%AD%E5%87%A0%E8%A1%8CC-%E7%A8%8B%E5%BA%8F%E4%BC%9A%E6%9C%892-3MB%E8%BF%99%E4%B9%88%E5%A4%A7/">为什么短短几行C++程序会有2~3MB这么大?</a>
           </li>
         
       </ul>
@@ -290,6 +290,152 @@
 
 <!-- 不蒜子:站点总 PV/UV -->
 <script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
+  
+<style>
+  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
+  .lanx-sidebar-sticky {
+    display: flex; flex-direction: column; gap: 12px;
+    margin: 0 0 50px 0;
+    width: 100%;
+  }
+
+  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
+  .lanx-card {
+    box-sizing: border-box; width: 100%;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid #e8e8e8; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    font-size: 12px; color: #666; text-align: center;
+    line-height: 1.6; user-select: none;
+    transition: box-shadow 0.2s ease;
+  }
+  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+
+  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
+  .lanx-clock .clock-time {
+    font-size: 36px; font-weight: 700; color: #1a365d;
+    font-variant-numeric: tabular-nums; letter-spacing: 1px;
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
+      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
+      "Courier New", monospace;
+  }
+  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
+  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
+
+  /* 语录 */
+  .lanx-quote .quote-body {
+    font-size: 13px; color: #444; line-height: 1.75;
+    text-align: left; padding: 2px 0;
+  }
+  .lanx-quote .quote-meta {
+    font-size: 11px; color: #999; margin-top: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
+  .lanx-quote .quote-author { color: #888; }
+  .lanx-quote .quote-type {
+    font-size: 10px; padding: 1px 8px; border-radius: 10px;
+    background: #f0f0f0; color: #888;
+  }
+  .lanx-quote .quote-refresh {
+    cursor: pointer; padding: 2px 6px; border-radius: 4px;
+    color: #aaa; transition: all 0.2s;
+  }
+  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
+  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
+
+  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
+  @media (max-width: 767px) {
+    .lanx-sidebar-sticky { display: none; }
+    .lanx-sidebar-sticky.lanx-mobile-only {
+      display: flex; margin: 50px 0; width: 100%;
+    }
+  }
+</style>
+
+<script>
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    var sidebar = document.querySelector('#sidebar');
+    if (!sidebar) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'lanx-sidebar-sticky';
+
+    var weekdays = ['日','一','二','三','四','五','六'];
+
+    // 检测是否手机端(与 CSS 媒体查询断点一致)
+    var isMobile = window.innerWidth < 768;
+
+    // 时钟(上)
+    var clock = document.createElement('div');
+    clock.className = 'lanx-card lanx-clock';
+    clock.innerHTML =
+      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
+      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
+      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
+    wrap.appendChild(clock);
+
+    // 语录(下)
+    var quote = document.createElement('div');
+    quote.className = 'lanx-card lanx-quote';
+    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
+    wrap.appendChild(quote);
+
+    if (isMobile) {
+      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
+      wrap.classList.add('lanx-mobile-only');
+      sidebar.appendChild(wrap);
+    } else {
+      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
+      sidebar.insertBefore(wrap, sidebar.firstChild);
+      var firstInner = document.querySelector('article .article-inner');
+      if (firstInner) {
+        wrap.style.marginTop =
+          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
+      }
+    }
+
+    // 时钟
+    function tick(){
+      var d = new Date();
+      var p = function(n){ return n<10?'0'+n:n; };
+      document.getElementById('lanx_clock_time').textContent =
+        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+      document.getElementById('lanx_clock_date').textContent =
+        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
+      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
+    function loadQuotes(){
+      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
+        show(window.LANX_EXCERPTS);
+        return;
+      }
+      fetch('/excerpts.json')
+        .then(function(r){ return r.json(); })
+        .then(function(d){ show(d||[]); })
+        .catch(function(){ show([]); });
+    }
+    loadQuotes();
+    function show(data){
+      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
+      var it = data[Math.floor(Math.random()*data.length)];
+      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
+      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
+      quote.innerHTML =
+        '<div class="quote-body">'+it.content+'</div>' +
+        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
+        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
+      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
+    }
+  }, 500);
+});
+</script>
   
 <style>
   #lanx-chess-root {
@@ -2206,152 +2352,6 @@ function undo(){
 
   mount();
 })();
-</script>
-  
-<style>
-  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
-  .lanx-sidebar-sticky {
-    display: flex; flex-direction: column; gap: 12px;
-    margin: 0 0 50px 0;
-    width: 100%;
-  }
-
-  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
-  .lanx-card {
-    box-sizing: border-box; width: 100%;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.94);
-    border: 1px solid #e8e8e8; border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    font-size: 12px; color: #666; text-align: center;
-    line-height: 1.6; user-select: none;
-    transition: box-shadow 0.2s ease;
-  }
-  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
-
-  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
-  .lanx-clock .clock-time {
-    font-size: 36px; font-weight: 700; color: #1a365d;
-    font-variant-numeric: tabular-nums; letter-spacing: 1px;
-    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
-      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
-      "Courier New", monospace;
-  }
-  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
-  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
-
-  /* 语录 */
-  .lanx-quote .quote-body {
-    font-size: 13px; color: #444; line-height: 1.75;
-    text-align: left; padding: 2px 0;
-  }
-  .lanx-quote .quote-meta {
-    font-size: 11px; color: #999; margin-top: 8px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
-  .lanx-quote .quote-author { color: #888; }
-  .lanx-quote .quote-type {
-    font-size: 10px; padding: 1px 8px; border-radius: 10px;
-    background: #f0f0f0; color: #888;
-  }
-  .lanx-quote .quote-refresh {
-    cursor: pointer; padding: 2px 6px; border-radius: 4px;
-    color: #aaa; transition: all 0.2s;
-  }
-  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
-  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
-
-  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
-  @media (max-width: 767px) {
-    .lanx-sidebar-sticky { display: none; }
-    .lanx-sidebar-sticky.lanx-mobile-only {
-      display: flex; margin: 50px 0; width: 100%;
-    }
-  }
-</style>
-
-<script>
-window.addEventListener('load', function(){
-  setTimeout(function(){
-    var sidebar = document.querySelector('#sidebar');
-    if (!sidebar) return;
-
-    var wrap = document.createElement('div');
-    wrap.className = 'lanx-sidebar-sticky';
-
-    var weekdays = ['日','一','二','三','四','五','六'];
-
-    // 检测是否手机端(与 CSS 媒体查询断点一致)
-    var isMobile = window.innerWidth < 768;
-
-    // 时钟(上)
-    var clock = document.createElement('div');
-    clock.className = 'lanx-card lanx-clock';
-    clock.innerHTML =
-      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
-      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
-      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
-    wrap.appendChild(clock);
-
-    // 语录(下)
-    var quote = document.createElement('div');
-    quote.className = 'lanx-card lanx-quote';
-    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
-    wrap.appendChild(quote);
-
-    if (isMobile) {
-      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
-      wrap.classList.add('lanx-mobile-only');
-      sidebar.appendChild(wrap);
-    } else {
-      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
-      sidebar.insertBefore(wrap, sidebar.firstChild);
-      var firstInner = document.querySelector('article .article-inner');
-      if (firstInner) {
-        wrap.style.marginTop =
-          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
-      }
-    }
-
-    // 时钟
-    function tick(){
-      var d = new Date();
-      var p = function(n){ return n<10?'0'+n:n; };
-      document.getElementById('lanx_clock_time').textContent =
-        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
-      document.getElementById('lanx_clock_date').textContent =
-        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
-      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
-    }
-    tick();
-    setInterval(tick, 1000);
-
-    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
-    function loadQuotes(){
-      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
-        show(window.LANX_EXCERPTS);
-        return;
-      }
-      fetch('/excerpts.json')
-        .then(function(r){ return r.json(); })
-        .then(function(d){ show(d||[]); })
-        .catch(function(){ show([]); });
-    }
-    loadQuotes();
-    function show(data){
-      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
-      var it = data[Math.floor(Math.random()*data.length)];
-      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
-      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
-      quote.innerHTML =
-        '<div class="quote-body">'+it.content+'</div>' +
-        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
-        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
-      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
-    }
-  }, 500);
-});
 </script>
   
 <!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->

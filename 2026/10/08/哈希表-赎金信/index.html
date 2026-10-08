@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   
   
-  <title>链表环检测:快慢指针和数学的重要性 | LANXone的博客</title>
+  <title>哈希表:赎金信 | LANXone的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="LeetCode 142.环形链表Ⅱ 解题感悟 题目描述 给定一个链表的头节点 head，返回链表开始入环的第一个节点。如果链表无环，则返回 null。  不允许修改链表。  代码（C++ 快慢指针解法） 12345678910111213141516171819202122class Solution &#123;public:    ListNode *detectCycle(ListNode">
+  <meta name="description" content="383. 赎金信 —— 计数型哈希表的入门课  题目：给两个字符串 randomNote 和 magazine，判断 randomNote 能不能由 magazine 里的字符构成。 magazine 中的每个字符只能在 randomNote 中使用一次。   一、我的解法复盘（双数组计数） 思路 用两个长度为 26 的数组，分别统计「信」和「杂志」里每个字母出现的次数，然后逐位比较：  如果信里">
 <meta property="og:type" content="article">
-<meta property="og:title" content="链表环检测:快慢指针和数学的重要性">
-<meta property="og:url" content="http://example.com/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/index.html">
+<meta property="og:title" content="哈希表:赎金信">
+<meta property="og:url" content="http://example.com/2026/10/08/%E5%93%88%E5%B8%8C%E8%A1%A8-%E8%B5%8E%E9%87%91%E4%BF%A1/index.html">
 <meta property="og:site_name" content="LANXone的博客">
-<meta property="og:description" content="LeetCode 142.环形链表Ⅱ 解题感悟 题目描述 给定一个链表的头节点 head，返回链表开始入环的第一个节点。如果链表无环，则返回 null。  不允许修改链表。  代码（C++ 快慢指针解法） 12345678910111213141516171819202122class Solution &#123;public:    ListNode *detectCycle(ListNode">
+<meta property="og:description" content="383. 赎金信 —— 计数型哈希表的入门课  题目：给两个字符串 randomNote 和 magazine，判断 randomNote 能不能由 magazine 里的字符构成。 magazine 中的每个字符只能在 randomNote 中使用一次。   一、我的解法复盘（双数组计数） 思路 用两个长度为 26 的数组，分别统计「信」和「杂志」里每个字母出现的次数，然后逐位比较：  如果信里">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-09-22T03:50:37.000Z">
-<meta property="article:modified_time" content="2026-09-22T04:59:50.267Z">
+<meta property="article:published_time" content="2026-10-08T02:01:33.000Z">
+<meta property="article:modified_time" content="2026-10-08T02:03:08.434Z">
 <meta property="article:author" content="LANXone">
 <meta property="article:tag" content="算法感悟">
 <meta name="twitter:card" content="summary">
@@ -80,10 +80,10 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-链表环检测-快慢指针和数学的重要性" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-哈希表-赎金信" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/" class="article-date">
-  <time class="dt-published" datetime="2026-09-22T03:50:37.000Z" itemprop="datePublished">2026-09-22</time>
+    <a href="/2026/10/08/%E5%93%88%E5%B8%8C%E8%A1%A8-%E8%B5%8E%E9%87%91%E4%BF%A1/" class="article-date">
+  <time class="dt-published" datetime="2026-10-08T02:01:33.000Z" itemprop="datePublished">2026-10-08</time>
 </a>
     
   </div>
@@ -94,7 +94,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      链表环检测:快慢指针和数学的重要性
+      哈希表:赎金信
     </h1>
   
 
@@ -102,60 +102,275 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h1>LeetCode 142.环形链表Ⅱ 解题感悟</h1>
-<h2 id="题目描述">题目描述</h2>
-<p>给定一个链表的头节点 <code>head</code>，返回链表开始入环的第一个节点。如果链表无环，则返回 <code>null</code>。</p>
+        <h1>383. 赎金信 —— 计数型哈希表的入门课</h1>
 <blockquote>
-<p>不允许修改链表。</p>
+<p>题目：给两个字符串 <code>randomNote</code> 和 <code>magazine</code>，判断 <code>randomNote</code> 能不能由 <code>magazine</code> 里的字符构成。<br>
+<code>magazine</code> 中的每个字符只能在 <code>randomNote</code> 中使用一次。</p>
 </blockquote>
-<h2 id="代码（C-快慢指针解法）">代码（C++ 快慢指针解法）</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">ListNode *<span class="title">detectCycle</span><span class="params">(ListNode *head)</span> </span>&#123;</span><br><span class="line">        ListNode* fast = head;</span><br><span class="line">        ListNode* slow = head;</span><br><span class="line">        <span class="keyword">while</span>(fast != <span class="literal">NULL</span> &amp;&amp; fast-&gt;next != <span class="literal">NULL</span>)&#123;</span><br><span class="line">            slow = slow-&gt;next;</span><br><span class="line">            fast = fast-&gt;next-&gt;next;</span><br><span class="line">            <span class="keyword">if</span>(slow == fast)&#123;</span><br><span class="line">                <span class="comment">// 相遇后，一个指针从头，一个从相遇点同步走，交点就是环入口</span></span><br><span class="line">                ListNode* in1 = head;</span><br><span class="line">                ListNode* in2 = slow;</span><br><span class="line">                <span class="keyword">while</span>(in1 != in2)&#123;</span><br><span class="line">                    in1= in1-&gt;next;</span><br><span class="line">                    in2= in2-&gt;next;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> in1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="解题感悟">解题感悟</h2>
-<p>这题主要考察对双指针方法的熟练运用。有环的情况下快慢两指针迟早会相遇，所以单单判断<strong>是否存在环</strong>是很简单的。</p>
-<h3 id="只检测链表是否存在环的简化代码">只检测链表是否存在环的简化代码</h3>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">hasCycle</span><span class="params">(ListNode *head)</span> </span>&#123;</span><br><span class="line">    ListNode* fast = head;</span><br><span class="line">    ListNode* slow = head;</span><br><span class="line">    <span class="keyword">while</span>(fast != <span class="literal">nullptr</span> &amp;&amp; fast-&gt;next != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        slow = slow-&gt;next;</span><br><span class="line">        fast = fast-&gt;next-&gt;next;</span><br><span class="line">        <span class="keyword">if</span>(slow == fast) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>但是要找到<strong>环的入口节点</strong>就比较困难，需要一定的数学推导。数学可以说是从小学到大，但是真正到了需要运用的时候却总是想不到要用。其实很多时候提出问题比解决问题困难。</p>
-</blockquote>
-<h3 id="本题数学思路推导">本题数学思路推导</h3>
-<p>设：</p>
+<hr>
+<h2 id="一、我的解法复盘（双数组计数）">一、我的解法复盘（双数组计数）</h2>
+<h3 id="思路">思路</h3>
+<p>用两个长度为 26 的数组，分别统计「信」和「杂志」里每个字母出现的次数，然后逐位比较：</p>
 <ul>
-<li>
-<p>链表头节点到环入口的距离：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">L</span></span></span></span></p>
-</li>
-<li>
-<p>环入口到快慢指针相遇点距离：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">x</span></span></span></span></p>
-</li>
-<li>
-<p>环的总长度：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>C</mi></mrow><annotation encoding="application/x-tex">C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.07153em;">C</span></span></span></span></p>
-</li>
+<li>如果信里某个字母的需求量 &gt; 杂志里的供给量 → <code>false</code></li>
+<li>26 位全部满足 → <code>true</code></li>
 </ul>
-<p>慢指针走过距离：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mrow><mi>s</mi><mi>l</mi><mi>o</mi><mi>w</mi></mrow></msub><mo>=</mo><mi>L</mi><mo>+</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">S_{slow}=L+x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.05764em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">s</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mord mathit">o</span><span class="mord mathit" style="margin-right:0.02691em;">w</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">L</span><span class="mbin">+</span><span class="mord mathit">x</span></span></span></span><br>
-快指针速度是慢指针 2 倍，所以快指针走过距离：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mrow><mi>f</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub><mo>=</mo><mi>L</mi><mo>+</mo><mi>x</mi><mo>+</mo><mi>n</mi><mi>C</mi></mrow><annotation encoding="application/x-tex">S_{fast}=L+x+nC</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.05764em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.10764em;">f</span><span class="mord mathit">a</span><span class="mord mathit">s</span><span class="mord mathit">t</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">L</span><span class="mbin">+</span><span class="mord mathit">x</span><span class="mbin">+</span><span class="mord mathit">n</span><span class="mord mathit" style="margin-right:0.07153em;">C</span></span></span></span>（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">n</span></span></span></span> 代表快指针在环内多跑的圈数，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mo>≥</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n\ge1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.78041em;vertical-align:-0.13597em;"></span><span class="base textstyle uncramped"><span class="mord mathit">n</span><span class="mrel">≥</span><span class="mord mathrm">1</span></span></span></span>）</p>
-<p>由 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mrow><mi>f</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub><mo>=</mo><mn>2</mn><mo>×</mo><msub><mi>S</mi><mrow><mi>s</mi><mi>l</mi><mi>o</mi><mi>w</mi></mrow></msub></mrow><annotation encoding="application/x-tex">S_{fast}=2\times S_{slow}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.05764em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.10764em;">f</span><span class="mord mathit">a</span><span class="mord mathit">s</span><span class="mord mathit">t</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathrm">2</span><span class="mbin">×</span><span class="mord"><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.05764em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">s</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mord mathit">o</span><span class="mord mathit" style="margin-right:0.02691em;">w</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>：</p>
-<p>化简得到：</p>
-<p>这个式子含义：<strong>头节点到环入口的距离 L，等于相遇点继续往前走 n 圈，到达环入口的距离</strong>。</p>
-<p>所以当快慢指针相遇之后：</p>
-<ol>
-<li>
-<p>一个指针从链表头 <code>head</code> 出发</p>
-</li>
-<li>
-<p><strong>另一个指针从相遇点出发<br>
-两个指针保持相同速度，他们一定会在环入口相遇。</strong></p>
-</li>
-</ol>
-<h2 id="总结">总结</h2>
-<p>不要把编程里的数学要求想得太简单。很多算法题本质是数学题，需要把数学模型转化成代码逻辑。<br>
-同时考虑到计算机的运算能力，很多暴力解法虽然直观，但时间复杂度高，在笔试、面试场景是无法通过的。暴力思路可以用来辅助理解，但想要高效解题，还是要挖掘问题背后的数学性质。</p>
+<h3 id="代码">代码</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">canConstruct</span><span class="params">(string ransomNote, string magazine)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">letter1</span><span class="params">(<span class="number">26</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">letter2</span><span class="params">(<span class="number">26</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">char</span> a : ransomNote) &#123;</span><br><span class="line">            letter1[a - <span class="string">&#x27;a&#x27;</span>]++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">char</span> b : magazine) &#123;</span><br><span class="line">            letter2[b - <span class="string">&#x27;a&#x27;</span>]++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (letter1[i] &gt; letter2[i]) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="正确性说明">正确性说明</h3>
+<p>这题的关键约束是「每个字符<strong>只能用一次</strong>」，所以判断的不是「集合是否包含」，而是「<strong>频次是否够</strong>」。<br>
+<code>letter1[i] &lt;= letter2[i]</code> 对所有 i 成立 ⟺ 信里任意字母的出现次数都不超过杂志供给 ⟺ 可构造。</p>
+<h3 id="复杂度">复杂度</h3>
+<p>设 n = <code>ransomNote</code> 长度，m = <code>magazine</code> 长度。</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>复杂度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>时间</td>
+<td><strong>O(n + m)</strong></td>
+<td>两次单层遍历 + 26 次比较，26 是常数</td>
+</tr>
+<tr>
+<td>空间</td>
+<td><strong>O(1)</strong></td>
+<td>两个固定长度 26 的数组，与输入规模无关</td>
+</tr>
+</tbody>
+</table>
+<h3 id="优点与可改进处">优点与可改进处</h3>
+<table>
+<thead>
+<tr>
+<th>做法</th>
+<th>评价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>排序后双指针 O(n log n)</td>
+<td>能做，但要排序，浪费</td>
+</tr>
+<tr>
+<td>每次 <code>find</code> 单个字符 O(n·m)</td>
+<td>暴力，慢</td>
+</tr>
+<tr>
+<td>双数组计数 O(n+m)</td>
+<td>✅ 正确且最优量级</td>
+</tr>
+<tr>
+<td><strong>单数组差分</strong></td>
+<td>⭐ 同为 O(n+m)，空间再省一半，代码更短</td>
+</tr>
+</tbody>
+</table>
+<p><strong>一个小细节</strong>：可以先加一条 <code>if (ransomNote.size() &gt; magazine.size()) return false;</code> 的剪枝，<br>
+长度都不够时直接返回，能省掉后面两次遍历（虽然复杂度不变，但常数很可观）。</p>
+<hr>
+<h2 id="二、进阶优化：一个数组-负值检测">二、进阶优化：一个数组 + 负值检测</h2>
+<p>「两个数组比较」可以合并成「一个数组做加减」：</p>
+<ul>
+<li>遍历 <code>randomNote</code>：对应位置 <code>+1</code>（需求）</li>
+<li>遍历 <code>magazine</code>：对应位置 <code>-1</code>（供给）</li>
+<li>最后只要存在某一位 <strong>&gt; 0</strong>，说明需求没被填平 → <code>false</code></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">canConstruct</span><span class="params">(string ransomNote, string magazine)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (ransomNote.<span class="built_in">size</span>() &gt; magazine.<span class="built_in">size</span>()) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> cnt[<span class="number">26</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">char</span> c : ransomNote) ++cnt[c - <span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">char</span> c : magazine) --cnt[c - <span class="string">&#x27;a&#x27;</span>];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (cnt[i] &gt; <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>（注：部分内容可能由 AI 生成）</p>
+<p>更进一步的「边扫边判」版本：遍历 magazine 时，每消耗一个字符就 <code>cnt--</code>，若某字符被消耗到负数立刻 <code>return false</code><br>
+（需要额外记录需求量，或先把 <code>randomNote</code> 的 cnt 记下来后靠 <code>magazine.size() - i</code> 判断）。这个写法能在 O(m) 就返回，<br>
+但可读性下降，面试中先把上面的版本写清楚更好。</p>
 </blockquote>
+<hr>
+<h2 id="三、边界与易错点">三、边界与易错点</h2>
+<ol>
+<li><strong>值域假设</strong>：<code>c - 'a'</code> 依赖「只含小写字母」。若含大写/空格/中文，需要扩展：
+<ul>
+<li>题目限定 <code>a~z</code>：直接用 <code>int[26]</code></li>
+<li>只知是 ASCII：<code>int[128]</code>，索引用 <code>(int)c</code></li>
+<li>字符集不固定（如 Unicode）：改用 <code>unordered_map&lt;char, int&gt;</code>，这才是「哈希表」的本体形态</li>
+</ul>
+</li>
+<li><strong>不能只判子集</strong>：用 <code>set</code> 判「信里的字符都在杂志里」会漏掉重复情况。<br>
+例：<code>ransomNote = &quot;aa&quot;</code>, <code>magazine = &quot;ab&quot;</code> → 集合判断会误判为 <code>true</code>，正确答案是 <code>false</code>。</li>
+<li><strong>不能用 <code>bitset</code></strong>：<code>bitset&lt;26&gt;</code> 同样丢失了频次信息，是错误的。</li>
+<li><strong>长度剪枝</strong>：<code>ransomNote.size() &gt; magazine.size()</code> 直接返回 false。</li>
+<li><strong>溢出</strong>：计数最大 10^5，<code>int</code> 足够，无需 <code>long long</code>。</li>
+<li><strong>是否原地改参数</strong>：<code>string</code> 是值传递，改它不影响调用方，安全；但若要追求极致性能，可用 <code>const string&amp;</code> 避免拷贝（本题按值传参是因为函数签名要求）。</li>
+</ol>
+<hr>
+<h2 id="四、哈希表的实际意义：空间换时间">四、哈希表的实际意义：空间换时间</h2>
+<p>这题是「计数型哈希表」最纯粹的例子，把它讲透，比记 10 道题更有价值。</p>
+<h3 id="4-1-三种做法的代价对比">4.1 三种做法的代价对比</h3>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>时间</th>
+<th>额外空间</th>
+<th>本质</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>双指针 + 找字符 <code>string::find</code></td>
+<td>O(n·m)</td>
+<td>O(1)</td>
+<td>用时间换空间（最坏）</td>
+</tr>
+<tr>
+<td>排序 + 归并比较</td>
+<td>O(n log n + m log m)</td>
+<td>O(log n) 栈</td>
+<td>用空间换时间（排序本身就是）</td>
+</tr>
+<tr>
+<td><strong>频次数组</strong></td>
+<td><strong>O(n + m)</strong></td>
+<td><strong>O(1) 固定 26 格</strong></td>
+<td><strong>用「一点」空间把查找降到 O(1)</strong></td>
+</tr>
+</tbody>
+</table>
+<p>关键在于：字符集只有 26 种可能，<strong>状态空间极小</strong>，所以哪怕只是开一个定长数组（哈希表的退化形态），<br>
+也能把「查某个字符还有没有」从 O(字符集长度) 降到 O(1)。</p>
+<blockquote>
+<p>这就是哈希表的本质：<strong>用额外的存储空间换取 O(1) 的定位能力</strong>，把「比较」从「反复扫描」变成「一次索引」。</p>
+</blockquote>
+<h3 id="4-2-什么时候该上哈希表">4.2 什么时候该上哈希表</h3>
+<ul>
+<li>✅ 值域小、且需要频繁 O(1) 查存在性 / 计频次（字符、数字、bool 状态）</li>
+<li>✅ 需要去重、分组、找重复（计数 + 遍历）</li>
+<li>✅ 想免掉排序的 O(n log n)（计数排序、桶排序的基数排序）</li>
+<li>✅ 滑动窗口里的「窗口内各字符还差几个」（配合 cnt 数组）</li>
+<li>❌ 值域极大（如 10^9 的用户 ID）且只查少量次 → 排序 / 二分更省内存</li>
+<li>❌ 内存极紧 → 定长数组 / 位图更省</li>
+</ul>
+<h3 id="4-3-同类题里的复用">4.3 同类题里的复用</h3>
+<table>
+<thead>
+<tr>
+<th>题目</th>
+<th>哈希表在这里的角色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>242 有效的字母异位词</td>
+<td>频次完全相等，是本题的「加强版」</td>
+</tr>
+<tr>
+<td>49 字母异位词分组</td>
+<td>用「排序后的字符串」或「26 位计数元组」当 key，<strong>哈希表 + 计数</strong></td>
+</tr>
+<tr>
+<td>205 同构字符串</td>
+<td>双向映射哈希表（两个方向都要查），比计数更进一步</td>
+</tr>
+<tr>
+<td>387 字符串中第一个唯一字符</td>
+<td>只记出现一次的 key</td>
+</tr>
+<tr>
+<td>451 根据数字字符频率排序</td>
+<td>桶（哈希思想 + 排序思想）</td>
+</tr>
+<tr>
+<td>76 最小覆盖子串</td>
+<td>计数数组 + 滑动窗口，本题的大哥</td>
+</tr>
+<tr>
+<td>1 两数之和</td>
+<td>哈希表把 O(n) 查找压成 O(1)，是它的核心</td>
+</tr>
+<tr>
+<td>49/128 最长连续序列</td>
+<td>哈希表把 O(n log n) 压成 O(n)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="五、可复用的「频次差分」模板">五、可复用的「频次差分」模板</h2>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 适用：只需判断「A 的需求是否被 B 满足」的所有变体</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">canCover</span><span class="params">(<span class="type">const</span> string&amp; A, <span class="type">const</span> string&amp; B)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (A.<span class="built_in">size</span>() &gt; B.<span class="built_in">size</span>()) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="type">int</span> cnt[<span class="number">26</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">char</span> c : A) ++cnt[c - <span class="string">&#x27;a&#x27;</span>];   <span class="comment">// 需求</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">char</span> c : B) --cnt[c - <span class="string">&#x27;a&#x27;</span>];   <span class="comment">// 供给</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; i++) <span class="keyword">if</span> (cnt[i] &gt; <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>变体只需改一处判断：</p>
+<table>
+<thead>
+<tr>
+<th>变体</th>
+<th>最后的判断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>包含关系（本题）</td>
+<td>存在 <code>&gt; 0</code> → false</td>
+</tr>
+<tr>
+<td>完全相等（242）</td>
+<td>存在 <code>!= 0</code> → false</td>
+</tr>
+<tr>
+<td>杂志字符无限用（1394）</td>
+<td>不需要统计次数，<code>set</code> 判断子集即可</td>
+</tr>
+<tr>
+<td>magazine 不能用（290）</td>
+<td>存在 <code>&gt;= 0</code> → false</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="六、复杂度速查">六、复杂度速查</h2>
+<table>
+<thead>
+<tr>
+<th>题</th>
+<th>时间</th>
+<th>空间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>双数组计数</td>
+<td>O(n + m)</td>
+<td>O(1)（2×26）</td>
+</tr>
+<tr>
+<td>单数组差分</td>
+<td>O(n + m)</td>
+<td>O(1)（1×26）</td>
+</tr>
+<tr>
+<td>排序比较</td>
+<td>O(n log n + m log m)</td>
+<td>O(log n)</td>
+</tr>
+<tr>
+<td><code>unordered_map</code> 版</td>
+<td>O(n + m) 均摊</td>
+<td>O(k)，k 为字符种类数</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="七、复盘要点（下次遇到同类题怎么想）">七、复盘要点（下次遇到同类题怎么想）</h2>
+<ol>
+<li><strong>先看值域</strong>：题目限定小写字母 → 直接想到定长数组；字符集不定 → 才需要 <code>unordered_map</code>。</li>
+<li><strong>看清约束是「存在」还是「次数够」</strong>：这题是次数够，所以必须计数，set / bitset 都不行。</li>
+<li><strong>两段统计可以合并</strong>：单数组做加减，最后统一判残留，省一半空间、也少一次遍历逻辑。</li>
+<li><strong>哈希表的收益公式</strong>：当 <code>值域 K ≪ 输入规模 n</code> 且「查找」出现 <code>m</code> 次时，<br>
+哈希表把 O(n·K) 或 O(n log K) 降到 O(n + m)，代价是 O(K) 空间。判断该不该用，就套这个公式。</li>
+</ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/22/%E9%93%BE%E8%A1%A8%E7%8E%AF%E6%A3%80%E6%B5%8B-%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E5%AD%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/" data-id="cmuxx7c3q000zqcmahnpn5tck" data-title="链表环检测:快慢指针和数学的重要性" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="http://example.com/2026/10/08/%E5%93%88%E5%B8%8C%E8%A1%A8-%E8%B5%8E%E9%87%91%E4%BF%A1/" data-id="cmuyw71sc0000hgma1c416odk" data-title="哈希表:赎金信" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -167,19 +382,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2026/09/22/Hexo/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">前一篇</strong>
-      <div class="article-nav-title">
-        
-          Hexo?
-        
-      </div>
-    </a>
   
-  
-    <a href="/2026/09/20/CSAPP%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%BC%AB%E6%B8%B8/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2026/10/06/%E6%99%BA%E8%83%BD%E5%B0%8F%E8%BD%A6%E4%B8%8E%E4%BB%93%E5%82%A8%E6%96%B9%E6%A1%88/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">后一篇</strong>
-      <div class="article-nav-title">CSAPP读书笔记：计算机漫游</div>
+      <div class="article-nav-title">智能小车与仓储方案</div>
     </a>
   
 </nav>
