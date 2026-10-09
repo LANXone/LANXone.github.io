@@ -4,17 +4,19 @@
   <meta charset="utf-8">
   
   
-  <title>归档: 2026/10 | LANXone的博客</title>
+  <title>C++开发日志:SDL环境配置与C++程序的编译过程 | LANXone的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="记录我的学习和心路历程">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LANXone的博客">
-<meta property="og:url" content="http://example.com/archives/2026/10/index.html">
+  <meta name="description" content="C++ 编译环境从零搭建（不用 IDE）  目标：亲手把 C++ 编译跑通一次，然后理解背后每一步在干什么。 环境：Windows + MinGW-w64 (GCC)。示例：Hello.cpp 全程只用：文本编辑器 + 命令行。   🏁 第 0 页：30 秒速通（赶时间只看这页） 1234567# ① 下载（选对变体，见第 2 页）#    → https:&#x2F;&#x2F;winlibs.com&#x2F;  下载">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++开发日志:SDL环境配置与C++程序的编译过程">
+<meta property="og:url" content="http://example.com/2026/10/09/C++%E4%BB%8E%E9%9B%B6%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91%E4%B8%8E%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83-%E5%AE%8C%E5%85%A8%E4%B8%8D%E4%BD%BF%E7%94%A8IDE/index.html">
 <meta property="og:site_name" content="LANXone的博客">
-<meta property="og:description" content="记录我的学习和心路历程">
+<meta property="og:description" content="C++ 编译环境从零搭建（不用 IDE）  目标：亲手把 C++ 编译跑通一次，然后理解背后每一步在干什么。 环境：Windows + MinGW-w64 (GCC)。示例：Hello.cpp 全程只用：文本编辑器 + 命令行。   🏁 第 0 页：30 秒速通（赶时间只看这页） 1234567# ① 下载（选对变体，见第 2 页）#    → https:&#x2F;&#x2F;winlibs.com&#x2F;  下载">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-09T15:44:21.000Z">
+<meta property="article:modified_time" content="2026-10-09T15:56:23.434Z">
 <meta property="article:author" content="LANXone">
-<meta property="article:tag" content="编程,游戏,算法练习与感悟">
+<meta property="article:tag" content="C++开发笔记">
 <meta name="twitter:card" content="summary">
   
   
@@ -78,191 +80,1502 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2026" class="archive-year">2026</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/10/09/C++%E4%BB%8E%E9%9B%B6%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91%E4%B8%8E%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83-%E5%AE%8C%E5%85%A8%E4%B8%8D%E4%BD%BF%E7%94%A8IDE/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-10-09T15:44:21.000Z" itemprop="datePublished">10月 9</time>
+        <section id="main"><article id="post-C++从零配置编译与运行环境-完全不使用IDE" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/09/C++%E4%BB%8E%E9%9B%B6%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91%E4%B8%8E%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83-%E5%AE%8C%E5%85%A8%E4%B8%8D%E4%BD%BF%E7%94%A8IDE/" class="article-date">
+  <time class="dt-published" datetime="2026-10-09T15:44:21.000Z" itemprop="datePublished">2026-10-09</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/10/09/C++%E4%BB%8E%E9%9B%B6%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91%E4%B8%8E%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83-%E5%AE%8C%E5%85%A8%E4%B8%8D%E4%BD%BF%E7%94%A8IDE/">C++开发日志:SDL环境配置与C++程序的编译过程</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      C++开发日志:SDL环境配置与C++程序的编译过程
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/10/09/%E6%97%A0IDE%E9%93%BE%E6%8E%A5%E5%A4%96%E9%83%A8%E5%BA%93%E5%AE%9E%E6%88%98-%E4%BB%A5SDL%E4%B8%BA%E4%BE%8B/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-10-09T15:44:21.000Z" itemprop="datePublished">10月 9</time>
-</a>
+    <div class="e-content article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/10/09/%E6%97%A0IDE%E9%93%BE%E6%8E%A5%E5%A4%96%E9%83%A8%E5%BA%93%E5%AE%9E%E6%88%98-%E4%BB%A5SDL%E4%B8%BA%E4%BE%8B/">C++开发日志:C++程序怎么连接外部库文件</a>
-    </h1>
-  
+        <h1>C++ 编译环境从零搭建（不用 IDE）</h1>
+<blockquote>
+<p>目标：<strong>亲手把 C++ 编译跑通一次，然后理解背后每一步在干什么。</strong><br>
+环境：Windows + MinGW-w64 (GCC)。示例：<code>Hello.cpp</code><br>
+全程只用：<strong>文本编辑器</strong> + <strong>命令行</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="🏁-第-0-页：30-秒速通（赶时间只看这页）">🏁 第 0 页：30 秒速通（赶时间只看这页）</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ① 下载（选对变体，见第 2 页）</span></span><br><span class="line"><span class="comment">#    → https://winlibs.com/  下载 MinGW-w64 x86_64 release-posix-seh ucrt rt_v12.zip</span></span><br><span class="line"><span class="comment"># ② 解压到无空格、无中文的路径，假设是 C:\mingw64</span></span><br><span class="line"><span class="comment"># ③ 把 C:\mingw64\bin 加到「用户环境变量」的 Path 里，然后【重开终端】</span></span><br><span class="line"><span class="comment"># ④ 写文件 Hello.cpp</span></span><br><span class="line">g++ -std=c++20 -O2 -Wall -Wextra -o hello.exe Hello.cpp</span><br><span class="line">./hello.exe</span><br></pre></td></tr></table></figure>
+<p>验证成功标志：终端打印 <code>Hello, World!</code></p>
+<p>如果报错 → 直接跳到 <strong>第 8 页 错误速查表</strong>。</p>
+<hr>
+<h2 id="🧠-第-1-页：一张图看懂编译">🧠 第 1 页：一张图看懂编译</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Hello.cpp</span><br><span class="line">   │</span><br><span class="line">   │ ①预处理   把 #include 的头文件贴进来，展开 #define 宏</span><br><span class="line">   ↓</span><br><span class="line">Hello.i</span><br><span class="line">   │</span><br><span class="line">   │ ②编译     C++ 语法 → 汇编；同时做语法/类型检查</span><br><span class="line">   ↓</span><br><span class="line">Hello.s</span><br><span class="line">   │</span><br><span class="line">   │ ③汇编     汇编 → 机器码</span><br><span class="line">   ↓</span><br><span class="line">Hello.o  ──────────────┐</span><br><span class="line">                       │ ④链接：ld 把你的 .o 和库拼成 exe</span><br><span class="line">libstdc++.a / libgcc.a │</span><br><span class="line">win32 系统库 ───────────┘</span><br><span class="line">                       ↓</span><br><span class="line">                   hello.exe</span><br></pre></td></tr></table></figure>
+<p><strong>三个必须记住的认知：</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>认知</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>g++</code> 只是个<strong>调度器</strong>，自己什么都不干</td>
+<td>它按你的参数依次调用 <code>cpp</code> → <code>cc1plus</code> → <code>as</code> → <code>ld</code>。用 <code>g++ -v</code> 你能亲眼看到</td>
+</tr>
+<tr>
+<td>2</td>
+<td>编译器只认<strong>文件</strong>，不认&quot;工程&quot;</td>
+<td>IDE 帮你做的事 = 写好参数 + 调 g++ + 把产物放好。你手写命令行，一点没损失</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>编译期</strong>环境和<strong>运行期</strong>环境是两批文件</td>
+<td>头文件/库文件是编译期；DLL 是运行期。混淆这点是&quot;我机器上能跑、拷给别人就崩&quot;的根源</td>
+</tr>
+</tbody>
+</table>
+<h3 id="编译期-vs-运行期，需要哪些东西">编译期 vs 运行期，需要哪些东西</h3>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>需要</th>
+<th>缺了会怎样</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>编译期</td>
+<td>编译器 + 头文件(<code>.h</code>) + 库文件(<code>.a</code>/<code>.lib</code>)</td>
+<td><code>fatal error: xxx.h: No such file</code> 或 <code>cannot find -lfoo</code></td>
+</tr>
+<tr>
+<td>运行期</td>
+<td>DLL（动态链接时）+ 运行时</td>
+<td>双击弹窗&quot;找不到 xxx.dll&quot;</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="📦-第-2-页：下载-MinGW（选对版本）">📦 第 2 页：下载 MinGW（选对版本）</h2>
+<h3 id="为什么需要它">为什么需要它</h3>
+<p>Windows 自带没有 C++ 编译器。要编译就得装一个工具链。GNU 这一套叫 <strong>MinGW</strong>（微软自己那套叫 MSVC，两者的库<strong>不能混用</strong>）。</p>
+<h3 id="两种分发方式，选哪个">两种分发方式，选哪个</h3>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>是什么</th>
+<th>选它吗</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>WinLibs 独立 zip</strong></td>
+<td>一个 zip，解压即用，像绿色软件</td>
+<td>✅ <strong>本文用这个</strong>，零概念负担</td>
+</tr>
+<tr>
+<td>MSYS2</td>
+<td>包管理器 + Unix 环境</td>
+<td>以后要装很多库时用（见第二篇）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="下载步骤">下载步骤</h3>
+<ol>
+<li>打开 <a target="_blank" rel="noopener" href="https://winlibs.com/">https://winlibs.com/</a></li>
+<li>找 <strong>UCRT runtime</strong> 那一组（版本越新越好，如 GCC 14.x / 15.x）</li>
+<li>文件名长这样，认准四个片段：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MinGW-w64 x86_64 release-posix-seh ucrt rt_v12.zip</span><br><span class="line">               │        │        │      └ ABI 版本（新版编译器才有）</span><br><span class="line">               │        │        └ 用 Win10+ 的 UCRT（Win7 已淘汰）</span><br><span class="line">               │        └ 线程模型：posix = 支持 &lt;thread&gt; ✅ 必须选</span><br><span class="line">               └ 目标 64 位</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>片段</th>
+<th>该选什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x86_64</code></td>
+<td>✅ 64 位</td>
+</tr>
+<tr>
+<td><strong><code>posix</code></strong></td>
+<td>✅ <strong>必须</strong>。老的 <code>win32</code> 变体不支持 C++ 多线程</td>
+</tr>
+<tr>
+<td><code>seh</code></td>
+<td>✅ 异常用 Windows 原生机制，比 <code>sjlj</code> 好</td>
+</tr>
+<tr>
+<td><code>ucrt</code></td>
+<td>✅ 新运行时</td>
+</tr>
+<tr>
+<td><s><code>llvm</code></s> / <s><code>dwarf</code></s></td>
+<td>❌ 那是 LLVM 后端，命令变成 <code>clang++</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="❌-别下错">❌ 别下错</h3>
+<table>
+<thead>
+<tr>
+<th>错误选择</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MSYS2 的 <code>.sfx.exe</code> 安装包</td>
+<td>不是本文路线</td>
+</tr>
+<tr>
+<td>名字带 <code>llvm</code></td>
+<td>命令是 <code>clang++</code>，不是本文目标</td>
+</tr>
+<tr>
+<td>SourceForge 上的 MinGW 3.x（2011 年）</td>
+<td>C++11 之后特性大面积缺失</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>下载慢的话：搜 &quot;winlibs 镜像&quot;，或用 GitHub <code>niXman/mingw-builds-binaries</code> 的 Releases。</p>
+</blockquote>
+<hr>
+<h2 id="📂-第-3-页：解压与放置">📂 第 3 页：解压与放置</h2>
+<h3 id="解压">解压</h3>
+<p>用 7-Zip 右键 → <code>解压到 ...\mingw64\</code>。<strong>解压后应该直接看到 <code>bin</code> <code>lib</code> <code>include</code> 这几个文件夹</strong>（不是再多套一层）。</p>
+<h3 id="放在哪：三条硬性要求">放在哪：三条硬性要求</h3>
+<table>
+<thead>
+<tr>
+<th>要求</th>
+<th>原因</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>① 路径无空格</strong></td>
+<td>链接器遇到空格路径会报<strong>不显示文件名</strong>的诡异错误，甚至内部崩溃</td>
+<td>✅ <code>C:\mingw64</code><br>❌ <code>C:\Program Files\MinGW</code></td>
+</tr>
+<tr>
+<td><strong>② 有完全写权限</strong></td>
+<td>某些生成操作会失败</td>
+<td>❌ 不要放 <code>C:\Windows\</code></td>
+</tr>
+<tr>
+<td><strong>③ 尽量短</strong></td>
+<td>超过 260 字符触发 MAX_PATH，查找库失败</td>
+<td><code>C:\tools\mingw64</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="解压后长这样">解压后长这样</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">C:\mingw64\</span><br><span class="line">├── bin\      ← ★ g++.exe gcc.exe gdb.exe ld.exe as.exe ar.exe 都在这</span><br><span class="line">├── lib\      ← 静态库 .a / 导入库 .dll.a</span><br><span class="line">├── include\  ← 头文件 .h</span><br><span class="line">├── libexec\  ← ★ cc1plus.exe（真正的编译器核心）</span><br><span class="line">└── share\</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>⚠️ 遇到 <code>fatal error: cc1plus.exe: No such file or directory</code>？<br>
+这个报错很傻，它说的<strong>它自己</strong>找不到了。原因几乎只有三个：路径太深 / 杀毒软件隔离了 / 解压不完整。<br>
+解决：加白名单 + 重新完整解压到 <code>C:\mingw64</code>。</p>
+</blockquote>
+<hr>
+<h2 id="⚙️-第-4-页：配置-PATH">⚙️ 第 4 页：配置 PATH</h2>
+<h3 id="PATH-是干什么的">PATH 是干什么的</h3>
+<p>你在终端敲 <code>g++</code>，系统不知道它在哪，于是<strong>按顺序翻 PATH 里的每个目录</strong>找 <code>g++.exe</code>。找不到就报：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x27;g++&#x27; 不是内部或外部命令，也不是可运行的程序或批处理文件。</span><br></pre></td></tr></table></figure>
+<p>所以要加的是 <strong><code>C:\mingw64\bin</code></strong>（不是 MinGW 根目录）。</p>
+<h3 id="图形界面配置（一次搞定）">图形界面配置（一次搞定）</h3>
+<ol>
+<li><code>Win</code> 键 → 搜 <strong><code>环境变量</code></strong> → 「编辑系统环境变量」→ 「环境变量」</li>
+<li>上半部分「<strong>用户变量</strong>」里找到 <code>Path</code> → 双击 → 「新建」（或直接编辑已有项）</li>
+<li>变量名 <code>Path</code>，变量值 <code>C:\mingw64\bin</code>（有其他内容就加一行，别覆盖）</li>
+<li>确定</li>
+</ol>
+<blockquote>
+<p><strong>为什么用用户变量不用系统变量？</strong><br>
+用户变量：只对你生效、不需管理员权限、改错无风险 → ✅ 首选<br>
+系统变量：全机器共享、要管理员权限 → 不必要</p>
+</blockquote>
+<blockquote>
+<p>⚠️ <strong>改完必须关掉所有已开的终端重开</strong>。PATH 只在新进程生效，VS Code 内置终端也要重开窗口。</p>
+</blockquote>
+<h3 id="验证-处理冲突">验证 + 处理冲突</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">where</span> g++          <span class="comment"># CMD / PowerShell</span></span><br><span class="line"><span class="built_in">which</span> g++          <span class="comment"># Git Bash</span></span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>输出</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\mingw64\bin\g++.exe</code>（一个）</td>
+<td>✅ 完美</td>
+</tr>
+<tr>
+<td>多个路径</td>
+<td>⚠️ 有别的编译器在抢，把 MinGW 的 bin 移到<strong>用户变量 Path 最前面</strong></td>
+</tr>
+<tr>
+<td>找不到</td>
+<td>❌ PATH 没配好，或终端没重开</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>装过 Visual Studio 时常见这问题：VS 的编译器也在 PATH 里。用 <code>where g++</code> 看谁在前面，把 MinGW 排到前面即可。</p>
+</blockquote>
+<h3 id="一个重要提醒">一个重要提醒</h3>
+<blockquote>
+<p>MinGW 编的 exe 需要 MinGW 的几个 DLL；MSVC 编的 exe 需要 VC++ 运行库。<br>
+<strong>&quot;我装了 VS 所以我的 MinGW 程序一定能跑&quot;是错的</strong>，反之亦然。</p>
+</blockquote>
+<hr>
+<h2 id="✅-第-5-页：验证安装（5-条命令）">✅ 第 5 页：验证安装（5 条命令）</h2>
+<p>打开<strong>新</strong>终端，逐条执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">g++ --version                    <span class="comment"># ① 有版本号，且含 (x86_64-w64-mingw32)</span></span><br><span class="line">g++ -dumpmachine                 <span class="comment"># ② 输出 x86_64-w64-mingw32</span></span><br><span class="line">g++ -print-prog-name=cc1plus     <span class="comment"># ③ 输出一个真实存在的路径</span></span><br><span class="line">g++ -print-search-dirs           <span class="comment"># ④ 列出所有库搜索路径（存着，以后排查用）</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;int main()&#123;&#125;&#x27;</span> &gt; t.cpp &amp;&amp; g++ t.cpp -o t.exe &amp;&amp; ./t.exe   <span class="comment"># ⑤ 不报错</span></span><br></pre></td></tr></table></figure>
+<h3 id="强烈建议：亲眼看一次-透明化">强烈建议：亲眼看一次&quot;透明化&quot;</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -v Hello.cpp -o hello.exe</span><br></pre></td></tr></table></figure>
+<p>你会看到 g++ 逐条调用内部工具：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/mingw64/bin/.../cc1plus.exe -quiet ... -o hello.s      ← 编译器核心</span><br><span class="line">cc1plus.exe: 输出 hello.s</span><br><span class="line">/mingw64/bin/.../as.exe --64 -o hello.o hello.s          ← 汇编器</span><br><span class="line">as.exe: 输出 hello.o</span><br><span class="line">/mingw64/bin/.../ld.exe -o hello.exe ...                ← 链接器</span><br><span class="line">ld.exe: 输出 hello.exe</span><br></pre></td></tr></table></figure>
+<p><strong>看懂这一屏，你就真的懂编译了。</strong> 后面所有报错都能定位到具体环节。</p>
+<p>想手动分步执行（结果完全等价）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">g++ -E Hello.cpp -o Hello.i    <span class="comment"># 预处理 → 文件膨胀到几 MB</span></span><br><span class="line">g++ -S Hello.i -o Hello.s      <span class="comment"># 编译 → 生成汇编，可直接阅读</span></span><br><span class="line">g++ -c Hello.s -o Hello.o      <span class="comment"># 汇编 → 目标文件</span></span><br><span class="line">g++ Hello.o -o hello.exe       <span class="comment"># 链接 → 可执行文件</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="✍️-第-6-页：写第一个程序">✍️ 第 6 页：写第一个程序</h2>
+<h3 id="编辑器用什么（都不是-IDE）">编辑器用什么（都不是 IDE）</h3>
+<table>
+<thead>
+<tr>
+<th>编辑器</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>记事本</td>
+<td>零门槛</td>
+</tr>
+<tr>
+<td><strong>VS Code</strong></td>
+<td>严格说是<strong>编辑器</strong>不是编译器，你还是在终端敲 g++。本文推荐</td>
+</tr>
+<tr>
+<td>Notepad++</td>
+<td>轻量</td>
+</tr>
+<tr>
+<td>vim / nano</td>
+<td>Git Bash 终端里直接编辑</td>
+</tr>
+</tbody>
+</table>
+<h3 id="⚠️-保存编码必须是-UTF-8-无-BOM">⚠️ 保存编码必须是 UTF-8 无 BOM</h3>
+<p>这是隐形杀手：BOM 会被当成文件开头的垃圾字符，报 <code>stray '\357' in program</code>，<strong>或者第一行多输出一个乱码字符</strong>。</p>
+<p>VS Code：右下角点编码名 → <code>Save with Encoding</code> → <strong><code>UTF-8</code></strong>（注意不是 <code>UTF-8 with BOM</code>）</p>
+<h3 id="Hello-cpp">Hello.cpp</h3>
+<p>新建 <code>Hello.cpp</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span>     <span class="comment">// 引入标准输入输出库（预处理指令：把头文件内容贴到这里）</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;            <span class="comment">// 程序入口，OS 从这里开始执行</span></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Hello, World!\n&quot;</span>;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;My first C++ program.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;           <span class="comment">// 返回 0 = 一切正常</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>四个要点：</strong></p>
+<table>
+<thead>
+<tr>
+<th>写法</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>#include &lt;xxx.h&gt;</code></td>
+<td>尖括号：先找<strong>系统</strong>头文件目录</td>
+</tr>
+<tr>
+<td><code>#include &quot;xxx.h&quot;</code></td>
+<td>引号：先找<strong>当前文件所在目录</strong></td>
+</tr>
+<tr>
+<td><code>std::</code></td>
+<td><code>namespace std</code>（标准库命名空间）的缩写</td>
+</tr>
+<tr>
+<td><code>;</code></td>
+<td>语句必须以分号结束 —— <strong>新手最高频错误来源</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>写法</th>
+<th>区别</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\n</code></td>
+<td>换行</td>
+</tr>
+<tr>
+<td><code>std::endl</code></td>
+<td>换行 + 强制刷新缓冲区（大量输出用 <code>\n</code>，报错信息用 <code>endl</code>）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="🔧-第-7-页：编译命令详解">🔧 第 7 页：编译命令详解</h2>
+<h3 id="最简-日常标准命令">最简 &amp; 日常标准命令</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 最简</span></span><br><span class="line">g++ Hello.cpp -o hello.exe</span><br><span class="line"></span><br><span class="line"><span class="comment"># ★ 日常标准（90% 的时间用这条）</span></span><br><span class="line">g++ -std=c++20 -O2 -Wall -Wextra -g -o hello.exe Hello.cpp</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+<th>为什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-std=c++20</code></td>
+<td>语言标准</td>
+<td>不写则用很老的默认值，<code>for (auto&amp; x : v)</code>、智能指针会报错</td>
+</tr>
+<tr>
+<td><code>-O2</code></td>
+<td>优化</td>
+<td>发布用。<strong>调试必须换成 <code>-O0</code></strong></td>
+</tr>
+<tr>
+<td><code>-Wall</code> <code>-Wextra</code></td>
+<td>警告</td>
+<td>不是错误，但每条都在提醒你有坑</td>
+</tr>
+<tr>
+<td><code>-g</code></td>
+<td>调试信息</td>
+<td><strong>没有它 gdb 里看不到变量名和源码行号</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="编译并运行（一条龙）">编译并运行（一条龙）</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Git Bash / Linux / macOS</span></span><br><span class="line">g++ -std=c++20 -g -o hello.exe Hello.cpp &amp;&amp; ./hello.exe</span><br><span class="line"></span><br><span class="line"><span class="comment"># PowerShell</span></span><br><span class="line">g++ -std=c++20 -g -o hello.exe Hello.cpp; <span class="keyword">if</span> (<span class="variable">$LASTEXITCODE</span> -eq 0) &#123; .\hello.exe &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># CMD</span></span><br><span class="line">g++ -std=c++20 -g -o hello.exe Hello.cpp &amp;&amp; hello.exe</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>💡 <strong>用 <code>&amp;&amp;</code> 不用 <code>;</code></strong> —— <code>&amp;&amp;</code> 是&quot;前一条成功才执行后一条&quot;。<br>
+用 <code>;</code> 会在编译失败时去运行上次的旧 exe，这是新手常见的困惑来源。</p>
+</blockquote>
+<h3 id="std-怎么选"><code>-std=</code> 怎么选</h3>
+<table>
+<thead>
+<tr>
+<th>标准</th>
+<th>状态</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C++11</td>
+<td>成熟</td>
+<td>保底（老库只支持到这）</td>
+</tr>
+<tr>
+<td>C++17</td>
+<td>主流</td>
+<td>✅ <strong>兼容性最好，第三方库支持最全</strong></td>
+</tr>
+<tr>
+<td>C++20</td>
+<td>主流</td>
+<td>✅ <strong>新项目推荐</strong>（ranges、<code>format</code>、协程）</td>
+</tr>
+<tr>
+<td>C++23</td>
+<td>逐步落地</td>
+<td>尝鲜</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-std=c++17    <span class="comment"># 最保险</span></span><br><span class="line">-std=c++20    <span class="comment"># 推荐</span></span><br><span class="line">-std=gnu++17  <span class="comment"># 带 gnu = 允许 GCC 扩展（第三方头文件有时需要）</span></span><br></pre></td></tr></table></figure>
+<h3 id="其他常用选项">其他常用选项</h3>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>选项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>警告</strong></td>
+<td><code>-Wshadow</code> <code>-pedantic</code></td>
+<td>变量遮蔽 / 严格按标准</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-Werror</code></td>
+<td>把警告当错误（严格项目用）</td>
+</tr>
+<tr>
+<td><strong>调试</strong></td>
+<td><code>-O0</code> <code>-g3</code> <code>-ggdb</code></td>
+<td>不优化 / 更多调试信息 / GDB 格式</td>
+</tr>
+<tr>
+<td><strong>产物</strong></td>
+<td><code>-c</code> <code>-S</code> <code>-E</code></td>
+<td>只编译 / 只到汇编 / 只预处理</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-M</code> <code>-MM</code> <code>-MD</code></td>
+<td>输出头文件依赖关系（增量编译用）</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-save-temps</code></td>
+<td><strong>保留 <code>.i</code> <code>.s</code> <code>.o</code> 中间产物</strong>（排查各阶段问题的救命开关）</td>
+</tr>
+<tr>
+<td><strong>静态链接</strong></td>
+<td><code>-static-libgcc -static-libstdc++</code></td>
+<td>✅ <strong>强烈推荐</strong>，见下</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-static</code></td>
+<td>全静态（exe 20-60MB，但什么环境都能跑）</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-s</code></td>
+<td>剥离符号表</td>
+</tr>
+<tr>
+<td><strong>字符集</strong></td>
+<td><code>-finput-charset=UTF-8</code> <code>-fexec-charset=UTF-8</code></td>
+<td>中文输出相关</td>
+</tr>
+<tr>
+<td><strong>多文件</strong></td>
+<td><code>-I</code> <code>-L</code> <code>-l</code></td>
+<td>见第二篇</td>
+</tr>
+<tr>
+<td><strong>其他</strong></td>
+<td><code>-pthread</code> <code>-rdynamic</code> <code>-lm</code></td>
+<td>线程 / 导出符号 / 数学库</td>
+</tr>
+</tbody>
+</table>
+<h3 id="🌟-C-程序分发的黄金配方">🌟 C++ 程序分发的黄金配方</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -std=c++20 -O2 -static-libgcc -static-libstdc++ -o app.exe main.cpp</span><br></pre></td></tr></table></figure>
+<p>这样 exe <strong>不需要</strong> <code>libstdc++-6.dll</code>、<code>libgcc_s_seh-1.dll</code>、<code>libwinpthread-1.dll</code>，<strong>拷给任何装了 Windows 的电脑都能直接跑</strong>。代价是体积大几 MB。绝大多数人不知道这个技巧。</p>
+<hr>
+<h2 id="📚-第-8-页：编译选项完整清单（收藏）">📚 第 8 页：编译选项完整清单（收藏）</h2>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>选项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>语言</strong></td>
+<td><code>-std=c++17</code> / <code>c++20</code> / <code>gnu++17</code></td>
+<td>语言标准</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-fno-exceptions</code></td>
+<td>禁异常（减小体积，代价：不能 try/catch）</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-fno-rtti</code></td>
+<td>禁 RTTI（减小体积，代价：不能 <code>dynamic_cast</code>）</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-pedantic</code></td>
+<td>严格按标准报警告</td>
+</tr>
+<tr>
+<td><strong>警告</strong></td>
+<td><code>-Wall</code> <code>-Wextra</code></td>
+<td>常用警告（建议常开）</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-Wshadow</code> <code>-Wconversion</code></td>
+<td>变量遮蔽 / 隐式类型转换</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-Werror</code> <code>-Wno-error=&lt;x&gt;</code></td>
+<td>警告当错误 / 放宽某类</td>
+</tr>
+<tr>
+<td><strong>优化</strong></td>
+<td><code>-O0</code></td>
+<td>不优化，<strong>调试必须</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><code>-O1</code> <code>-O2</code> <code>-O3</code></td>
+<td>各级优化，<strong>-O2 是标准档</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><code>-Os</code> <code>-Oz</code></td>
+<td>面向体积</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-march=native</code></td>
+<td>针对当前 CPU —— ⚠️ 分发慎用，换机器可能跑不了</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-Ofast</code></td>
+<td>放宽浮点标准，不建议</td>
+</tr>
+<tr>
+<td><strong>调试</strong></td>
+<td><code>-g</code> <code>-g3</code> <code>-ggdb</code></td>
+<td>调试信息（<code>-g3</code> 含宏）</td>
+</tr>
+<tr>
+<td><strong>产物</strong></td>
+<td><code>-o &lt;file&gt;</code></td>
+<td>输出文件名（不写则 Windows 得 <code>a.exe</code>）</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-c</code> <code>-S</code> <code>-E</code></td>
+<td>编译到 .o / .s / .i 就停</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-save-temps</code></td>
+<td>保留中间产物</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-M</code> <code>-MM</code> <code>-MMD</code></td>
+<td>头文件依赖 / 生成 .d 文件</td>
+</tr>
+<tr>
+<td><strong>搜索</strong></td>
+<td><code>-I&lt;dir&gt;</code></td>
+<td><strong>头文件</strong>搜索目录</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-D&lt;name&gt;[=v]</code></td>
+<td>预定义宏，如 <code>-DDEBUG</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>-L&lt;dir&gt;</code> <code>-l&lt;name&gt;</code></td>
+<td><strong>库文件</strong>搜索目录 / 链接名为 name 的库</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-Wl,&lt;opt&gt;</code></td>
+<td>传给链接器，如 <code>-Wl,-rpath,/opt/lib</code></td>
+</tr>
+<tr>
+<td><strong>链接</strong></td>
+<td><code>-static</code></td>
+<td>全静态</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-static-libgcc</code></td>
+<td>✅ 只静态 GCC 运行时（推荐）</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-static-libstdc++</code></td>
+<td>✅ 只静态 C++ 标准库（推荐）</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-shared</code></td>
+<td>生成动态库</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-pthread</code></td>
+<td>线程库（GCC13+ 已默认）</td>
+</tr>
+<tr>
+<td><strong>字符集</strong></td>
+<td><code>-finput-charset=UTF-8</code></td>
+<td>源文件是 UTF-8</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-fexec-charset=UTF-8</code></td>
+<td>输出字符常量用 UTF-8</td>
+</tr>
+<tr>
+<td></td>
+<td><code>-finput-charset=GBK</code></td>
+<td>源文件是 GBK（老项目）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="📂-第-9-页：多文件项目">📂 第 9 页：多文件项目</h2>
+<h3 id="三种文件的角色">三种文件的角色</h3>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>内容</th>
+<th>怎么用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.h</code> / <code>.hpp</code></td>
+<td><strong>头文件</strong>：声明（有什么）</td>
+<td>不单独编译</td>
+</tr>
+<tr>
+<td><code>.cpp</code></td>
+<td><strong>源文件</strong>：定义（是什么）</td>
+<td>编译成 <code>.o</code></td>
+</tr>
+<tr>
+<td><code>.a</code> / <code>.lib</code></td>
+<td><strong>库</strong>：一堆 <code>.o</code> 打包</td>
+<td>链接时用</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>一个 exe 只能有一个 <code>main</code></strong>。有多个会报<br>
+<code>multiple definition of 'main'</code>（Windows 上是 <code>LNK1169: entry point symbol ... defined in multiple objects</code>）</p>
+</blockquote>
+<h3 id="三种链接方式">三种链接方式</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ① 一次搞定（小项目）</span></span><br><span class="line">g++ -std=c++20 -O2 -o app.exe main.cpp MathUtils.cpp StringUtils.cpp</span><br><span class="line"></span><br><span class="line"><span class="comment"># ② 先各自编译再链接（清晰，能观察每一步；IDE 背后就是这么干的）</span></span><br><span class="line">g++ -c main.cpp      -o main.o</span><br><span class="line">g++ -c MathUtils.cpp -o MathUtils.o</span><br><span class="line">g++ main.o MathUtils.o -o app.exe</span><br><span class="line"></span><br><span class="line"><span class="comment"># ③ 打静态库再链接（大型项目标准做法）</span></span><br><span class="line">ar rcs libmyutils.a MathUtils.o StringUtils.o    <span class="comment"># s 必须有！建符号索引</span></span><br><span class="line">g++ main.o -L. -lmyutils -o app.exe</span><br></pre></td></tr></table></figure>
+<h3 id="完整分文件示例">完整分文件示例</h3>
+<p><strong><code>src/MathUtils.h</code></strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once                       <span class="comment">// 等价于老式 #ifndef 三行，现代推荐直接写</span></span></span><br><span class="line"><span class="keyword">namespace</span> mymath &#123;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">add</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong><code>src/MathUtils.cpp</code></strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;MathUtils.h&quot;</span>             <span class="comment">// ✅ 包含自己的头文件 —— 编译器帮你检查声明/定义一致</span></span></span><br><span class="line"><span class="keyword">namespace</span> mymath &#123;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">add</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a + b; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong><code>src/main.cpp</code></strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;MathUtils.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;sum = &quot;</span> &lt;&lt; mymath::<span class="built_in">add</span>(<span class="number">1</span>, <span class="number">2</span>) &lt;&lt; <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p build</span><br><span class="line">g++ -std=c++17 -O2 -Wall -Wextra -c src/MathUtils.cpp -o build/MathUtils.o</span><br><span class="line">g++ -std=c++17 -O2 -Wall -Wextra -c src/main.cpp      -o build/main.o</span><br><span class="line">g++ build/main.o build/MathUtils.o -o build/app.exe</span><br><span class="line">./build/app.exe</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>💡 把 <code>build/</code> 和 <code>src/</code> 分开。这样清理产物直接删整个目录，不用小心翼翼挑文件。</p>
+</blockquote>
+<h3 id="其他常用写法">其他常用写法</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">g++ -std=c++20 -O2 -o app.exe src/*.cpp          <span class="comment"># 一次编译 src 下所有 cpp</span></span><br><span class="line">ar t libmyutils.a                                  <span class="comment"># 列出库里有哪些 .o</span></span><br><span class="line">nm libmyutils.a | grep -i add                     <span class="comment"># 找符号</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="🐛-第-10-页：gdb-调试（不用-IDE）">🐛 第 10 页：gdb 调试（不用 IDE）</h2>
+<h3 id="编译时必须-g-O0">编译时必须 <code>-g -O0</code></h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -std=c++17 -g -O0 -o app_dbg.exe main.cpp</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-g</code> 写入调试信息（变量名、类型、源码行号）</li>
+<li><code>-O0</code> 不优化 —— <strong>开了 <code>-O2</code> 变量会被优化掉、断点漂移、单步跳行</strong>，gdb 会看到一堆 <code>&lt;optimized out&gt;</code></li>
+</ul>
+<h3 id="启动">启动</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gdb ./app_dbg.exe</span><br><span class="line">gdb --args ./app_dbg.exe arg1 arg2        <span class="comment"># 带命令行参数</span></span><br></pre></td></tr></table></figure>
+<h3 id="核心命令（打印贴显示器上）">核心命令（打印贴显示器上）</h3>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>运行</strong></td>
+<td><code>run</code>/<code>r</code> 启动 · <code>start</code> 停在 main 第一行 · <code>continue</code>/<code>c</code> 继续 · <code>next</code>/<code>n</code> 下一行（不进函数）· <code>step</code>/<code>s</code> 下一行（进函数）· <code>finish</code>/<code>fin</code> 函数返回 · <code>until</code>/<code>u</code> 跳到下一行</td>
+</tr>
+<tr>
+<td><strong>断点</strong></td>
+<td><code>break main</code> 在函数 · <code>break 42</code> 在行号 · <code>break f.cpp:42</code> 文件+行号 · <code>tbreak</code> 临时断点 · <code>condition 1 i&gt;3</code> 条件断点 · <code>ignore 1 5</code> 跳过前5次 · <code>disable 1</code>/<code>enable 1</code>/<code>delete 1</code>/<code>delete</code> · <code>info breakpoints</code> 查看</td>
+</tr>
+<tr>
+<td><strong>看数据</strong></td>
+<td><code>print x</code>/<code>p x</code> · <code>p arr[3]</code> · <code>p *ptr</code> · <code>p sizeof(int)</code> · <code>p &amp;x</code> 地址 · <code>p/x i</code> 十六进制 · <code>info locals</code> 所有局部变量 · <code>info args</code> 参数 · <code>info variables</code> 全局变量 · <code>ptype int</code> 类型详情</td>
+</tr>
+<tr>
+<td><strong>调用栈</strong></td>
+<td><code>backtrace</code>/<code>bt</code> <strong>打印调用栈</strong>（崩溃分析第一步）· <code>bt full</code> 带变量 · <code>frame</code>/<code>f &lt;n&gt;</code> 切栈帧 · <code>up</code>/<code>down</code> 移动栈帧</td>
+</tr>
+<tr>
+<td><strong>源码</strong></td>
+<td><code>list</code>/<code>l</code> 列源码 · <code>list 20</code> 第20行附近</td>
+</tr>
+<tr>
+<td><strong>调用函数</strong></td>
+<td><code>print mymath::add(1,2)</code> 在调试器里直接调</td>
+</tr>
+<tr>
+<td><strong>其他</strong></td>
+<td><code>shell &lt;命令&gt;</code> 执行终端命令 · <code>set args a b</code> 设参数 · <code>help &lt;cmd&gt;</code> 帮助</td>
+</tr>
+</tbody>
+</table>
+<h3 id="崩溃排查三连">崩溃排查三连</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(gdb) bt              <span class="comment"># ① 看调用栈</span></span><br><span class="line">(gdb) frame 0         <span class="comment"># ② 切到出问题那一层</span></span><br><span class="line">(gdb) info locals      <span class="comment"># ③ 看这一层的变量</span></span><br></pre></td></tr></table></figure>
+<p><strong>这三步能解决绝大多数问题。</strong> 比事后分析 core dump 高效得多。</p>
+<h3 id="示例">示例</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Bug.cpp</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">divide</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a / b; &#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::vector&lt;<span class="type">int</span>&gt; v = &#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>&#125;;</span><br><span class="line">    <span class="type">int</span> i = <span class="number">5</span>;</span><br><span class="line">    std::cout &lt;&lt; v[i] &lt;&lt; <span class="string">&quot;\n&quot;</span>;       <span class="comment">// 越界</span></span><br><span class="line">    std::cout &lt;&lt; <span class="built_in">divide</span>(<span class="number">10</span>, <span class="number">0</span>) &lt;&lt; <span class="string">&quot;\n&quot;</span>;  <span class="comment">// 除零</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">g++ -std=c++17 -g -O0 -o bug.exe Bug.cpp</span><br><span class="line">gdb ./bug.exe</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(gdb) break main</span><br><span class="line">(gdb) run</span><br><span class="line">(gdb) next</span><br><span class="line">(gdb) next</span><br><span class="line">(gdb) print i</span><br><span class="line">$1 = 5</span><br><span class="line">(gdb) print v.size()</span><br><span class="line">$2 = 3          ← 发现 i=5 但只有 3 个元素，越界</span><br><span class="line">(gdb) bt         ← 崩溃后看这里</span><br><span class="line">(gdb) quit</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="📦-第-11-页：静态链接（生成能拷走的-exe）">📦 第 11 页：静态链接（生成能拷走的 exe）</h2>
+<h3 id="静态-vs-动态">静态 vs 动态</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>链接时发生什么</th>
+<th>运行时依赖</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>静态</strong> <code>.a</code></td>
+<td>库代码<strong>整体拷进你的 exe</strong></td>
+<td>无</td>
+</tr>
+<tr>
+<td><strong>动态</strong> <code>.dll</code> + 导入库 <code>.dll.a</code></td>
+<td><strong>只记录&quot;函数在 DLL 的什么位置&quot;</strong>（导入库只有几十 KB 符号表）</td>
+<td>必须有那个 DLL</td>
+</tr>
+</tbody>
+</table>
+<p>MinGW 预置的动态版本：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">libstdc++.dll.a      ← 导入库（几十 KB，只含符号表）</span><br><span class="line">libstdc++-6.dll      ← 真 DLL（~2-3 MB，分发时必须带上）</span><br><span class="line">libgcc.a / libgcc_s_seh-1.dll / libwinpthread-1.dll</span><br></pre></td></tr></table></figure>
+<h3 id="三种静态化程度">三种静态化程度</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ① 完全静态 —— exe 20-60MB，但最干净，什么环境都能跑</span></span><br><span class="line">g++ -std=c++20 -O2 -static -o app.exe main.cpp</span><br><span class="line"></span><br><span class="line"><span class="comment"># ② 只静态 GCC 运行时 —— ★ 实用之选</span></span><br><span class="line">g++ -std=c++20 -O2 -static-libgcc -static-libstdc++ -o app.exe main.cpp</span><br><span class="line"></span><br><span class="line"><span class="comment"># ③ 全动态 —— exe 最小，但必须带 dll</span></span><br><span class="line">g++ -std=c++20 -O2 -o app.exe main.cpp</span><br></pre></td></tr></table></figure>
+<h3 id="检查依赖">检查依赖</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objdump -p app.exe | grep <span class="string">&quot;DLL Name&quot;</span>    <span class="comment"># 看依赖哪些 dll</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>日常用 ②，交付关键场景用 ①。</strong></p>
+</blockquote>
+<h3 id="static-的坑"><code>-static</code> 的坑</h3>
+<p><code>-static</code> 不是万能药：</p>
+<table>
+<thead>
+<tr>
+<th>报错</th>
+<th>加这个</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>undefined reference to 'pthread_create'</code></td>
+<td><code>-pthread</code></td>
+</tr>
+<tr>
+<td><code>undefined reference to &lt;某系统函数&gt;</code></td>
+<td>对应系统库，如 <code>-lws2_32</code>（网络）<code>-ladvapi32</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ 全静态 + <code>&lt;thread&gt;</code>：确保你装的是 <strong>posix</strong> 变体的 MinGW（win32 变体不支持）。</p>
+</blockquote>
+<hr>
+<h2 id="🛠-第-12-页：Makefile-与脚本">🛠 第 12 页：Makefile 与脚本</h2>
+<h3 id="为什么需要-Makefile">为什么需要 Makefile</h3>
+<p>手敲 <code>g++ a.cpp b.cpp ...</code> 的痛点：改一个文件要全部重编译 / 忘了 <code>-Wall</code> / 命令没人能维护。<br>
+Makefile = 用纯文本描述构建规则。Windows 上由 MinGW 提供 <code>mingw32-make.exe</code>。</p>
+<h3 id="最小可用-Makefile">最小可用 Makefile</h3>
+<p>项目根目录建 <code>Makefile</code>（<strong>首字母大写、无扩展名</strong>）：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">CXX      := g++</span><br><span class="line">CXXFLAGS := -std=c++20 -Wall -Wextra -O2</span><br><span class="line">LDFLAGS  := -static-libgcc -static-libstdc++</span><br><span class="line"></span><br><span class="line">SRCDIR   := src</span><br><span class="line">BUILDDIR := build</span><br><span class="line">TARGET   := <span class="variable">$(BUILDDIR)</span>/app</span><br><span class="line"></span><br><span class="line">SRCS := <span class="variable">$(<span class="built_in">wildcard</span> <span class="variable">$(SRCDIR)</span>/*.cpp)</span></span><br><span class="line">OBJS := <span class="variable">$(<span class="built_in">patsubst</span> <span class="variable">$(SRCDIR)</span>/%.cpp,<span class="variable">$(BUILDDIR)</span>/%.o,<span class="variable">$(SRCS)</span>)</span></span><br><span class="line">DEPS := $(OBJS:.o=.d)</span><br><span class="line"></span><br><span class="line"><span class="variable">$(BUILDDIR)</span>/%.o: <span class="variable">$(SRCDIR)</span>/%.cpp | <span class="variable">$(BUILDDIR)</span></span><br><span class="line">	<span class="variable">$(CXX)</span> <span class="variable">$(CXXFLAGS)</span> -MMD -MP -c <span class="variable">$&lt;</span> -o <span class="variable">$@</span>     ← ⚠️ 必须是真 Tab！</span><br><span class="line"></span><br><span class="line"><span class="variable">$(TARGET)</span>: <span class="variable">$(OBJS)</span></span><br><span class="line">	<span class="variable">$(CXX)</span> <span class="variable">$(OBJS)</span> <span class="variable">$(LDFLAGS)</span> -o <span class="variable">$@</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$(BUILDDIR)</span>:</span><br><span class="line">	mkdir -p <span class="variable">$(BUILDDIR)</span></span><br><span class="line"></span><br><span class="line"><span class="section">run: <span class="variable">$(TARGET)</span></span></span><br><span class="line">	./<span class="variable">$(TARGET)</span></span><br><span class="line"></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	rm -rf <span class="variable">$(BUILDDIR)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">-include</span> <span class="variable">$(DEPS)</span></span><br><span class="line"><span class="meta"><span class="keyword">.PHONY</span>: all run clean</span></span><br><span class="line"><span class="section">all: <span class="variable">$(TARGET)</span></span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>⚠️ <strong>Makefile 铁律：命令行必须用真 Tab，且是行首第一个字符。</strong><br>
+这是 90% 的失败原因。VS Code 装 &quot;Makefile&quot; 扩展并关掉 <code>insertSpaces</code>。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mingw32-make          <span class="comment"># 或 make</span></span><br><span class="line">mingw32-make run      <span class="comment"># 编译并运行</span></span><br><span class="line">mingw32-make clean</span><br><span class="line">mingw32-make -j8      <span class="comment"># 8 线程并行</span></span><br><span class="line">mingw32-make -n       <span class="comment"># 只打印不执行（调试用）</span></span><br></pre></td></tr></table></figure>
+<h3 id="三平台一键脚本">三平台一键脚本</h3>
+<p><strong><code>build.sh</code></strong>（Git Bash / Linux / macOS）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env bash</span></span><br><span class="line"><span class="built_in">set</span> -euo pipefail</span><br><span class="line">CXX=<span class="variable">$&#123;CXX:-g++&#125;</span>; STD=<span class="variable">$&#123;STD:-c++20&#125;</span>; BUILD=<span class="variable">$&#123;BUILD:-build&#125;</span></span><br><span class="line"><span class="built_in">mkdir</span> -p <span class="string">&quot;<span class="variable">$BUILD</span>&quot;</span></span><br><span class="line"></span><br><span class="line">SRCS=$(find src -name <span class="string">&#x27;*.cpp&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ① 先只做语法检查（不产出 exe），秒级反馈</span></span><br><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> <span class="variable">$SRCS</span>; <span class="keyword">do</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">&quot;&gt;&gt; 语法检查 <span class="variable">$f</span>&quot;</span></span><br><span class="line">  <span class="variable">$CXX</span> -std=<span class="variable">$STD</span> -Wall -Wextra -fsyntax-only <span class="string">&quot;<span class="variable">$f</span>&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ② 真正编译</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&gt;&gt; 编译中...&quot;</span></span><br><span class="line"><span class="variable">$CXX</span> -std=<span class="variable">$STD</span> -O2 -Wall -Wextra -g -static-libgcc -static-libstdc++ \</span><br><span class="line">     <span class="variable">$SRCS</span> -o <span class="string">&quot;<span class="variable">$BUILD</span>/app&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&gt;&gt; 运行&quot;</span></span><br><span class="line"><span class="string">&quot;./<span class="variable">$BUILD</span>/app&quot;</span> <span class="string">&quot;<span class="variable">$@</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p><strong><code>build.bat</code></strong>（Windows CMD）</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"><span class="built_in">setlocal</span></span><br><span class="line"><span class="built_in">set</span> CXX=g++ &amp; <span class="built_in">set</span> STD=c++<span class="number">20</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> <span class="keyword">exist</span> build <span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">echo</span> == 语法检查 ==</span><br><span class="line"><span class="built_in">dir</span> /s /b src\*.cpp &gt; build\_files.txt</span><br><span class="line"><span class="keyword">for</span> /f &quot;delims=&quot; <span class="variable">%%f</span> <span class="keyword">in</span> (build\_files.txt) <span class="keyword">do</span> (</span><br><span class="line">    <span class="variable">%CXX%</span> -std=<span class="variable">%STD%</span> -Wall -Wextra -fsyntax-only <span class="variable">%%f</span> || <span class="keyword">goto</span> :err</span><br><span class="line">)</span><br><span class="line"><span class="built_in">echo</span> == 编译 ==</span><br><span class="line"><span class="variable">%CXX%</span> -std=<span class="variable">%STD%</span> -O2 -Wall -Wextra -static-libgcc -static-libstdc++ src\*.cpp -o build\app.exe || <span class="keyword">goto</span> :err</span><br><span class="line"><span class="built_in">echo</span> == 运行 ==</span><br><span class="line">build\app.exe %*</span><br><span class="line"><span class="keyword">goto</span> :eof</span><br><span class="line">:err</span><br><span class="line"><span class="built_in">echo</span> 编译失败！ &amp; <span class="keyword">exit</span> /b <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p><strong><code>build.ps1</code></strong>（PowerShell）</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ErrorActionPreference</span> = <span class="string">&#x27;Stop&#x27;</span></span><br><span class="line"><span class="variable">$std</span> = <span class="string">&#x27;c++20&#x27;</span></span><br><span class="line"><span class="built_in">New-Item</span> <span class="literal">-ItemType</span> Directory <span class="literal">-Force</span> <span class="literal">-Path</span> build | <span class="built_in">Out-Null</span></span><br><span class="line"><span class="variable">$srcs</span> = <span class="built_in">Get-ChildItem</span> <span class="literal">-Path</span> src <span class="literal">-Filter</span> <span class="string">&#x27;*.cpp&#x27;</span> <span class="literal">-Recurse</span> | <span class="built_in">ForEach-Object</span> &#123; <span class="variable">$_</span>.FullName &#125;</span><br><span class="line">&amp; g++ <span class="string">&quot;-std=<span class="variable">$std</span>&quot;</span> <span class="literal">-Wall</span> <span class="literal">-Wextra</span> <span class="literal">-O2</span> <span class="literal">-g</span> <span class="literal">-static-libgcc</span> <span class="literal">-static-libstdc</span>++ @srcs <span class="literal">-o</span> build/app.exe</span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$LASTEXITCODE</span> <span class="operator">-ne</span> <span class="number">0</span>) &#123; <span class="keyword">throw</span> <span class="string">&quot;编译失败&quot;</span> &#125;</span><br><span class="line">&amp; build/app.exe @args</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="❌-第-13-页：错误速查表">❌ 第 13 页：错误速查表</h2>
+<blockquote>
+<p>💡 <strong>通用原则：错误信息里第一个 <code>error:</code> 才是根因</strong>，后面一堆是连带噪音。<br>
+<strong>一次只修一个错误</strong> —— 修好第一个，后面几十个会一起消失。<br>
+报错行号常指向&quot;后果&quot;，真正原因在上方一两行（缺 <code>&#123;</code> 或 <code>;</code>）。</p>
+</blockquote>
+<h3 id="环境类">环境类</h3>
+<table>
+<thead>
+<tr>
+<th>报错</th>
+<th>真实原因</th>
+<th>解法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'g++' 不是内部或外部命令</code></td>
+<td>PATH 没配/配错/终端没重开</td>
+<td>加 <code>C:\mingw64\bin</code> 到<strong>用户</strong> PATH，重开所有终端</td>
+</tr>
+<tr>
+<td><code>where g++</code> 返回多个</td>
+<td>有编译器在抢</td>
+<td>把 MinGW 的 bin 移到<strong>用户变量 Path 最前</strong></td>
+</tr>
+<tr>
+<td><code>fatal error: cc1plus.exe: No such file</code></td>
+<td>编译器找不到<strong>它自己的核心</strong></td>
+<td>重新完整解压到<strong>无空格</strong>路径；加杀毒白名单</td>
+</tr>
+<tr>
+<td>之前能编，换台电脑不行</td>
+<td>依赖 DLL 没带走</td>
+<td>见下方&quot;运行时 dll 问题&quot;</td>
+</tr>
+</tbody>
+</table>
+<h3 id="源码类">源码类</h3>
+<table>
+<thead>
+<tr>
+<th>报错</th>
+<th>含义</th>
+<th>修法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>error: expected ';' before '&#125;'</code></td>
+<td>少分号</td>
+<td>看报错行 <strong>和上面一行</strong></td>
+</tr>
+<tr>
+<td><code>stray '\357' in program</code></td>
+<td>文件是 <strong>UTF-8 with BOM</strong></td>
+<td>另存为 <strong>UTF-8 无 BOM</strong></td>
+</tr>
+<tr>
+<td><code>undefined reference to 'foo'</code></td>
+<td>声明了但没定义</td>
+<td>① 函数定义了吗 ② 那个 .cpp 加进命令了吗 ③ 名字/大小写一致吗</td>
+</tr>
+<tr>
+<td><code>multiple definition of 'main'</code></td>
+<td>多个 main</td>
+<td>只留一个</td>
+</tr>
+<tr>
+<td><code>LNK1169: _mainCRTStartup defined in multiple objects</code></td>
+<td>同上（Windows 版报错）</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>'xxx' was not declared in this scope</code></td>
+<td>缺头文件 / 忘了 <code>std::</code> / 拼错</td>
+<td>补 <code>#include</code></td>
+</tr>
+<tr>
+<td><code>no matching function for call to 'f(int)'</code></td>
+<td>传参类型不对</td>
+<td>看报错列出的候选签名</td>
+</tr>
+<tr>
+<td><code>cannot convert 'std::string' to 'const char*'</code></td>
+<td>string 传给要 C 字符串的地方</td>
+<td><code>s.c_str()</code></td>
+</tr>
+<tr>
+<td><code>invalid conversion from 'const char*' to 'char*'</code></td>
+<td>c_str() 的结果给了要 <code>char*</code> 的地方</td>
+<td><code>char* p = str.data();</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="路径与命令行类">路径与命令行类</h3>
+<table>
+<thead>
+<tr>
+<th>报错</th>
+<th>原因</th>
+<th>解法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ld.exe: cannot open input file: No such file...</code>（<strong>却不显示文件名</strong>）</td>
+<td>⚠️ <strong>路径里有空格</strong></td>
+<td>路径加双引号；<code>dir</code> 确认文件在</td>
+</tr>
+<tr>
+<td><code>No such file or directory: 'hello.cpp'</code></td>
+<td>目录不对</td>
+<td><code>pwd</code> / <code>cd</code> 确认</td>
+</tr>
+<tr>
+<td><code>cannot find -lfoo</code></td>
+<td>库路径没给或名字错</td>
+<td>加 <code>-L&lt;dir&gt;</code>；确认文件名是 <code>libfoo.a</code> 还是 <code>foo.lib</code></td>
+</tr>
+<tr>
+<td><code>cannot open output file: hello.exe</code></td>
+<td>exe 正在运行被占用</td>
+<td>关掉程序窗口 / 任务管理器结束进程</td>
+</tr>
+<tr>
+<td><code>ld: cannot find crt0.o</code></td>
+<td>MinGW 安装损坏</td>
+<td>重装到无空格路径</td>
+</tr>
+<tr>
+<td><code>build/</code> 目录不存在</td>
+<td>目录没建</td>
+<td><code>mkdir build</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="头文件找不到">头文件找不到</h3>
+<table>
+<thead>
+<tr>
+<th>报错</th>
+<th>原因</th>
+<th>解法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fatal error: mylib.h: No such file</code></td>
+<td>不知道去哪找</td>
+<td><code>-I&lt;头文件所在目录&gt;</code> —— 要给到 <code>.h</code> 所在那一层</td>
+</tr>
+<tr>
+<td>头文件在 <code>include/mylib/</code> 下，库内 <code>#include &quot;detail.h&quot;</code> 找不到</td>
+<td>相对路径问题</td>
+<td>把 include 根目录加进 <code>-I</code>，或用库自带的 CMake 配置</td>
+</tr>
+</tbody>
+</table>
+<h3 id="运行时-DLL-问题">运行时 DLL 问题</h3>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>原因</th>
+<th>解法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>libstdc++-6.dll was not found</code></td>
+<td>DLL 没跟 exe 走</td>
+<td>① 拷 3 个 dll 到 exe 同目录 ② <strong>用 <code>-static-libstdc++ -static-libgcc</code></strong> ✅推荐</td>
+</tr>
+<tr>
+<td><code>libwinpthread-1.dll not found</code></td>
+<td>用了 <code>&lt;thread&gt;</code></td>
+<td>同上，或加 <code>-pthread</code></td>
+</tr>
+<tr>
+<td><code>libgomp-1.dll not found</code></td>
+<td>用了 <code>-fopenmp</code></td>
+<td>同上，或去掉 <code>-fopenmp</code></td>
+</tr>
+<tr>
+<td><code>VCRUNTIME140.dll not found</code></td>
+<td>用了 MSVC 编的库</td>
+<td>装 VC++ Redistributable，或该库改用 MinGW 版</td>
+</tr>
+<tr>
+<td><code>api-ms-win-*</code> 缺失</td>
+<td>目标系统太老</td>
+<td>选旧 ABI 变体（<code>msv7rt</code>/<code>v14</code>）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="排查信息获取（救急三连）">排查信息获取（救急三连）</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">g++ -v main.cpp -o app.exe            <span class="comment"># 看完整调用链，定位哪个阶段失败</span></span><br><span class="line">g++ -save-temps main.cpp -o app.exe   <span class="comment"># 保留 .i/.s/.o，逐阶段人工检查</span></span><br><span class="line">g++ -print-search-dirs                <span class="comment"># 编译器所有搜索路径</span></span><br><span class="line">g++ -E main.cpp &gt; main.i              <span class="comment"># 只看预处理结果（头文件是否正确展开）</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="📤-第-14-页：把-exe-发给别人">📤 第 14 页：把 exe 发给别人</h2>
+<h3 id="最省事：静态化-剥离符号">最省事：静态化 + 剥离符号</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -std=c++20 -O2 -Wall -Wextra -static-libgcc -static-libstdc++ -s -o app.exe main.cpp</span><br></pre></td></tr></table></figure>
+<h3 id="清单">清单</h3>
+<ul>
+<li>[ ] <strong>架构匹配</strong>：你编的是 x64，对方必须 64 位 Windows。<code>g++ -m32</code> 编 32 位（但 MinGW 32 位支持少）</li>
+<li>[ ] <strong>别用 <code>-march=native</code></strong> —— 只能在你的 CPU 上跑</li>
+<li>[ ] <strong>确认无外部依赖</strong>：<code>objdump -p app.exe | grep &quot;DLL&quot;</code></li>
+<li>[ ] <strong>杀毒误报</strong>：MinGW 编的程序偶尔被杀软当&quot;未知程序&quot;。加版本信息资源（<code>windres</code>）、代码签名、或分发 zip 会好很多</li>
+<li>[ ] <strong>控制台 vs GUI</strong>：加 <code>-mwindows</code> 就没有黑框，但<strong>不能直接用 <code>std::cout</code></strong>（没有 stdout），需要 <code>AllocConsole()</code> 或写日志文件</li>
+</ul>
+<hr>
+<h2 id="🖥-第-15-页：VS-Code-等价操作">🖥 第 15 页：VS Code 等价操作</h2>
+<blockquote>
+<p><strong>定位</strong>：前面 14 页是&quot;手写命令行&quot;路线，这一页是&quot;同样的事，用 VS Code 更便利&quot;路线。<br>
+<strong>重要</strong>：VS Code 是<strong>编辑器 + 调试前端</strong>，它<strong>不含编译器</strong>。所有编译仍由 <code>g++</code> 完成，只是 VS Code 帮你敲命令、看错误、跳转定义。<br>
+目标是：<strong>先懂命令行，再用 IDE 提效，而不是反过来。</strong></p>
+</blockquote>
+<h3 id="15-1-命令行-↔-VS-Code-操作对照表">15.1 命令行 ↔ VS Code 操作对照表</h3>
+<table>
+<thead>
+<tr>
+<th>命令行操作</th>
+<th>VS Code 等价操作</th>
+<th>背后实际发生</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g++ main.cpp -o main.exe</code></td>
+<td>Ctrl+Shift+B（或终端里敲）</td>
+<td><strong>完全相同的 g++ 命令</strong></td>
+</tr>
+<tr>
+<td>看到编译错误列表</td>
+<td>Problems 面板（Ctrl+Shift+M）</td>
+<td>解析 g++ 的 stderr，按文件:行号跳转</td>
+</tr>
+<tr>
+<td>Ctrl+点击函数看定义</td>
+<td>鼠标悬停 / Ctrl+点击</td>
+<td>cpptools 解析头文件+库索引</td>
+</tr>
+<tr>
+<td>实时补全</td>
+<td>IntelliSense</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>gdb ./app</code> + <code>break main</code></td>
+<td>F5 / 断点红点</td>
+<td>调用 gdb，通过 DAP 协议</td>
+</tr>
+<tr>
+<td><code>-fsyntax-only</code> 快速检查</td>
+<td>保存时自动检查（可配）</td>
+<td>同一条 g++ 命令</td>
+</tr>
+<tr>
+<td><code>grep</code> 找代码</td>
+<td>Ctrl+Shift+F</td>
+<td>文本搜索</td>
+</tr>
+<tr>
+<td><code>mkdir build</code></td>
+<td>不用了</td>
+<td>VS Code 用 <code>.vscode/</code> 存配置</td>
+</tr>
+<tr>
+<td>Makefile / <a target="_blank" rel="noopener" href="http://build.sh">build.sh</a></td>
+<td>tasks.json</td>
+<td>同一个脚本，只是能按快捷键触发</td>
+</tr>
+<tr>
+<td><code>-I -L -l</code> 参数</td>
+<td><code>c_cpp_properties.json</code> / <code>CMakeLists.txt</code></td>
+<td>同上，只是 VS Code 帮你算好</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>🎯 <strong>核心结论</strong>：VS Code 里没有&quot;魔法&quot;，它做的每一件事你都能在终端敲出来。<strong>这就是为什么先学命令行。</strong></p>
+</blockquote>
+<h3 id="15-2-最小配置（两个文件）">15.2 最小配置（两个文件）</h3>
+<p>在项目根目录建 <code>.vscode/</code> 文件夹，放两个 JSON。</p>
+<p><strong><code>.vscode/tasks.json</code></strong> —— 编译任务</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2.0.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;tasks&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;shell&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;label&quot;</span><span class="punctuation">:</span> <span class="string">&quot;build&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;g++ -std=c++20 -O2 -Wall -Wextra -g -static-libgcc -static-libstdc++ -o build/app.exe src/*.cpp&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;options&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;cwd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;workspaceFolder&#125;&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;problemMatcher&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;$gcc&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;group&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;kind&quot;</span><span class="punctuation">:</span> <span class="string">&quot;build&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;isDefault&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span> <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;shell&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;label&quot;</span><span class="punctuation">:</span> <span class="string">&quot;run&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./build/app.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;dependsOn&quot;</span><span class="punctuation">:</span> <span class="string">&quot;build&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;problemMatcher&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;shell&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;label&quot;</span><span class="punctuation">:</span> <span class="string">&quot;syntax check&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;g++ -std=c++20 -Wall -Wextra -fsyntax-only src/*.cpp&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;problemMatcher&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;$gcc&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;shell&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;label&quot;</span><span class="punctuation">:</span> <span class="string">&quot;clean&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;rm -rf build&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;problemMatcher&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>command</code></td>
+<td><strong>就是你要敲的 g++ 命令，一字不差</strong> ← 这才是重点</td>
+</tr>
+<tr>
+<td><code>problemMatcher: [&quot;$gcc&quot;]</code></td>
+<td>让 VS Code 解析 g++ 的报错格式，自动分类进 Problems 面板</td>
+</tr>
+<tr>
+<td><code>dependsOn: &quot;build&quot;</code></td>
+<td>运行前先编译（等价于 <code>&amp;&amp;</code>）</td>
+</tr>
+<tr>
+<td><code>group.isDefault</code></td>
+<td>让 Ctrl+Shift+B 绑定到它</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <code>command</code> 写成任意东西都行 —— 换成 <code>-fsyntax-only</code> 就变成快速检查，换成 <code>mingw32-make</code> 就走 Makefile。<strong>IDE 不设限。</strong></p>
+</blockquote>
+<p><strong><code>.vscode/c_cpp_properties.json</code></strong> —— 让 IntelliSense 找到头文件和库</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="number">4</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;configurations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;MinGW&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;includePath&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="string">&quot;$&#123;workspaceFolder&#125;/src&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="string">&quot;C:/mingw64/x86_64-w64-mingw32/include&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="string">&quot;C:/mingw64/include&quot;</span></span><br><span class="line">    <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;compilerPath&quot;</span><span class="punctuation">:</span> <span class="string">&quot;C:/mingw64/bin/g++.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;cStandard&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c17&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;cppStandard&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c++20&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;intelliSenseMode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;windows-gcc-x64&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>这段 <code>includePath</code> 就是命令行 <code>-I</code> 的可视化版本 —— <strong>一 一对应</strong>。</p>
+<h3 id="15-3-装扩展（只需-2-个）">15.3 装扩展（只需 2 个）</h3>
+<table>
+<thead>
+<tr>
+<th>扩展</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>C/C++</strong> (Microsoft)</td>
+<td>IntelliSense + 调试支持</td>
+</tr>
+<tr>
+<td><strong>Makefile Tools</strong></td>
+<td>有 Makefile 时可视化</td>
+</tr>
+</tbody>
+</table>
+<p>可选：<code>Code Runner</code>（一键运行）、<code>CMake Tools</code>、<code>Error Lens</code>（错误显示在行尾）</p>
+<blockquote>
+<p>⚠️ 装完扩展后<strong>重开终端</strong>（Ctrl+` 或重开窗口），让它继承新的 PATH。</p>
+</blockquote>
+<h3 id="15-4-调试：图形化-gdb">15.4 调试：图形化 gdb</h3>
+<p><strong><code>.vscode/launch.json</code></strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;0.2.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;configurations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;gdb debug&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cppdbg&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;request&quot;</span><span class="punctuation">:</span> <span class="string">&quot;launch&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;program&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;workspaceFolder&#125;/build/app.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;cwd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;workspaceFolder&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;MIMode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;gdb&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;preLaunchTask&quot;</span><span class="punctuation">:</span> <span class="string">&quot;build&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;externalConsole&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;setupCommands&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;为 gdb 设置整洁输出&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;-enable-pretty-printing&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;ignoreFailures&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">]</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>对应命令行的什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>preLaunchTask: &quot;build&quot;</code></td>
+<td>等价于 <code>g++ ... &amp;&amp; gdb app.exe</code></td>
+</tr>
+<tr>
+<td><code>program</code></td>
+<td><code>./build/app.exe</code></td>
+</tr>
+<tr>
+<td><code>args</code></td>
+<td><code>gdb --args ./app.exe &lt;args&gt;</code></td>
+</tr>
+<tr>
+<td><code>MIMode: &quot;gdb&quot;</code></td>
+<td>用 gdb 当调试后端</td>
+</tr>
+</tbody>
+</table>
+<h3 id="15-5-VS-Code-调试面板速查">15.5 VS Code 调试面板速查</h3>
+<table>
+<thead>
+<tr>
+<th>界面操作</th>
+<th>对应 gdb 命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>行号左侧点击（红点）</td>
+<td><code>break 42</code></td>
+</tr>
+<tr>
+<td>▶ 继续 / F5</td>
+<td><code>continue</code></td>
+</tr>
+<tr>
+<td>⤵ 单步跳过 / F10</td>
+<td><code>next</code></td>
+</tr>
+<tr>
+<td>⤵ 单步进入 / F11</td>
+<td><code>step</code></td>
+</tr>
+<tr>
+<td>⤴ 跳出 / Shift+F11</td>
+<td><code>finish</code></td>
+</tr>
+<tr>
+<td>变量窗口</td>
+<td><code>print x</code></td>
+</tr>
+<tr>
+<td>调用堆栈窗口</td>
+<td><code>bt</code></td>
+</tr>
+<tr>
+<td>右键变量 → 添加监听</td>
+<td><code>p expr</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>用法建议</strong>：图形化调试<strong>和</strong>命令行 gdb <strong>配合用</strong>。</p>
+<ul>
+<li>学习/理解机制 → 命令行 <code>gdb</code>，看 <code>bt</code>、<code>info locals</code> 的原始输出</li>
+<li>日常查 bug → 图形化面板，看变量历史、调用树、条件断点更直观</li>
+</ul>
+<h3 id="15-6-完整工作流">15.6 完整工作流</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">写代码（VS Code）</span><br><span class="line">    ↓  Ctrl+S</span><br><span class="line">自动语法检查（可选，tasks 里的 syntax check）</span><br><span class="line">    ↓  Ctrl+Shift+B       ← 实际执行 tasks.json 里的 g++ 命令</span><br><span class="line">编译产物 build/app.exe</span><br><span class="line">    ↓  F5                 ← 实际执行 gdb</span><br><span class="line">调试（断点/单步/变量）</span><br><span class="line">    ↓  改 bug → 回到第一步</span><br></pre></td></tr></table></figure>
+<h3 id="15-7-想更便利？上-CMake（仍不是-IDE）">15.7 想更便利？上 CMake（仍不是 IDE）</h3>
+<p>VS Code + CMake 能自动算好所有 <code>-I -L -l</code>，等于第 16 篇讲的方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 命令行</span></span><br><span class="line">cmake -S . -B build -G <span class="string">&quot;MinGW Makefiles&quot;</span> -DCMAKE_BUILD_TYPE=Release</span><br><span class="line">cmake --build build --parallel 8</span><br><span class="line"></span><br><span class="line"><span class="comment"># VS Code：装 CMake Tools 扩展，同一条命令，点按钮</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>💡 <strong>偷看参数的最佳方法</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake --build build --verbose</span><br></pre></td></tr></table></figure>
+<p>会打印出 CMake 真正执行的 g++ 命令行。想学 <code>-I -L -l</code> 怎么来的，这里看最直观。</p>
+</blockquote>
+<h3 id="15-8-从命令行路线过渡到-IDE-路线的顺序建议">15.8 从命令行路线过渡到 IDE 路线的顺序建议</h3>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>做什么</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>纯手敲 <code>g++</code>，<strong>不用任何编辑器插件</strong></td>
+<td>理解 4 个阶段在干什么</td>
+</tr>
+<tr>
+<td>2</td>
+<td>手敲 <code>g++ -v</code>、<code>-save-temps</code>、<code>nm</code>、<code>objdump</code></td>
+<td>理解产物格式（<code>.i/.s/.o/a/dll</code>）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>手敲 <code>gdb</code>，跑通 <code>break/run/next/print/bt</code></td>
+<td>理解调试在干什么</td>
+</tr>
+<tr>
+<td>4</td>
+<td>用 VS Code + tasks.json，<strong>命令仍然是你自己写的</strong></td>
+<td>学会&quot;命令可视化&quot;，不改心智模型</td>
+</tr>
+<tr>
+<td>5</td>
+<td>用 VS Code 调试面板</td>
+<td>提升日常效率</td>
+</tr>
+<tr>
+<td>6</td>
+<td>上 CMake / vcpkg</td>
+<td>彻底告别手写路径</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>千万别跳过 1-3 阶段直接用 IDE</strong>。<br>
+我见过太多人用 VS Code 写了两年 C++，换了 IDE 就完全不会了 —— 因为他从来不知道 <code>-I</code> 是什么意思，出错了也不知道该搜什么关键词。</p>
+</blockquote>
+<hr>
+<h2 id="📎-附录-A：命令速查卡（可打印）">📎 附录 A：命令速查卡（可打印）</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ===== 编译 =====</span></span><br><span class="line">g++ main.cpp -o main.exe                                  <span class="comment"># 最简</span></span><br><span class="line">g++ -std=c++20 -O2 -Wall -Wextra -g -o main.exe main.cpp   <span class="comment"># ★ 推荐</span></span><br><span class="line">g++ -std=c++17 -fsyntax-only main.cpp                     <span class="comment"># 只查语法（秒级反馈）</span></span><br><span class="line">g++ -c main.cpp -o main.o                                 <span class="comment"># 只编译不链接</span></span><br><span class="line">g++ main.o main2.o -o app.exe                             <span class="comment"># 链接</span></span><br><span class="line">g++ a.cpp b.cpp -o app.exe                                 <span class="comment"># 多文件一次搞定</span></span><br><span class="line">ar rcs libmy.a a.o b.o                                    <span class="comment"># 打静态库（s 必须有）</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== 拆解每一步 =====</span></span><br><span class="line">g++ -E main.cpp -o main.i &amp;&amp; g++ -S main.i -o main.s &amp;&amp; g++ -c main.s -o main.o &amp;&amp; g++ main.o -o main.exe</span><br><span class="line">g++ -save-temps main.cpp -o main.exe                      <span class="comment"># 保留中间产物</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== 编译并运行 =====</span></span><br><span class="line">g++ -std=c++20 -g -o main.exe main.cpp &amp;&amp; ./main.exe       <span class="comment"># Git Bash</span></span><br><span class="line">g++ -std=c++20 -g -o main.exe main.cpp &amp;&amp; main.exe         <span class="comment"># CMD</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== 查看信息 =====</span></span><br><span class="line">g++ --version ; g++ -dumpmachine ; g++ -dumpversion</span><br><span class="line">g++ -v main.cpp -o main.exe                                <span class="comment"># ★ 完整调用链</span></span><br><span class="line">g++ -print-search-dirs                                     <span class="comment"># 所有搜索路径</span></span><br><span class="line">g++ -print-prog-name=cc1plus</span><br><span class="line"><span class="built_in">where</span> g++                                                   <span class="comment"># CMD 找 g++ 位置</span></span><br><span class="line">objdump -p app.exe | grep <span class="string">&quot;DLL Name&quot;</span>                       <span class="comment"># exe 依赖哪些 dll</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== 调试 =====</span></span><br><span class="line">gdb ./app.exe</span><br><span class="line">  <span class="built_in">break</span> main ; run ; next ; step ; finish ; <span class="built_in">continue</span></span><br><span class="line">  <span class="built_in">print</span> x ; info locals ; info args ; p *ptr</span><br><span class="line">  bt ; frame 0 ; quit</span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== 静态链接 =====</span></span><br><span class="line">g++ -static -o app.exe main.cpp                              <span class="comment"># 全静态</span></span><br><span class="line">g++ -static-libgcc -static-libstdc++ -o app.exe main.cpp     <span class="comment"># ★ 推荐</span></span><br><span class="line">g++ -s -o app.exe main.cpp                                    <span class="comment"># 剥离符号</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== 警告 / 字符集 =====</span></span><br><span class="line">-Wall -Wextra -Wshadow -pedantic</span><br><span class="line">-finput-charset=UTF-8 -fexec-charset=UTF-8</span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== 构建自动化 =====</span></span><br><span class="line">mingw32-make / make / make run / make clean / make -j8</span><br></pre></td></tr></table></figure>
+<h2 id="📎-附录-B：CMD-vs-PowerShell-差异">📎 附录 B：CMD vs PowerShell 差异</h2>
+<table>
+<thead>
+<tr>
+<th>目的</th>
+<th>CMD</th>
+<th>PowerShell</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>列出文件</td>
+<td><code>dir</code></td>
+<td><code>Get-ChildItem</code> / <code>ls</code></td>
+</tr>
+<tr>
+<td>删除文件</td>
+<td><code>del a.txt</code></td>
+<td><code>Remove-Item a.txt</code> / <code>rm</code></td>
+</tr>
+<tr>
+<td>清屏</td>
+<td><code>cls</code></td>
+<td><code>Clear-Host</code></td>
+</tr>
+<tr>
+<td>复制</td>
+<td><code>copy a b</code></td>
+<td><code>Copy-Item a b</code></td>
+</tr>
+<tr>
+<td>找程序</td>
+<td><code>where g++</code></td>
+<td><code>where g++</code></td>
+</tr>
+<tr>
+<td>当前目录</td>
+<td><code>cd</code></td>
+<td><code>Get-Location</code></td>
+</tr>
+<tr>
+<td>通配展开</td>
+<td>❌ 无</td>
+<td><code>(Get-ChildItem src\*.cpp).FullName</code></td>
+</tr>
+<tr>
+<td>设 UTF-8</td>
+<td><code>chcp 65001</code></td>
+<td><code>chcp 65001</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>cd</code> <code>echo</code> <code>mkdir</code> <code>type</code> <code>g++</code> <code>dir</code> <code>where</code> 这些两边一致。</p>
+<p><strong>Git Bash 独有优势</strong>：<code>ls</code>、<code>cat</code>、<code>pwd</code>、<code>&amp;&amp;</code>、<code>$(...)</code>、通配符 <code>*.cpp</code> 自动展开 —— 写脚本最顺手。</p>
+<h2 id="📎-附录-C：其他系统">📎 附录 C：其他系统</h2>
+<h3 id="Linux">Linux</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update &amp;&amp; <span class="built_in">sudo</span> apt install build-essential gdb      <span class="comment"># Debian/Ubuntu</span></span><br><span class="line"><span class="built_in">sudo</span> dnf install gcc-c++ gdb                                  <span class="comment"># Fedora</span></span><br><span class="line">g++ -std=c++20 -O2 -o app main.cpp &amp;&amp; ./app</span><br></pre></td></tr></table></figure>
+<h3 id="macOS">macOS</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xcode-select --install          <span class="comment"># 装 Command Line Tools（含 clang++）</span></span><br><span class="line">clang++ -std=c++20 -O2 -o app main.cpp &amp;&amp; ./app</span><br></pre></td></tr></table></figure>
+<p>macOS 用 <strong>Clang</strong>（底层 LLVM），不是 GCC。差异：默认输出 <code>a.out</code>；调系统库用 <code>-framework Cocoa</code>（不是 <code>-lxxx</code>）；调试器用 <strong>lldb</strong>（不是 gdb）；产物是 Mach-O。</p>
+<h3 id="三平台速查">三平台速查</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Windows (MinGW)</th>
+<th>Linux (GCC)</th>
+<th>macOS (Clang)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>默认输出</td>
+<td><code>a.exe</code></td>
+<td><code>a.out</code></td>
+<td><code>a.out</code></td>
+</tr>
+<tr>
+<td>编译器</td>
+<td><code>g++</code></td>
+<td><code>g++</code></td>
+<td><code>clang++</code></td>
+</tr>
+<tr>
+<td>静态库</td>
+<td><code>libfoo.a</code></td>
+<td><code>libfoo.a</code></td>
+<td><code>libfoo.a</code></td>
+</tr>
+<tr>
+<td>动态库</td>
+<td><code>foo.dll</code> + <code>foo.dll.a</code></td>
+<td><code>libfoo.so</code></td>
+<td><code>libfoo.dylib</code></td>
+</tr>
+<tr>
+<td>调试器</td>
+<td><code>gdb</code> / WinDbg</td>
+<td><code>gdb</code> ✅</td>
+<td><code>lldb</code></td>
+</tr>
+<tr>
+<td>加系统库</td>
+<td><code>-lws2_32</code>（无前缀）</td>
+<td><code>-lpthread</code></td>
+<td><code>-framework X</code></td>
+</tr>
+<tr>
+<td>路径分隔符</td>
+<td><code>\</code> 或 <code>/</code></td>
+<td><code>/</code></td>
+<td><code>/</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="🎯-结语：脱离-IDE-你获得了什么">🎯 结语：脱离 IDE 你获得了什么</h2>
+<table>
+<thead>
+<tr>
+<th>收获</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>可复现</strong></td>
+<td>CI 服务器、Linux 服务器、Docker 里，一条命令就是完整环境。IDE 工程文件（<code>.sln</code>/<code>.cbp</code>）是不透明、平台相关的</td>
+</tr>
+<tr>
+<td><strong>可诊断</strong></td>
+<td>IDE 只能给你一个错误列表。命令行让你用 <code>-save-temps</code>、<code>-E</code>、<code>-S</code> 把每个阶段的结果摆在你面前</td>
+</tr>
+<tr>
+<td><strong>可迁移</strong></td>
+<td>学会 <code>g++</code>，Windows/Linux/服务器/Docker 都能编。换个 IDE 就废的东西，你不怕</td>
+</tr>
+<tr>
+<td><strong>知识沉淀</strong></td>
+<td>Makefile、脚本、CMakeLists.txt 都是<strong>纯文本</strong>，能进 git、能 review、能被别人复用。&quot;我点一下按钮就好了&quot;不能</td>
+</tr>
+<tr>
+<td><strong>理解原理</strong></td>
+<td>你现在知道 exe 是怎么来的了。这比任何 IDE 快捷键都值钱</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><strong>下一篇</strong>：<a href="./%E6%97%A0IDE%E9%93%BE%E6%8E%A5%E5%A4%96%E9%83%A8%E5%BA%93%E5%AE%9E%E6%88%98-%E4%BB%A5SDL%E4%B8%BA%E4%BE%8B.md">《不使用 IDE 链接外部库实战（以 SDL 为例）》</a></p>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-10-09T07:03:29.000Z" itemprop="datePublished">10月 9</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/">SDL的各个部分</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/10/08/%E8%90%A8%E7%BB%B4%E5%BE%B7%E6%8B%89%E5%B1%80%E9%9D%A2%EF%BC%9A%E5%85%B5%E5%8D%87%E5%8F%98%E4%B8%BA%E8%BD%A6%E7%9A%84%E5%90%88%E7%90%86%E6%80%A7/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-10-08T08:44:30.000Z" itemprop="datePublished">10月 8</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/10/09/C++%E4%BB%8E%E9%9B%B6%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91%E4%B8%8E%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83-%E5%AE%8C%E5%85%A8%E4%B8%8D%E4%BD%BF%E7%94%A8IDE/" data-id="cmv15ejkb0000ugma85kb6zdq" data-title="C++开发日志:SDL环境配置与C++程序的编译过程" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/10/08/%E8%90%A8%E7%BB%B4%E5%BE%B7%E6%8B%89%E5%B1%80%E9%9D%A2%EF%BC%9A%E5%85%B5%E5%8D%87%E5%8F%98%E4%B8%BA%E8%BD%A6%E7%9A%84%E5%90%88%E7%90%86%E6%80%A7/">萨维德拉局面：兵升变为车的合理性</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/10/08/%E5%93%88%E5%B8%8C%E8%A1%A8-%E8%B5%8E%E9%87%91%E4%BF%A1/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-10-08T02:01:33.000Z" itemprop="datePublished">10月 8</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/10/08/%E5%93%88%E5%B8%8C%E8%A1%A8-%E8%B5%8E%E9%87%91%E4%BF%A1/">哈希表:赎金信</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/10/06/%E6%99%BA%E8%83%BD%E5%B0%8F%E8%BD%A6%E4%B8%8E%E4%BB%93%E5%82%A8%E6%96%B9%E6%A1%88/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-10-06T14:26:44.000Z" itemprop="datePublished">10月 6</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/10/06/%E6%99%BA%E8%83%BD%E5%B0%8F%E8%BD%A6%E4%B8%8E%E4%BB%93%E5%82%A8%E6%96%B9%E6%A1%88/">智能小车与仓储方案</a>
-    </h1>
-  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li></ul>
 
-    </header>
+    </footer>
   </div>
-</article>
   
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/10/05/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B%E7%9A%84%E7%BC%96%E5%89%A7%E5%BA%94%E8%AF%A5%E6%83%B3%E4%BB%80%E4%B9%88/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-10-05T14:04:58.000Z" itemprop="datePublished">10月 5</time>
-</a>
-      
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/10/05/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B%E7%9A%84%E7%BC%96%E5%89%A7%E5%BA%94%E8%AF%A5%E6%83%B3%E4%BB%80%E4%B9%88/">赛博朋克的编剧应该想什么?</a>
-    </h1>
   
+    <a href="/2026/10/09/%E6%97%A0IDE%E9%93%BE%E6%8E%A5%E5%A4%96%E9%83%A8%E5%BA%93%E5%AE%9E%E6%88%98-%E4%BB%A5SDL%E4%B8%BA%E4%BE%8B/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">C++开发日志:C++程序怎么连接外部库文件</div>
+    </a>
+  
+</nav>
 
-    </header>
-  </div>
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/10/02/%E8%81%8C%E4%B8%9A%E8%A7%84%E5%88%92-%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%B7%A5%E7%A8%8B%E5%B8%88/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-10-02T14:25:39.000Z" itemprop="datePublished">10月 2</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/10/02/%E8%81%8C%E4%B8%9A%E8%A7%84%E5%88%92-%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%B7%A5%E7%A8%8B%E5%B8%88/">职业规划:嵌入式工程师</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/10/02/OpenGL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-SpaceBunny%E6%A8%A1%E5%9E%8B%E7%89%88/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-10-02T13:57:04.000Z" itemprop="datePublished">10月 2</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/10/02/OpenGL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-SpaceBunny%E6%A8%A1%E5%9E%8B%E7%89%88/">OpenGL环境配置:SpaceBunny模型版</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
 
 
 </section>
