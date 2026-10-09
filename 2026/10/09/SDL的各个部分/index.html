@@ -4,19 +4,19 @@
   <meta charset="utf-8">
   
   
-  <title>哈希表:数组交集 | LANXone的博客</title>
+  <title>SDL的各个部分 | LANXone的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="哈希表：两数组交集 暴力双循环 12345678910111213141516171819202122232425class Solution &#123;public:    vector&lt;int&gt; intersection(vector&lt;int&gt;&amp; nums1, vector&lt;int&gt;&amp; nums2) &#123;        int si">
+  <meta name="description" content="SDL库目录结构说明（Windows）  路径：C:\ccccc\GANME\SDLproject\SDL 解压后的SDL开发包，4个核心文件夹：bin、include、lib、share  bin 存放SDL运行时动态库文件（.dll）  里面是 SDL2.dll（64位&#x2F;32位根据你的下载版本） 作用：程序编译成功后，运行exe时必须依赖这个dll。 使用要点：  编译好的 .exe 程序要和">
 <meta property="og:type" content="article">
-<meta property="og:title" content="哈希表:数组交集">
-<meta property="og:url" content="http://example.com/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E6%95%B0%E7%BB%84%E4%BA%A4%E9%9B%86/index.html">
+<meta property="og:title" content="SDL的各个部分">
+<meta property="og:url" content="http://example.com/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/index.html">
 <meta property="og:site_name" content="LANXone的博客">
-<meta property="og:description" content="哈希表：两数组交集 暴力双循环 12345678910111213141516171819202122232425class Solution &#123;public:    vector&lt;int&gt; intersection(vector&lt;int&gt;&amp; nums1, vector&lt;int&gt;&amp; nums2) &#123;        int si">
+<meta property="og:description" content="SDL库目录结构说明（Windows）  路径：C:\ccccc\GANME\SDLproject\SDL 解压后的SDL开发包，4个核心文件夹：bin、include、lib、share  bin 存放SDL运行时动态库文件（.dll）  里面是 SDL2.dll（64位&#x2F;32位根据你的下载版本） 作用：程序编译成功后，运行exe时必须依赖这个dll。 使用要点：  编译好的 .exe 程序要和">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-09-28T09:53:36.000Z">
-<meta property="article:modified_time" content="2026-09-28T09:55:25.326Z">
+<meta property="article:published_time" content="2026-10-09T07:03:29.000Z">
+<meta property="article:modified_time" content="2026-10-09T07:04:27.104Z">
 <meta property="article:author" content="LANXone">
-<meta property="article:tag" content="算法感悟">
+<meta property="article:tag" content="C++开发笔记">
 <meta name="twitter:card" content="summary">
   
   
@@ -80,10 +80,10 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-哈希表-数组交集" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-SDL的各个部分" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E6%95%B0%E7%BB%84%E4%BA%A4%E9%9B%86/" class="article-date">
-  <time class="dt-published" datetime="2026-09-28T09:53:36.000Z" itemprop="datePublished">2026-09-28</time>
+    <a href="/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/" class="article-date">
+  <time class="dt-published" datetime="2026-10-09T07:03:29.000Z" itemprop="datePublished">2026-10-09</time>
 </a>
     
   </div>
@@ -94,7 +94,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      哈希表:数组交集
+      SDL的各个部分
     </h1>
   
 
@@ -102,78 +102,73 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h1>哈希表：两数组交集</h1>
-<h2 id="暴力双循环">暴力双循环</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">intersection</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums1, vector&lt;<span class="type">int</span>&gt;&amp; nums2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> size1 = nums1.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> size2 = nums2.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> max1 = <span class="built_in">max</span>(size1,size2);</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; res;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i =<span class="number">0</span>; i&lt;size1; i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>;j&lt;size2; j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(nums1[i]==nums2[j])&#123;</span><br><span class="line">                    res.<span class="built_in">push_back</span>(nums1[i]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;res.<span class="built_in">size</span>();i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;res.<span class="built_in">size</span>();j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(res[i]==res[j]&amp;&amp;i!=j)&#123;</span><br><span class="line">                    res.<span class="built_in">erase</span>(res.<span class="built_in">begin</span>()+j);</span><br><span class="line">                    j--;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="哈希表法">哈希表法</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">intersection</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums1, vector&lt;<span class="type">int</span>&gt;&amp; nums2)</span> </span>&#123;</span><br><span class="line">        unordered_set&lt;<span class="type">int</span>&gt; result_set; <span class="comment">// 存放结果，之所以用set是为了给结果集去重</span></span><br><span class="line">        <span class="function">unordered_set&lt;<span class="type">int</span>&gt; <span class="title">nums_set</span><span class="params">(nums1.begin(), nums1.end())</span></span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> num : nums2) &#123;</span><br><span class="line">            <span class="comment">// 发现nums2的元素 在nums_set里又出现过</span></span><br><span class="line">            <span class="keyword">if</span> (nums_set.<span class="built_in">find</span>(num) != nums_set.<span class="built_in">end</span>()) &#123;</span><br><span class="line">                result_set.<span class="built_in">insert</span>(num);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(result_set.<span class="built_in">begin</span>(), result_set.<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<hr>
-<h1>unordered_set 无序集合（C++）</h1>
-<p>底层：哈希表，元素无序，不重复。</p>
-<p>头文件：<code>#include &lt;unordered_set&gt;</code></p>
-<h2 id="✅-核心属性">✅ 核心属性</h2>
-<ol>
-<li><strong>元素唯一</strong>：不能存放重复的值，插入重复元素会直接忽略。</li>
-<li><strong>无序存储</strong>：遍历顺序不是插入顺序，也不是从小到大排序。（对比 <code>set</code>：红黑树，自动升序）</li>
-<li><strong>查找、插入、删除平均 O(1)</strong>，最坏 O(n)（哈希冲突）</li>
-</ol>
+        <h1>SDL库目录结构说明（Windows）</h1>
 <blockquote>
-<p>set（有序集合）增删查稳定 O(logn)</p>
+<p>路径：<code>C:\ccccc\GANME\SDLproject\SDL</code><br>
+解压后的SDL开发包，4个核心文件夹：<code>bin</code>、<code>include</code>、<code>lib</code>、<code>share</code></p>
 </blockquote>
-<h2 id="✅-常用成员函数">✅ 常用成员函数</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">unordered_set&lt;<span class="type">int</span>&gt; st;</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">5</span>);        <span class="comment">// 插入元素</span></span><br><span class="line">st.<span class="built_in">erase</span>(<span class="number">5</span>);         <span class="comment">// 删除元素，可以传值/迭代器</span></span><br><span class="line">st.<span class="built_in">count</span>(<span class="number">5</span>);         <span class="comment">// 判断元素是否存在：存在返回1，不存在返回0</span></span><br><span class="line">st.<span class="built_in">find</span>(<span class="number">5</span>);          <span class="comment">// 找到返回迭代器；找不到返回 st.end()</span></span><br><span class="line">st.<span class="built_in">empty</span>();          <span class="comment">// 判断是否为空</span></span><br><span class="line">st.<span class="built_in">size</span>();           <span class="comment">// 返回元素个数</span></span><br><span class="line">st.<span class="built_in">clear</span>();          <span class="comment">// 清空全部元素</span></span><br></pre></td></tr></table></figure>
-<p>示例：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">unordered_set&lt;<span class="type">int</span>&gt; st;</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">1</span>);</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">2</span>);</span><br><span class="line">st.<span class="built_in">insert</span>(<span class="number">2</span>); <span class="comment">// 重复，不会生效</span></span><br><span class="line">cout &lt;&lt; st.<span class="built_in">size</span>(); <span class="comment">// 输出2</span></span><br></pre></td></tr></table></figure>
-<h2 id="⚠️-高频坑（刷题考点）">⚠️ 高频坑（刷题考点）</h2>
+<h2 id="bin">bin</h2>
+<p><strong>存放SDL运行时动态库文件（<code>.dll</code>）</strong></p>
+<ul>
+<li>里面是 <code>SDL2.dll</code>（64位/32位根据你的下载版本）</li>
+<li><strong>作用</strong>：程序编译成功后，运行exe时必须依赖这个dll。</li>
+<li>使用要点：
 <ol>
-<li>不能用下标 <code>st[0]</code> 访问！没有 <code>[]</code> 运算符，和 vector/map 不一样。</li>
-<li>迭代器遍历顺序不确定，不要依赖顺序。</li>
-<li>自定义结构体不能直接放进 unordered_set，需要自己写哈希函数；普通int、string可以直接用。</li>
-<li><code>st.find(x) != st.end()</code> 用来判断元素存在；<code>st.count(x)</code> 也可以，返回0或1。</li>
+<li>编译好的 <code>.exe</code> 程序要和 <code>SDL2.dll</code> 放在同一个目录下才能正常启动；</li>
+<li>或者把dll放到系统<code>C:\Windows\System32</code>（不推荐，打包程序不方便）；</li>
+<li>开发阶段，IDE运行项目也需要能找到这个dll。</li>
 </ol>
-<h2 id="🆚-unordered-set-vs-set">🆚 unordered_set vs set</h2>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>unordered_set</th>
-<th>set</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>底层</td>
-<td>哈希表</td>
-<td>红黑树</td>
-</tr>
-<tr>
-<td>顺序</td>
-<td>无序</td>
-<td>从小到大自动排序</td>
-</tr>
-<tr>
-<td>复杂度</td>
-<td>平均O(1)</td>
-<td>O(logn)</td>
-</tr>
-<tr>
-<td>重复元素</td>
-<td>不允许</td>
-<td>不允许</td>
-</tr>
-</tbody>
-</table>
-<h2 id="📌什么时候选unordered-set？">📌什么时候选unordered_set？</h2>
-<p>只需要去重 + 判断某个元素是否存在，不关心顺序 → 优先 unordered_set。</p>
+</li>
+</ul>
+<h2 id="include">include</h2>
+<p><strong>头文件目录（<code>.h</code>）</strong></p>
+<ul>
+<li>包含 <code>SDL.h</code>、<code>SDL_types.h</code> 等所有SDL声明头文件。</li>
+<li><strong>作用</strong>：写代码 <code>#include &lt;SDL2/SDL.h&gt;</code> 的来源。编译器在编译阶段，从这里读取函数、结构体、宏定义。</li>
+<li>使用要点：
+<ul>
+<li>在VS/CMake编译配置里，添加<strong>包含目录</strong>，指向这个<code>include</code>文件夹。</li>
+<li>只负责告诉编译器“函数长什么样”，<strong>不包含实现代码</strong>。</li>
+</ul>
+</li>
+</ul>
+<h2 id="lib">lib</h2>
+<p><strong>库文件目录（静态库 <code>.lib</code> / 导入库 <code>.lib</code>）</strong></p>
+<ul>
+<li>Windows下SDL这里是<strong>导入库</strong>（不是完整静态库）：<code>SDL2.lib</code>、<code>SDL2main.lib</code></li>
+<li><strong>作用</strong>：链接阶段使用。告诉链接器，函数的实现存在 <code>SDL2.dll</code> 里面。</li>
+<li>使用要点：
+<ol>
+<li>IDE配置，添加<strong>库目录</strong>指向这个<code>lib</code>文件夹；</li>
+<li>链接器附加依赖项填写：<code>SDL2.lib;SDL2main.lib</code>；</li>
+<li><code>SDL2main.lib</code> 用来接管Windows程序入口，替换<code>main</code>函数，SDL程序一般都要链接它。</li>
+</ol>
+</li>
+</ul>
+<h2 id="share">share</h2>
+<p><strong>资源文档文件夹</strong></p>
+<ul>
+<li>里面存放许可证、readme文档、cmake配置文件、man手册等。</li>
+<li><strong>作用</strong>：开发基本用不到，是开源项目附带的法律声明、文档、cmake支持文件。</li>
+<li>使用要点：写代码、编译链接完全不需要引用这个文件夹。CMake项目可以自动读取里面的cmake脚本方便查找SDL。</li>
+</ul>
+<hr>
+<h1>快速配置总结（VS为例）</h1>
+<ol>
+<li><strong>包含目录</strong>：<code>...\SDL\include</code></li>
+<li><strong>库目录</strong>：<code>...\SDL\lib</code></li>
+<li><strong>链接器附加依赖</strong>：<code>SDL2.lib;SDL2main.lib</code></li>
+<li><strong>运行</strong>：把 <code>bin\SDL2.dll</code> 复制到exe同目录</li>
+</ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E6%95%B0%E7%BB%84%E4%BA%A4%E9%9B%86/" data-id="cmuxx7c3l000cqcma63k7hkzb" data-title="哈希表:数组交集" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="http://example.com/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/" data-id="cmv0mebsu0000hwma82ebhlsi" data-title="SDL的各个部分" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li></ul>
 
     </footer>
   </div>
@@ -181,19 +176,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2026/09/28/%E5%93%88%E5%B8%8C%E8%A1%A8-%E5%BF%AB%E4%B9%90%E6%95%B0/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">前一篇</strong>
-      <div class="article-nav-title">
-        
-          哈希表:快乐数
-        
-      </div>
-    </a>
   
-  
-    <a href="/2026/09/22/CSAPP%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2026/10/08/%E8%90%A8%E7%BB%B4%E5%BE%B7%E6%8B%89%E5%B1%80%E9%9D%A2%EF%BC%9A%E5%85%B5%E5%8D%87%E5%8F%98%E4%B8%BA%E8%BD%A6%E7%9A%84%E5%90%88%E7%90%86%E6%80%A7/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">后一篇</strong>
-      <div class="article-nav-title">CSAPP读书笔记:程序的编译</div>
+      <div class="article-nav-title">萨维德拉局面：兵升变为车的合理性</div>
     </a>
   
 </nav>
