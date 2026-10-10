@@ -80,6 +80,168 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-快速-在vscode中快速开始SDL项目" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/11/%E5%BF%AB%E9%80%9F-%E5%9C%A8vscode%E4%B8%AD%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8BSDL%E9%A1%B9%E7%9B%AE/" class="article-date">
+  <time class="dt-published" datetime="2026-10-10T17:52:34.000Z" itemprop="datePublished">2026-10-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/10/11/%E5%BF%AB%E9%80%9F-%E5%9C%A8vscode%E4%B8%AD%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8BSDL%E9%A1%B9%E7%9B%AE/">快速:在vscode中快速开始SDL项目</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>VS Code 快速开始 SDL3 项目</h1>
+<blockquote>
+<p>环境：Windows + MinGW（g++ 在 <code>C:/ccccc/cppenviro/w64devkit/bin/</code>）<br>
+SDL3 库来源：已有项目的 <code>SDL/</code> 目录（含 <code>bin/</code> <code>include/</code> <code>lib/</code>）</p>
+</blockquote>
+<hr>
+<h2 id="一、VS-Code-快速开始（6-步）">一、VS Code 快速开始（6 步）</h2>
+<h3 id="1-新建项目文件夹，VS-Code-打开它">1. 新建项目文件夹，VS Code 打开它</h3>
+<h3 id="2-复制-SDL-文件夹过来">2. 复制 SDL 文件夹过来</h3>
+<p>把已有项目里的 <code>SDL/</code> 目录整个拖进新项目根目录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">新项目/</span><br><span class="line">├── SDL/</span><br><span class="line">│   ├── bin/SDL3.dll</span><br><span class="line">│   ├── include/SDL3/*.h</span><br><span class="line">│   └── lib/libSDL3.dll.a</span><br><span class="line">├── .vscode/              ← 第 4 步会建</span><br><span class="line">├── main.cpp              ← 第 3 步</span><br><span class="line">└── CMakeList.txt         ← 第 5 步（可选）</span><br></pre></td></tr></table></figure>
+<h3 id="3-新建-main-cpp，写程序">3. 新建 main.cpp，写程序</h3>
+<h3 id="4-新建-vscode-tasks-json-—-⚠️-最关键，VS-Code-不会自动帮你配-SDL-路径">4. 新建 <code>.vscode/tasks.json</code> — ⚠️ 最关键，VS Code 不会自动帮你配 SDL 路径</h3>
+<p>Ctrl+Shift+B 的默认编译任务（<strong>cppbuild</strong>）是 VS Code C/C++ 扩展自动生成的，它只适合编 hello world，编 SDL 项目会报 <code>SDL3/SDL.h: No such file or directory</code>。<strong>不要删它（删了会自动重生），给它补齐 SDL 参数就行。</strong></p>
+<p>在项目根目录创建 <code>.vscode/tasks.json</code>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2.0.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;tasks&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cppbuild&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;label&quot;</span><span class="punctuation">:</span> <span class="string">&quot;C/C++: g++.exe 生成活动文件&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;C:/ccccc/cppenviro/w64devkit/bin/g++.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="string">&quot;-g&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-std=c++17&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-I&quot;</span><span class="punctuation">,</span> <span class="string">&quot;SDL/include&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;$&#123;file&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-o&quot;</span><span class="punctuation">,</span> <span class="string">&quot;$&#123;fileDirname&#125;\\$&#123;fileBasenameNoExtension&#125;.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-L&quot;</span><span class="punctuation">,</span> <span class="string">&quot;SDL/lib&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-lSDL3&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-lws2_32&quot;</span></span><br><span class="line">            <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;options&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;cwd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;fileDirname&#125;&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;problemMatcher&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;$gcc&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;group&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;kind&quot;</span><span class="punctuation">:</span> <span class="string">&quot;build&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;isDefault&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span> <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p><strong>三个必须改的地方</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>加什么</th>
+<th>为什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>args</code> 里加 <code>-I</code>, <code>SDL/include</code></td>
+<td>头文件路径</td>
+<td>默认任务没有 <code>-I</code>，<code>#include &lt;SDL3/SDL.h&gt;</code> 直接崩</td>
+</tr>
+<tr>
+<td><code>args</code> 里加 <code>-L</code>, <code>SDL/lib</code>, <code>-lSDL3</code>, <code>-lws2_32</code></td>
+<td>链接 SDL + WinSock</td>
+<td>缺了就 <code>undefined reference</code></td>
+</tr>
+<tr>
+<td><code>options.cwd</code> 改成 <code>$&#123;fileDirname&#125;</code></td>
+<td>工作目录跟源文件走</td>
+<td>VS Code 有时自动设成 MinGW/bin，相对路径全废</td>
+</tr>
+</tbody>
+</table>
+<p><strong>默认 cppbuild vs 补齐后</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">默认:  g++ -g main.cpp -o main.exe                ← 什么都没带</span><br><span class="line">补齐:  g++ -g -std=c++17 -I SDL/include main.cpp -o main.exe -L SDL/lib -lSDL3 -lws2_32</span><br><span class="line">              ^^^^^^^^^^^  ^^^^^^^^^^^^                        ^^^^^^^^^^^^ ^^^^^^^^</span><br><span class="line">                           头文件路径                              链接库</span><br></pre></td></tr></table></figure>
+<h3 id="5-（可选）写-CMakeList-txt">5. （可选）写 CMakeList.txt</h3>
+<p>如果你用 CMake Tools 插件：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.20</span>)</span><br><span class="line"><span class="keyword">project</span>(HelloSDL3 LANGUAGES CXX)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">17</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD_REQUIRED <span class="keyword">ON</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(SDL3_DIR <span class="string">&quot;$&#123;CMAKE_SOURCE_DIR&#125;/SDL/lib/cmake/SDL3&quot;</span> CACHE PATH <span class="string">&quot;SDL3 cmake config&quot;</span>)</span><br><span class="line"><span class="keyword">find_package</span>(SDL3 REQUIRED CONFIG)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">NOT</span> <span class="keyword">TARGET</span> SDL3::SDL3)</span><br><span class="line">    <span class="keyword">add_library</span>(SDL3::SDL3 ALIAS SDL3::SDL3-shared)</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_executable</span>(demo main.cpp)</span><br><span class="line"><span class="keyword">target_link_libraries</span>(demo PRIVATE SDL3::SDL3)</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_custom_command</span>(<span class="keyword">TARGET</span> demo POST_BUILD</span><br><span class="line">    <span class="keyword">COMMAND</span> <span class="variable">$&#123;CMAKE_COMMAND&#125;</span> -E copy_if_different</span><br><span class="line">        $&lt;TARGET_FILE:SDL3::SDL3&gt; $&lt;TARGET_FILE_DIR:demo&gt;</span><br><span class="line">    VERBATIM)</span><br></pre></td></tr></table></figure>
+<h3 id="6-拷-SDL3-dll，编译运行">6. 拷 SDL3.dll，编译运行</h3>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Copy-Item</span> SDL\bin\SDL3.dll .</span><br></pre></td></tr></table></figure>
+<p>然后 <strong>Ctrl+Shift+B</strong> 编译，双击 exe 运行。</p>
+<hr>
+<h2 id="二、命令行编译（不依赖-VS-Code）">二、命令行编译（不依赖 VS Code）</h2>
+<p>一行搞定，适合快速验证：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">g++ <span class="literal">-g</span> <span class="literal">-std</span>=c++<span class="number">17</span> <span class="literal">-I</span> SDL/include main.cpp <span class="literal">-o</span> demo.exe <span class="literal">-L</span> SDL/lib <span class="literal">-lSDL3</span> <span class="literal">-lws2_32</span></span><br><span class="line"><span class="built_in">Copy-Item</span> SDL\bin\SDL3.dll .</span><br><span class="line">.\demo.exe</span><br></pre></td></tr></table></figure>
+<p>完整参数用绝对路径写死：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\ccccc\cppenviro\w64devkit\bin\g++.exe <span class="literal">-g</span> <span class="literal">-std</span>=c++<span class="number">17</span> <span class="literal">-I</span> SDL/include main.cpp <span class="literal">-o</span> demo.exe <span class="literal">-L</span> SDL/lib <span class="literal">-lSDL3</span> <span class="literal">-lws2_32</span></span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-I SDL/include</code></td>
+<td>头文件搜索目录，让 <code>#include &lt;SDL3/SDL.h&gt;</code> 能找到</td>
+</tr>
+<tr>
+<td><code>-L SDL/lib</code></td>
+<td>链接库搜索目录，找到 <code>libSDL3.dll.a</code></td>
+</tr>
+<tr>
+<td><code>-lSDL3</code></td>
+<td>链接 SDL3 主库</td>
+</tr>
+<tr>
+<td><code>-lws2_32</code></td>
+<td>链接 WinSock（SDL3 在 Windows 上需要）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="三、常见报错速查">三、常见报错速查</h2>
+<table>
+<thead>
+<tr>
+<th>报错</th>
+<th>原因</th>
+<th>修法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SDL3/SDL.h: No such file or directory</code></td>
+<td>cppbuild 任务没补 <code>-I SDL/include</code></td>
+<td>改 <code>tasks.json</code> 的 args（见第 4 步）</td>
+</tr>
+<tr>
+<td><code>undefined reference to SDL_Init...</code></td>
+<td>没加 <code>-lSDL3 -lws2_32</code></td>
+<td>同上，args 补全链接参数</td>
+</tr>
+<tr>
+<td>双击 exe 报&quot;找不到 SDL3.dll&quot;</td>
+<td>DLL 没放对位置</td>
+<td>拷 <code>SDL/bin/SDL3.dll</code> 到 exe 同目录</td>
+</tr>
+<tr>
+<td>IntelliSense 报红波浪线</td>
+<td><code>c_cpp_properties.json</code> 缺路径</td>
+<td>在 <code>.vscode/c_cpp_properties.json</code> 的 <code>includePath</code> 加 <code>&quot;$&#123;workspaceFolder&#125;/SDL/include&quot;</code></td>
+</tr>
+<tr>
+<td>cppbuild 的 cwd 自动变成 <code>w64devkit/bin</code></td>
+<td>VS Code C/C++ 扩展的 bug</td>
+<td>手动把 <code>options.cwd</code> 改成 <code>&quot;$&#123;fileDirname&#125;&quot;</code></td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/10/11/%E5%BF%AB%E9%80%9F-%E5%9C%A8vscode%E4%B8%AD%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8BSDL%E9%A1%B9%E7%9B%AE/" data-id="cmv2p1hpq0004qsmab1itb5zb" data-title="快速:在vscode中快速开始SDL项目" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F/" rel="tag">快速</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-C++从零配置编译与运行环境-完全不使用IDE" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/10/09/C++%E4%BB%8E%E9%9B%B6%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91%E4%B8%8E%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83-%E5%AE%8C%E5%85%A8%E4%B8%8D%E4%BD%BF%E7%94%A8IDE/" class="article-date">
@@ -2929,10 +3091,10 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
 
 
   
-    <article id="post-SDL的各个部分" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <article id="post-C-开发日志-SDL环境配置与C-程序的编译过程" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/" class="article-date">
-  <time class="dt-published" datetime="2026-10-09T07:03:29.000Z" itemprop="datePublished">2026-10-09</time>
+    <a href="/2026/10/09/C-%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97-SDL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E4%B8%8EC-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/" class="article-date">
+  <time class="dt-published" datetime="2026-10-09T07:44:21.000Z" itemprop="datePublished">2026-10-09</time>
 </a>
     
   </div>
@@ -2943,7 +3105,7 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
         
   
     <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/">SDL的各个部分</a>
+      <a class="p-name article-title" href="/2026/10/09/C-%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97-SDL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E4%B8%8EC-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">C++开发日志:SDL环境配置与C++程序的编译过程</a>
     </h1>
   
 
@@ -2951,135 +3113,21 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h1>SDL库目录结构说明（Windows）</h1>
-<blockquote>
-<p>路径：<code>C:\ccccc\GANME\SDLproject\SDL</code><br>
-解压后的SDL开发包，4个核心文件夹：<code>bin</code>、<code>include</code>、<code>lib</code>、<code>share</code></p>
-</blockquote>
-<h2 id="bin">bin</h2>
-<p><strong>存放SDL运行时动态库文件（<code>.dll</code>）</strong></p>
+        <p><img src="SDL%E4%B8%89%E9%98%B6%E6%AE%B5%E7%BC%96%E8%AF%91%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE_%E4%B8%AD%E6%96%87%E7%89%88.png" alt="alt text"></p>
 <ul>
-<li>里面是 <code>SDL2.dll</code>（64位/32位根据你的下载版本）</li>
-<li><strong>作用</strong>：程序编译成功后，运行exe时必须依赖这个dll。</li>
-<li>使用要点：
-<ol>
-<li>编译好的 <code>.exe</code> 程序要和 <code>SDL2.dll</code> 放在同一个目录下才能正常启动；</li>
-<li>或者把dll放到系统<code>C:\Windows\System32</code>（不推荐，打包程序不方便）；</li>
-<li>开发阶段，IDE运行项目也需要能找到这个dll。</li>
-</ol>
-</li>
+<li>首先，编译器会把 <code>main.cpp</code> 转换成机器码，也就是处理器实际执行的指令。为了处理我们的 SDL 代码，编译器需要读取 SDL 的头文件，因此必须知道<code>include</code>文件夹所在位置。</li>
+<li>接下来，链接器会把我们生成的机器码和 SDL 库的机器码合并，生成完整程序，也就是<code>.exe</code>可执行文件；这一步需要用到<code>SDL3.lib</code>。</li>
+<li>最后，程序启动时，Windows 会加载<code>SDL3.dll</code>。前两项属于项目配置，第三项是我们需要手动复制的文件。</li>
 </ul>
-<h2 id="include">include</h2>
-<p><strong>头文件目录（<code>.h</code>）</strong></p>
-<ul>
-<li>包含 <code>SDL.h</code>、<code>SDL_types.h</code> 等所有SDL声明头文件。</li>
-<li><strong>作用</strong>：写代码 <code>#include &lt;SDL2/SDL.h&gt;</code> 的来源。编译器在编译阶段，从这里读取函数、结构体、宏定义。</li>
-<li>使用要点：
-<ul>
-<li>在VS/CMake编译配置里，添加<strong>包含目录</strong>，指向这个<code>include</code>文件夹。</li>
-<li>只负责告诉编译器“函数长什么样”，<strong>不包含实现代码</strong>。</li>
-</ul>
-</li>
-</ul>
-<h2 id="lib">lib</h2>
-<p><strong>库文件目录（静态库 <code>.lib</code> / 导入库 <code>.lib</code>）</strong></p>
-<ul>
-<li>Windows下SDL这里是<strong>导入库</strong>（不是完整静态库）：<code>SDL2.lib</code>、<code>SDL2main.lib</code></li>
-<li><strong>作用</strong>：链接阶段使用。告诉链接器，函数的实现存在 <code>SDL2.dll</code> 里面。</li>
-<li>使用要点：
-<ol>
-<li>IDE配置，添加<strong>库目录</strong>指向这个<code>lib</code>文件夹；</li>
-<li>链接器附加依赖项填写：<code>SDL2.lib;SDL2main.lib</code>；</li>
-<li><code>SDL2main.lib</code> 用来接管Windows程序入口，替换<code>main</code>函数，SDL程序一般都要链接它。</li>
-</ol>
-</li>
-</ul>
-<h2 id="share">share</h2>
-<p><strong>资源文档文件夹</strong></p>
-<ul>
-<li>里面存放许可证、readme文档、cmake配置文件、man手册等。</li>
-<li><strong>作用</strong>：开发基本用不到，是开源项目附带的法律声明、文档、cmake支持文件。</li>
-<li>使用要点：写代码、编译链接完全不需要引用这个文件夹。CMake项目可以自动读取里面的cmake脚本方便查找SDL。</li>
-</ul>
-<hr>
-<h1>快速配置总结（VS为例）</h1>
-<ol>
-<li><strong>包含目录</strong>：<code>...\SDL\include</code></li>
-<li><strong>库目录</strong>：<code>...\SDL\lib</code></li>
-<li><strong>链接器附加依赖</strong>：<code>SDL2.lib;SDL2main.lib</code></li>
-<li><strong>运行</strong>：把 <code>bin\SDL2.dll</code> 复制到exe同目录</li>
-</ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/" data-id="cmv0mebsu0000hwma82ebhlsi" data-title="SDL的各个部分" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="http://example.com/2026/10/09/C-%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97-SDL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E4%B8%8EC-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/" data-id="cmv2p1hpj0000qsmadii4gcnm" data-title="C++开发日志:SDL环境配置与C++程序的编译过程" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-萨维德拉局面：兵升变为车的合理性" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/10/08/%E8%90%A8%E7%BB%B4%E5%BE%B7%E6%8B%89%E5%B1%80%E9%9D%A2%EF%BC%9A%E5%85%B5%E5%8D%87%E5%8F%98%E4%B8%BA%E8%BD%A6%E7%9A%84%E5%90%88%E7%90%86%E6%80%A7/" class="article-date">
-  <time class="dt-published" datetime="2026-10-08T08:44:30.000Z" itemprop="datePublished">2026-10-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/08/%E8%90%A8%E7%BB%B4%E5%BE%B7%E6%8B%89%E5%B1%80%E9%9D%A2%EF%BC%9A%E5%85%B5%E5%8D%87%E5%8F%98%E4%B8%BA%E8%BD%A6%E7%9A%84%E5%90%88%E7%90%86%E6%80%A7/">萨维德拉局面：兵升变为车的合理性</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>一般来说，后是国际象棋中的最强的棋子，当兵升变时，理所应当升变为后，实战时也有变马的情况，但是那是因为马有其优势区间，马能攻击到当下后没法攻击到位置，所以有合理性。</p>
-<h1><strong>但是</strong></h1>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/%E8%90%A8%E7%BB%B4%E5%BE%B7%E6%8B%89%E5%B1%80%E9%9D%A2.png" alt=""></p>
-<blockquote>
-<p><a target="_blank" rel="noopener" href="https://mindzug.com/zh-Hans/glossary/saavedra-position" title="点击查看详情">萨维德拉局面</a></p>
-</blockquote>
-<p>面对这种局面时变后就并非最优解，因为有<strong>逼和</strong>这种规则的存在，更强的棋子反而会导致黑棋没有可操作的棋子而导致原本的必胜局面变成了和棋</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/%E4%BD%8E%E5%8D%87%E5%8F%98.png" alt=""></p>
-<blockquote>
-<p>低升变</p>
-</blockquote>
-<p>此时变成车反而可以将杀，保住胜势</p>
-<h1><strong>那是不是说只剩下王的情况就必然逼和了吗？</strong></h1>
-<pre><code>答案当然时否定的
-</code></pre>
-<h2 id="逼和定义：">逼和定义：</h2>
-<ol>
-<li>当前<strong>没有被将军</strong></li>
-<li>该方<strong>所有棋子（只剩王的话就是王）全部没有合法走格</strong></li>
-</ol>
-<h1>为什么要有逼和？</h1>
-<p>逼和本质是 <strong>「王不能被捕获」</strong> 这条铁律的推论，不是凭空增加的一条耍赖规则。它抬高了残局难度，给劣势方留了救命的手段，也诞生了很多独特战术。代价就是新手经常一不小心把赢棋走成和棋。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/10/08/%E8%90%A8%E7%BB%B4%E5%BE%B7%E6%8B%89%E5%B1%80%E9%9D%A2%EF%BC%9A%E5%85%B5%E5%8D%87%E5%8F%98%E4%B8%BA%E8%BD%A6%E7%9A%84%E5%90%88%E7%90%86%E6%80%A7/" data-id="cmuzbnp6800000sma404bcs8m" data-title="萨维德拉局面：兵升变为车的合理性" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Chess/" rel="tag">Chess</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%81%B5%E6%84%9F/" rel="tag">灵感</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" rel="tag">游戏开发日志</a></li></ul>
 
     </footer>
   </div>
@@ -3107,7 +3155,7 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACGN/" rel="tag">ACGN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Chess/" rel="tag">Chess</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGL/" rel="tag">OpenGL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" rel="tag">功能测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" rel="tag">学习规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" rel="tag">开发方案</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%81%B5%E6%84%9F/" rel="tag">灵感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" rel="tag">赛博朋克</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACGN/" rel="tag">ACGN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Chess/" rel="tag">Chess</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGL/" rel="tag">OpenGL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" rel="tag">功能测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" rel="tag">学习规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" rel="tag">开发方案</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F/" rel="tag">快速</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" rel="tag">游戏开发日志</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%81%B5%E6%84%9F/" rel="tag">灵感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" rel="tag">赛博朋克</a></li></ul>
     </div>
   </div>
 
@@ -3117,7 +3165,7 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/OpenGL/" style="font-size: 12.5px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 12.5px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 15px;">学习规划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 12.5px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 17.5px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a>
+      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/OpenGL/" style="font-size: 12.5px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 12.5px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 15px;">学习规划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 10px;">快速</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 12.5px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 17.5px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a>
     </div>
   </div>
 
@@ -3139,6 +3187,10 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
       <ul>
         
           <li>
+            <a href="/2026/10/11/%E5%BF%AB%E9%80%9F-%E5%9C%A8vscode%E4%B8%AD%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8BSDL%E9%A1%B9%E7%9B%AE/">快速:在vscode中快速开始SDL项目</a>
+          </li>
+        
+          <li>
             <a href="/2026/10/09/C++%E4%BB%8E%E9%9B%B6%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91%E4%B8%8E%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83-%E5%AE%8C%E5%85%A8%E4%B8%8D%E4%BD%BF%E7%94%A8IDE/">C++开发日志:SDL环境配置与C++程序的编译过程</a>
           </li>
         
@@ -3151,11 +3203,7 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
           </li>
         
           <li>
-            <a href="/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/">SDL的各个部分</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/08/%E8%90%A8%E7%BB%B4%E5%BE%B7%E6%8B%89%E5%B1%80%E9%9D%A2%EF%BC%9A%E5%85%B5%E5%8D%87%E5%8F%98%E4%B8%BA%E8%BD%A6%E7%9A%84%E5%90%88%E7%90%86%E6%80%A7/">萨维德拉局面：兵升变为车的合理性</a>
+            <a href="/2026/10/09/C-%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97-SDL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E4%B8%8EC-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">C++开发日志:SDL环境配置与C++程序的编译过程</a>
           </li>
         
       </ul>
@@ -3212,6 +3260,429 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
 
   </div>
 <!-- hexo injector body_end start -->
+<style>
+  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
+  .lanx-sidebar-sticky {
+    display: flex; flex-direction: column; gap: 12px;
+    margin: 0 0 50px 0;
+    width: 100%;
+  }
+
+  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
+  .lanx-card {
+    box-sizing: border-box; width: 100%;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid #e8e8e8; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    font-size: 12px; color: #666; text-align: center;
+    line-height: 1.6; user-select: none;
+    transition: box-shadow 0.2s ease;
+  }
+  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+
+  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
+  .lanx-clock .clock-time {
+    font-size: 36px; font-weight: 700; color: #1a365d;
+    font-variant-numeric: tabular-nums; letter-spacing: 1px;
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
+      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
+      "Courier New", monospace;
+  }
+  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
+  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
+
+  /* 语录 */
+  .lanx-quote .quote-body {
+    font-size: 13px; color: #444; line-height: 1.75;
+    text-align: left; padding: 2px 0;
+  }
+  .lanx-quote .quote-meta {
+    font-size: 11px; color: #999; margin-top: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
+  .lanx-quote .quote-author { color: #888; }
+  .lanx-quote .quote-type {
+    font-size: 10px; padding: 1px 8px; border-radius: 10px;
+    background: #f0f0f0; color: #888;
+  }
+  .lanx-quote .quote-refresh {
+    cursor: pointer; padding: 2px 6px; border-radius: 4px;
+    color: #aaa; transition: all 0.2s;
+  }
+  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
+  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
+
+  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
+  @media (max-width: 767px) {
+    .lanx-sidebar-sticky { display: none; }
+    .lanx-sidebar-sticky.lanx-mobile-only {
+      display: flex; margin: 50px 0; width: 100%;
+    }
+  }
+</style>
+
+<script>
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    var sidebar = document.querySelector('#sidebar');
+    if (!sidebar) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'lanx-sidebar-sticky';
+
+    var weekdays = ['日','一','二','三','四','五','六'];
+
+    // 检测是否手机端(与 CSS 媒体查询断点一致)
+    var isMobile = window.innerWidth < 768;
+
+    // 时钟(上)
+    var clock = document.createElement('div');
+    clock.className = 'lanx-card lanx-clock';
+    clock.innerHTML =
+      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
+      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
+      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
+    wrap.appendChild(clock);
+
+    // 语录(下)
+    var quote = document.createElement('div');
+    quote.className = 'lanx-card lanx-quote';
+    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
+    wrap.appendChild(quote);
+
+    if (isMobile) {
+      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
+      wrap.classList.add('lanx-mobile-only');
+      sidebar.appendChild(wrap);
+    } else {
+      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
+      sidebar.insertBefore(wrap, sidebar.firstChild);
+      var firstInner = document.querySelector('article .article-inner');
+      if (firstInner) {
+        wrap.style.marginTop =
+          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
+      }
+    }
+
+    // 时钟
+    function tick(){
+      var d = new Date();
+      var p = function(n){ return n<10?'0'+n:n; };
+      document.getElementById('lanx_clock_time').textContent =
+        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+      document.getElementById('lanx_clock_date').textContent =
+        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
+      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
+    function loadQuotes(){
+      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
+        show(window.LANX_EXCERPTS);
+        return;
+      }
+      fetch('/excerpts.json')
+        .then(function(r){ return r.json(); })
+        .then(function(d){ show(d||[]); })
+        .catch(function(){ show([]); });
+    }
+    loadQuotes();
+    function show(data){
+      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
+      var it = data[Math.floor(Math.random()*data.length)];
+      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
+      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
+      quote.innerHTML =
+        '<div class="quote-body">'+it.content+'</div>' +
+        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
+        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
+      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
+    }
+  }, 500);
+});
+</script>
+  
+<style>
+  .visitor-stats { margin-top: 10px; color: #999; font-size: 13px; text-align: center; }
+  .visitor-stats .stat-item { display: inline-block; margin: 0 6px; }
+  .visitor-stats .stat-num { color: #555; font-weight: 600; }
+  @media (max-width: 500px) { .visitor-stats .stat-item { display: block; margin: 2px 0; } }
+</style>
+
+<script>
+// === 今日 & 本月访问(localStorage,仅反映当前浏览器) ===
+(function(){
+  var now = new Date();
+  var todayKey = 'visit_' + now.toISOString().slice(0, 10);
+  var monthKey = 'visit_' + now.getFullYear() + '_' + (now.getMonth()+1);
+  var todayCount = parseInt(localStorage.getItem(todayKey) || '0') + 1;
+  var monthCount = parseInt(localStorage.getItem(monthKey) || '0') + 1;
+  localStorage.setItem(todayKey, todayCount);
+  localStorage.setItem(monthKey, monthCount);
+
+  // 插入页脚统计区
+  function inject() {
+    var fi = document.querySelector('#footer-info');
+    if (!fi) { setTimeout(inject, 300); return; }
+    if (fi.querySelector('.visitor-stats')) return;
+    var div = document.createElement('div');
+    div.className = 'visitor-stats';
+    div.innerHTML =
+      '<span class="stat-item">📅 今日 <span class="stat-num">' + todayCount + '</span></span>' +
+      '<span class="stat-item">📆 本月 <span class="stat-num">' + monthCount + '</span></span>' +
+      '<span class="stat-item">👥 访客 <span id="busuanzi_value_site_uv" class="stat-num">--</span></span>' +
+      '<span class="stat-item">📄 浏览 <span id="busuanzi_value_site_pv" class="stat-num">--</span></span>';
+    fi.appendChild(div);
+  }
+  inject();
+})();
+</script>
+
+<!-- 不蒜子:站点总 PV/UV -->
+<script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
+  
+<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
+<style>
+  /* --- Toast 提示 --- */
+  .lanx-toast {
+    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
+    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lanx-toast.success { background: #38a169; }
+  .lanx-toast.error { background: #e53e3e; }
+
+  /* --- Twikoo 评论区整体容器 --- */
+  #twikoo-comments {
+    margin-top: 48px; padding: 28px 28px 20px;
+    background: #fff; border-radius: 14px;
+    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
+  }
+  #twikoo-comments > h3 {
+    margin: 0 0 20px 0; padding-bottom: 14px;
+    font-size: 16px; font-weight: 600; color: #333;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  /* 留言板:不同的标题和背景 */
+  body.page-guestbook #twikoo-comments {
+    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
+    border: 1px solid #dbeafe;
+  }
+  body.page-guestbook #twikoo-comments > h3 {
+    border-bottom-color: #dbeafe;
+    color: #2563eb;
+  }
+
+  /* --- Twikoo 内部组件美化 --- */
+  .tk-comment-box {
+    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
+    padding: 14px 16px !important; margin-bottom: 16px !important;
+    transition: border-color 0.2s !important;
+  }
+  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
+  .tk-comment-box .el-textarea__inner {
+    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
+    font-size: 14px !important; line-height: 1.6 !important;
+  }
+  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
+  .tk-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    border: none !important; border-radius: 20px !important;
+    padding: 8px 22px !important; font-weight: 500 !important;
+  }
+  .tk-btn-primary:hover { opacity: 0.9; }
+
+  /* 评论列表卡片化 */
+  .tk-comment-item {
+    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
+    padding: 16px 18px !important; margin-bottom: 12px !important;
+    background: #fafbfc !important; transition: box-shadow 0.2s !important;
+  }
+  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+  /* 博主标识 */
+  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
+
+  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
+  .tk-powered-by,
+  .tk-comment-powered,
+  [class*="powered-by"],
+  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
+
+  /* 评论区底部工具条 */
+  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
+
+  /* 点赞/踩按钮 */
+  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
+
+  /* 头像 */
+  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
+
+  /* --- 分享按钮改复制链接 --- */
+  .article-share-link { cursor: pointer; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
+
+<script>
+(function(){
+  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
+  var path = location.pathname;
+  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
+  var isPost = document.querySelectorAll('article.article').length === 1;
+  var isGuestbook = path.indexOf('/guestbook') !== -1;
+
+  // ============ Toast 工具 ============
+  function showToast(msg, type) {
+    var t = document.createElement('div');
+    t.className = 'lanx-toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 1800);
+  }
+
+  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
+  function copyShareLink() {
+    var links = document.querySelectorAll('.article-share-link');
+    if (!links.length) return;
+    links.forEach(function(link) {
+      link.href = 'javascript:void(0)';
+      // 移除旧监听(防重复绑定)
+      link.replaceWith(link.cloneNode(true));
+    });
+    // 重新获取(因为 cloneNode 替换了)
+    links = document.querySelectorAll('.article-share-link');
+    links.forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
+        var url;
+        if (link.dataset.url) {
+          try { url = new URL(link.dataset.url, location.origin).href; }
+          catch(err) { url = location.origin + location.pathname; }
+        } else {
+          url = location.origin + location.pathname;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function(){
+            showToast('📋 链接已复制到剪贴板');
+          }).catch(function(){ fallbackCopy(url); });
+        } else {
+          fallbackCopy(url);
+        }
+      }, true);
+    });
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
+    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
+    ta.remove();
+  }
+
+  // ============ 2. 文章页访问量 + 评论容器 ============
+  if (isGuestbook) document.body.classList.add('page-guestbook');
+
+  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
+  copyShareLink();
+
+  if (isPost) {
+    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
+    setTimeout(function(){
+      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
+      var af = document.querySelector('.article-footer');
+      if (!af) return;
+      // 👁️ 阅读 + 👍 点赞 内联显示
+      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
+        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
+        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
+      '</span>';
+      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
+      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
+    }, 200);
+  }
+
+  if (isPost || isGuestbook) {
+    var commentDiv = document.createElement('div');
+    commentDiv.id = 'twikoo-comments';
+    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
+    var collapsible = !isGuestbook;
+    commentDiv.innerHTML =
+      (collapsible
+        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
+        : ''
+      ) +
+      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
+        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
+      '</div>';
+    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
+    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
+
+    // 折叠按钮点击
+    if (collapsible) {
+      var btn = document.getElementById('twikoo-toggle-btn');
+      var body = document.getElementById('twikoo-comments-body');
+      btn.addEventListener('click', function() {
+        if (body.style.display === 'none') {
+          body.style.display = '';
+          btn.textContent = '🙈 收起评论区';
+          btn.style.background = '#f5f5f5';
+          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
+          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
+        } else {
+          body.style.display = 'none';
+          btn.textContent = '💬 展开评论区';
+          btn.style.background = '#fff';
+        }
+      });
+    }
+  }
+
+  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
+  function initTwikooBody() {
+    var commentBox = document.getElementById('tcomments');
+    if (!commentBox) return;
+    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
+    var pinger = new Promise(function(resolve){
+      var timer = setTimeout(function(){ resolve(false); }, 5000);
+      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
+        .then(function(){ clearTimeout(timer); resolve(true); })
+        .catch(function(){ clearTimeout(timer); resolve(false); });
+    });
+    pinger.then(function(ok){
+      if (!ok) {
+        commentBox.innerHTML =
+          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
+            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
+            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
+          '</div>';
+        return;
+      }
+      function waitTwikoo(){
+        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
+        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
+          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
+      }
+      waitTwikoo();
+    });
+  }
+  // 留言板:立即初始化;文章页:等用户点展开按钮
+  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
+})();
+</script>
+  
 <style>
   #lanx-chess-root {
     --lanx-light: #f0d9b5;
@@ -5126,429 +5597,6 @@ function undo(){
   }
 
   mount();
-})();
-</script>
-  
-<style>
-  .visitor-stats { margin-top: 10px; color: #999; font-size: 13px; text-align: center; }
-  .visitor-stats .stat-item { display: inline-block; margin: 0 6px; }
-  .visitor-stats .stat-num { color: #555; font-weight: 600; }
-  @media (max-width: 500px) { .visitor-stats .stat-item { display: block; margin: 2px 0; } }
-</style>
-
-<script>
-// === 今日 & 本月访问(localStorage,仅反映当前浏览器) ===
-(function(){
-  var now = new Date();
-  var todayKey = 'visit_' + now.toISOString().slice(0, 10);
-  var monthKey = 'visit_' + now.getFullYear() + '_' + (now.getMonth()+1);
-  var todayCount = parseInt(localStorage.getItem(todayKey) || '0') + 1;
-  var monthCount = parseInt(localStorage.getItem(monthKey) || '0') + 1;
-  localStorage.setItem(todayKey, todayCount);
-  localStorage.setItem(monthKey, monthCount);
-
-  // 插入页脚统计区
-  function inject() {
-    var fi = document.querySelector('#footer-info');
-    if (!fi) { setTimeout(inject, 300); return; }
-    if (fi.querySelector('.visitor-stats')) return;
-    var div = document.createElement('div');
-    div.className = 'visitor-stats';
-    div.innerHTML =
-      '<span class="stat-item">📅 今日 <span class="stat-num">' + todayCount + '</span></span>' +
-      '<span class="stat-item">📆 本月 <span class="stat-num">' + monthCount + '</span></span>' +
-      '<span class="stat-item">👥 访客 <span id="busuanzi_value_site_uv" class="stat-num">--</span></span>' +
-      '<span class="stat-item">📄 浏览 <span id="busuanzi_value_site_pv" class="stat-num">--</span></span>';
-    fi.appendChild(div);
-  }
-  inject();
-})();
-</script>
-
-<!-- 不蒜子:站点总 PV/UV -->
-<script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
-  
-<style>
-  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
-  .lanx-sidebar-sticky {
-    display: flex; flex-direction: column; gap: 12px;
-    margin: 0 0 50px 0;
-    width: 100%;
-  }
-
-  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
-  .lanx-card {
-    box-sizing: border-box; width: 100%;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.94);
-    border: 1px solid #e8e8e8; border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    font-size: 12px; color: #666; text-align: center;
-    line-height: 1.6; user-select: none;
-    transition: box-shadow 0.2s ease;
-  }
-  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
-
-  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
-  .lanx-clock .clock-time {
-    font-size: 36px; font-weight: 700; color: #1a365d;
-    font-variant-numeric: tabular-nums; letter-spacing: 1px;
-    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
-      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
-      "Courier New", monospace;
-  }
-  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
-  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
-
-  /* 语录 */
-  .lanx-quote .quote-body {
-    font-size: 13px; color: #444; line-height: 1.75;
-    text-align: left; padding: 2px 0;
-  }
-  .lanx-quote .quote-meta {
-    font-size: 11px; color: #999; margin-top: 8px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
-  .lanx-quote .quote-author { color: #888; }
-  .lanx-quote .quote-type {
-    font-size: 10px; padding: 1px 8px; border-radius: 10px;
-    background: #f0f0f0; color: #888;
-  }
-  .lanx-quote .quote-refresh {
-    cursor: pointer; padding: 2px 6px; border-radius: 4px;
-    color: #aaa; transition: all 0.2s;
-  }
-  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
-  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
-
-  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
-  @media (max-width: 767px) {
-    .lanx-sidebar-sticky { display: none; }
-    .lanx-sidebar-sticky.lanx-mobile-only {
-      display: flex; margin: 50px 0; width: 100%;
-    }
-  }
-</style>
-
-<script>
-window.addEventListener('load', function(){
-  setTimeout(function(){
-    var sidebar = document.querySelector('#sidebar');
-    if (!sidebar) return;
-
-    var wrap = document.createElement('div');
-    wrap.className = 'lanx-sidebar-sticky';
-
-    var weekdays = ['日','一','二','三','四','五','六'];
-
-    // 检测是否手机端(与 CSS 媒体查询断点一致)
-    var isMobile = window.innerWidth < 768;
-
-    // 时钟(上)
-    var clock = document.createElement('div');
-    clock.className = 'lanx-card lanx-clock';
-    clock.innerHTML =
-      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
-      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
-      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
-    wrap.appendChild(clock);
-
-    // 语录(下)
-    var quote = document.createElement('div');
-    quote.className = 'lanx-card lanx-quote';
-    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
-    wrap.appendChild(quote);
-
-    if (isMobile) {
-      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
-      wrap.classList.add('lanx-mobile-only');
-      sidebar.appendChild(wrap);
-    } else {
-      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
-      sidebar.insertBefore(wrap, sidebar.firstChild);
-      var firstInner = document.querySelector('article .article-inner');
-      if (firstInner) {
-        wrap.style.marginTop =
-          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
-      }
-    }
-
-    // 时钟
-    function tick(){
-      var d = new Date();
-      var p = function(n){ return n<10?'0'+n:n; };
-      document.getElementById('lanx_clock_time').textContent =
-        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
-      document.getElementById('lanx_clock_date').textContent =
-        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
-      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
-    }
-    tick();
-    setInterval(tick, 1000);
-
-    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
-    function loadQuotes(){
-      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
-        show(window.LANX_EXCERPTS);
-        return;
-      }
-      fetch('/excerpts.json')
-        .then(function(r){ return r.json(); })
-        .then(function(d){ show(d||[]); })
-        .catch(function(){ show([]); });
-    }
-    loadQuotes();
-    function show(data){
-      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
-      var it = data[Math.floor(Math.random()*data.length)];
-      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
-      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
-      quote.innerHTML =
-        '<div class="quote-body">'+it.content+'</div>' +
-        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
-        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
-      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
-    }
-  }, 500);
-});
-</script>
-  
-<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
-<style>
-  /* --- Toast 提示 --- */
-  .lanx-toast {
-    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
-    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
-    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  }
-  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .lanx-toast.success { background: #38a169; }
-  .lanx-toast.error { background: #e53e3e; }
-
-  /* --- Twikoo 评论区整体容器 --- */
-  #twikoo-comments {
-    margin-top: 48px; padding: 28px 28px 20px;
-    background: #fff; border-radius: 14px;
-    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
-  }
-  #twikoo-comments > h3 {
-    margin: 0 0 20px 0; padding-bottom: 14px;
-    font-size: 16px; font-weight: 600; color: #333;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  /* 留言板:不同的标题和背景 */
-  body.page-guestbook #twikoo-comments {
-    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
-    border: 1px solid #dbeafe;
-  }
-  body.page-guestbook #twikoo-comments > h3 {
-    border-bottom-color: #dbeafe;
-    color: #2563eb;
-  }
-
-  /* --- Twikoo 内部组件美化 --- */
-  .tk-comment-box {
-    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
-    padding: 14px 16px !important; margin-bottom: 16px !important;
-    transition: border-color 0.2s !important;
-  }
-  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
-  .tk-comment-box .el-textarea__inner {
-    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
-    font-size: 14px !important; line-height: 1.6 !important;
-  }
-  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
-  .tk-btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-    border: none !important; border-radius: 20px !important;
-    padding: 8px 22px !important; font-weight: 500 !important;
-  }
-  .tk-btn-primary:hover { opacity: 0.9; }
-
-  /* 评论列表卡片化 */
-  .tk-comment-item {
-    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
-    padding: 16px 18px !important; margin-bottom: 12px !important;
-    background: #fafbfc !important; transition: box-shadow 0.2s !important;
-  }
-  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-
-  /* 博主标识 */
-  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
-
-  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
-  .tk-powered-by,
-  .tk-comment-powered,
-  [class*="powered-by"],
-  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
-
-  /* 评论区底部工具条 */
-  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
-
-  /* 点赞/踩按钮 */
-  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
-
-  /* 头像 */
-  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
-
-  /* --- 分享按钮改复制链接 --- */
-  .article-share-link { cursor: pointer; }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
-
-<script>
-(function(){
-  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
-  var path = location.pathname;
-  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
-  var isPost = document.querySelectorAll('article.article').length === 1;
-  var isGuestbook = path.indexOf('/guestbook') !== -1;
-
-  // ============ Toast 工具 ============
-  function showToast(msg, type) {
-    var t = document.createElement('div');
-    t.className = 'lanx-toast' + (type ? ' ' + type : '');
-    t.textContent = msg;
-    document.body.appendChild(t);
-    requestAnimationFrame(function(){ t.classList.add('show'); });
-    setTimeout(function(){
-      t.classList.remove('show');
-      setTimeout(function(){ t.remove(); }, 300);
-    }, 1800);
-  }
-
-  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
-  function copyShareLink() {
-    var links = document.querySelectorAll('.article-share-link');
-    if (!links.length) return;
-    links.forEach(function(link) {
-      link.href = 'javascript:void(0)';
-      // 移除旧监听(防重复绑定)
-      link.replaceWith(link.cloneNode(true));
-    });
-    // 重新获取(因为 cloneNode 替换了)
-    links = document.querySelectorAll('.article-share-link');
-    links.forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault(); e.stopPropagation();
-        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
-        var url;
-        if (link.dataset.url) {
-          try { url = new URL(link.dataset.url, location.origin).href; }
-          catch(err) { url = location.origin + location.pathname; }
-        } else {
-          url = location.origin + location.pathname;
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(url).then(function(){
-            showToast('📋 链接已复制到剪贴板');
-          }).catch(function(){ fallbackCopy(url); });
-        } else {
-          fallbackCopy(url);
-        }
-      }, true);
-    });
-  }
-  function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
-    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
-    ta.remove();
-  }
-
-  // ============ 2. 文章页访问量 + 评论容器 ============
-  if (isGuestbook) document.body.classList.add('page-guestbook');
-
-  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
-  copyShareLink();
-
-  if (isPost) {
-    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
-    setTimeout(function(){
-      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
-      var af = document.querySelector('.article-footer');
-      if (!af) return;
-      // 👁️ 阅读 + 👍 点赞 内联显示
-      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
-        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
-        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
-      '</span>';
-      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
-      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
-    }, 200);
-  }
-
-  if (isPost || isGuestbook) {
-    var commentDiv = document.createElement('div');
-    commentDiv.id = 'twikoo-comments';
-    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
-    var collapsible = !isGuestbook;
-    commentDiv.innerHTML =
-      (collapsible
-        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
-        : ''
-      ) +
-      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
-        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
-      '</div>';
-    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
-    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
-
-    // 折叠按钮点击
-    if (collapsible) {
-      var btn = document.getElementById('twikoo-toggle-btn');
-      var body = document.getElementById('twikoo-comments-body');
-      btn.addEventListener('click', function() {
-        if (body.style.display === 'none') {
-          body.style.display = '';
-          btn.textContent = '🙈 收起评论区';
-          btn.style.background = '#f5f5f5';
-          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
-          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
-        } else {
-          body.style.display = 'none';
-          btn.textContent = '💬 展开评论区';
-          btn.style.background = '#fff';
-        }
-      });
-    }
-  }
-
-  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
-  function initTwikooBody() {
-    var commentBox = document.getElementById('tcomments');
-    if (!commentBox) return;
-    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
-    var pinger = new Promise(function(resolve){
-      var timer = setTimeout(function(){ resolve(false); }, 5000);
-      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
-        .then(function(){ clearTimeout(timer); resolve(true); })
-        .catch(function(){ clearTimeout(timer); resolve(false); });
-    });
-    pinger.then(function(ok){
-      if (!ok) {
-        commentBox.innerHTML =
-          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
-            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
-            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
-          '</div>';
-        return;
-      }
-      function waitTwikoo(){
-        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
-        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
-          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
-      }
-      waitTwikoo();
-    });
-  }
-  // 留言板:立即初始化;文章页:等用户点展开按钮
-  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
 })();
 </script>
   

@@ -4,19 +4,20 @@
   <meta charset="utf-8">
   
   
-  <title>SDL的各个部分 | LANXone的博客</title>
+  <title>快速:在vscode中快速开始SDL项目 | LANXone的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="SDL库目录结构说明（Windows）  路径：C:\ccccc\GANME\SDLproject\SDL 解压后的SDL开发包，4个核心文件夹：bin、include、lib、share  bin 存放SDL运行时动态库文件（.dll）  里面是 SDL2.dll（64位&#x2F;32位根据你的下载版本） 作用：程序编译成功后，运行exe时必须依赖这个dll。 使用要点：  编译好的 .exe 程序要和">
+  <meta name="description" content="VS Code 快速开始 SDL3 项目  环境：Windows + MinGW（g++ 在 C:&#x2F;ccccc&#x2F;cppenviro&#x2F;w64devkit&#x2F;bin&#x2F;） SDL3 库来源：已有项目的 SDL&#x2F; 目录（含 bin&#x2F; include&#x2F; lib&#x2F;）   一、VS Code 快速开始（6 步） 1. 新建项目文件夹，VS Code 打开它 2. 复制 SDL 文件夹过来 把已有项目里的 SDL&#x2F;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SDL的各个部分">
-<meta property="og:url" content="http://example.com/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/index.html">
+<meta property="og:title" content="快速:在vscode中快速开始SDL项目">
+<meta property="og:url" content="http://example.com/2026/10/11/%E5%BF%AB%E9%80%9F-%E5%9C%A8vscode%E4%B8%AD%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8BSDL%E9%A1%B9%E7%9B%AE/index.html">
 <meta property="og:site_name" content="LANXone的博客">
-<meta property="og:description" content="SDL库目录结构说明（Windows）  路径：C:\ccccc\GANME\SDLproject\SDL 解压后的SDL开发包，4个核心文件夹：bin、include、lib、share  bin 存放SDL运行时动态库文件（.dll）  里面是 SDL2.dll（64位&#x2F;32位根据你的下载版本） 作用：程序编译成功后，运行exe时必须依赖这个dll。 使用要点：  编译好的 .exe 程序要和">
+<meta property="og:description" content="VS Code 快速开始 SDL3 项目  环境：Windows + MinGW（g++ 在 C:&#x2F;ccccc&#x2F;cppenviro&#x2F;w64devkit&#x2F;bin&#x2F;） SDL3 库来源：已有项目的 SDL&#x2F; 目录（含 bin&#x2F; include&#x2F; lib&#x2F;）   一、VS Code 快速开始（6 步） 1. 新建项目文件夹，VS Code 打开它 2. 复制 SDL 文件夹过来 把已有项目里的 SDL&#x2F;">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-10-09T07:03:29.000Z">
-<meta property="article:modified_time" content="2026-10-09T07:04:27.104Z">
+<meta property="article:published_time" content="2026-10-10T17:52:34.000Z">
+<meta property="article:modified_time" content="2026-10-10T17:53:42.411Z">
 <meta property="article:author" content="LANXone">
 <meta property="article:tag" content="C++开发笔记">
+<meta property="article:tag" content="快速">
 <meta name="twitter:card" content="summary">
   
   
@@ -80,10 +81,10 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-SDL的各个部分" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-快速-在vscode中快速开始SDL项目" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/" class="article-date">
-  <time class="dt-published" datetime="2026-10-09T07:03:29.000Z" itemprop="datePublished">2026-10-09</time>
+    <a href="/2026/10/11/%E5%BF%AB%E9%80%9F-%E5%9C%A8vscode%E4%B8%AD%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8BSDL%E9%A1%B9%E7%9B%AE/" class="article-date">
+  <time class="dt-published" datetime="2026-10-10T17:52:34.000Z" itemprop="datePublished">2026-10-11</time>
 </a>
     
   </div>
@@ -94,7 +95,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      SDL的各个部分
+      快速:在vscode中快速开始SDL项目
     </h1>
   
 
@@ -102,73 +103,137 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h1>SDL库目录结构说明（Windows）</h1>
+        <h1>VS Code 快速开始 SDL3 项目</h1>
 <blockquote>
-<p>路径：<code>C:\ccccc\GANME\SDLproject\SDL</code><br>
-解压后的SDL开发包，4个核心文件夹：<code>bin</code>、<code>include</code>、<code>lib</code>、<code>share</code></p>
+<p>环境：Windows + MinGW（g++ 在 <code>C:/ccccc/cppenviro/w64devkit/bin/</code>）<br>
+SDL3 库来源：已有项目的 <code>SDL/</code> 目录（含 <code>bin/</code> <code>include/</code> <code>lib/</code>）</p>
 </blockquote>
-<h2 id="bin">bin</h2>
-<p><strong>存放SDL运行时动态库文件（<code>.dll</code>）</strong></p>
-<ul>
-<li>里面是 <code>SDL2.dll</code>（64位/32位根据你的下载版本）</li>
-<li><strong>作用</strong>：程序编译成功后，运行exe时必须依赖这个dll。</li>
-<li>使用要点：
-<ol>
-<li>编译好的 <code>.exe</code> 程序要和 <code>SDL2.dll</code> 放在同一个目录下才能正常启动；</li>
-<li>或者把dll放到系统<code>C:\Windows\System32</code>（不推荐，打包程序不方便）；</li>
-<li>开发阶段，IDE运行项目也需要能找到这个dll。</li>
-</ol>
-</li>
-</ul>
-<h2 id="include">include</h2>
-<p><strong>头文件目录（<code>.h</code>）</strong></p>
-<ul>
-<li>包含 <code>SDL.h</code>、<code>SDL_types.h</code> 等所有SDL声明头文件。</li>
-<li><strong>作用</strong>：写代码 <code>#include &lt;SDL2/SDL.h&gt;</code> 的来源。编译器在编译阶段，从这里读取函数、结构体、宏定义。</li>
-<li>使用要点：
-<ul>
-<li>在VS/CMake编译配置里，添加<strong>包含目录</strong>，指向这个<code>include</code>文件夹。</li>
-<li>只负责告诉编译器“函数长什么样”，<strong>不包含实现代码</strong>。</li>
-</ul>
-</li>
-</ul>
-<h2 id="lib">lib</h2>
-<p><strong>库文件目录（静态库 <code>.lib</code> / 导入库 <code>.lib</code>）</strong></p>
-<ul>
-<li>Windows下SDL这里是<strong>导入库</strong>（不是完整静态库）：<code>SDL2.lib</code>、<code>SDL2main.lib</code></li>
-<li><strong>作用</strong>：链接阶段使用。告诉链接器，函数的实现存在 <code>SDL2.dll</code> 里面。</li>
-<li>使用要点：
-<ol>
-<li>IDE配置，添加<strong>库目录</strong>指向这个<code>lib</code>文件夹；</li>
-<li>链接器附加依赖项填写：<code>SDL2.lib;SDL2main.lib</code>；</li>
-<li><code>SDL2main.lib</code> 用来接管Windows程序入口，替换<code>main</code>函数，SDL程序一般都要链接它。</li>
-</ol>
-</li>
-</ul>
-<h2 id="share">share</h2>
-<p><strong>资源文档文件夹</strong></p>
-<ul>
-<li>里面存放许可证、readme文档、cmake配置文件、man手册等。</li>
-<li><strong>作用</strong>：开发基本用不到，是开源项目附带的法律声明、文档、cmake支持文件。</li>
-<li>使用要点：写代码、编译链接完全不需要引用这个文件夹。CMake项目可以自动读取里面的cmake脚本方便查找SDL。</li>
-</ul>
 <hr>
-<h1>快速配置总结（VS为例）</h1>
-<ol>
-<li><strong>包含目录</strong>：<code>...\SDL\include</code></li>
-<li><strong>库目录</strong>：<code>...\SDL\lib</code></li>
-<li><strong>链接器附加依赖</strong>：<code>SDL2.lib;SDL2main.lib</code></li>
-<li><strong>运行</strong>：把 <code>bin\SDL2.dll</code> 复制到exe同目录</li>
-</ol>
+<h2 id="一、VS-Code-快速开始（6-步）">一、VS Code 快速开始（6 步）</h2>
+<h3 id="1-新建项目文件夹，VS-Code-打开它">1. 新建项目文件夹，VS Code 打开它</h3>
+<h3 id="2-复制-SDL-文件夹过来">2. 复制 SDL 文件夹过来</h3>
+<p>把已有项目里的 <code>SDL/</code> 目录整个拖进新项目根目录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">新项目/</span><br><span class="line">├── SDL/</span><br><span class="line">│   ├── bin/SDL3.dll</span><br><span class="line">│   ├── include/SDL3/*.h</span><br><span class="line">│   └── lib/libSDL3.dll.a</span><br><span class="line">├── .vscode/              ← 第 4 步会建</span><br><span class="line">├── main.cpp              ← 第 3 步</span><br><span class="line">└── CMakeList.txt         ← 第 5 步（可选）</span><br></pre></td></tr></table></figure>
+<h3 id="3-新建-main-cpp，写程序">3. 新建 main.cpp，写程序</h3>
+<h3 id="4-新建-vscode-tasks-json-—-⚠️-最关键，VS-Code-不会自动帮你配-SDL-路径">4. 新建 <code>.vscode/tasks.json</code> — ⚠️ 最关键，VS Code 不会自动帮你配 SDL 路径</h3>
+<p>Ctrl+Shift+B 的默认编译任务（<strong>cppbuild</strong>）是 VS Code C/C++ 扩展自动生成的，它只适合编 hello world，编 SDL 项目会报 <code>SDL3/SDL.h: No such file or directory</code>。<strong>不要删它（删了会自动重生），给它补齐 SDL 参数就行。</strong></p>
+<p>在项目根目录创建 <code>.vscode/tasks.json</code>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2.0.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;tasks&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cppbuild&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;label&quot;</span><span class="punctuation">:</span> <span class="string">&quot;C/C++: g++.exe 生成活动文件&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;C:/ccccc/cppenviro/w64devkit/bin/g++.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="string">&quot;-g&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-std=c++17&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-I&quot;</span><span class="punctuation">,</span> <span class="string">&quot;SDL/include&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;$&#123;file&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-o&quot;</span><span class="punctuation">,</span> <span class="string">&quot;$&#123;fileDirname&#125;\\$&#123;fileBasenameNoExtension&#125;.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-L&quot;</span><span class="punctuation">,</span> <span class="string">&quot;SDL/lib&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-lSDL3&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-lws2_32&quot;</span></span><br><span class="line">            <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;options&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;cwd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;fileDirname&#125;&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;problemMatcher&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;$gcc&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;group&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;kind&quot;</span><span class="punctuation">:</span> <span class="string">&quot;build&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;isDefault&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span> <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p><strong>三个必须改的地方</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>加什么</th>
+<th>为什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>args</code> 里加 <code>-I</code>, <code>SDL/include</code></td>
+<td>头文件路径</td>
+<td>默认任务没有 <code>-I</code>，<code>#include &lt;SDL3/SDL.h&gt;</code> 直接崩</td>
+</tr>
+<tr>
+<td><code>args</code> 里加 <code>-L</code>, <code>SDL/lib</code>, <code>-lSDL3</code>, <code>-lws2_32</code></td>
+<td>链接 SDL + WinSock</td>
+<td>缺了就 <code>undefined reference</code></td>
+</tr>
+<tr>
+<td><code>options.cwd</code> 改成 <code>$&#123;fileDirname&#125;</code></td>
+<td>工作目录跟源文件走</td>
+<td>VS Code 有时自动设成 MinGW/bin，相对路径全废</td>
+</tr>
+</tbody>
+</table>
+<p><strong>默认 cppbuild vs 补齐后</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">默认:  g++ -g main.cpp -o main.exe                ← 什么都没带</span><br><span class="line">补齐:  g++ -g -std=c++17 -I SDL/include main.cpp -o main.exe -L SDL/lib -lSDL3 -lws2_32</span><br><span class="line">              ^^^^^^^^^^^  ^^^^^^^^^^^^                        ^^^^^^^^^^^^ ^^^^^^^^</span><br><span class="line">                           头文件路径                              链接库</span><br></pre></td></tr></table></figure>
+<h3 id="5-（可选）写-CMakeList-txt">5. （可选）写 CMakeList.txt</h3>
+<p>如果你用 CMake Tools 插件：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.20</span>)</span><br><span class="line"><span class="keyword">project</span>(HelloSDL3 LANGUAGES CXX)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">17</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD_REQUIRED <span class="keyword">ON</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(SDL3_DIR <span class="string">&quot;$&#123;CMAKE_SOURCE_DIR&#125;/SDL/lib/cmake/SDL3&quot;</span> CACHE PATH <span class="string">&quot;SDL3 cmake config&quot;</span>)</span><br><span class="line"><span class="keyword">find_package</span>(SDL3 REQUIRED CONFIG)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">NOT</span> <span class="keyword">TARGET</span> SDL3::SDL3)</span><br><span class="line">    <span class="keyword">add_library</span>(SDL3::SDL3 ALIAS SDL3::SDL3-shared)</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_executable</span>(demo main.cpp)</span><br><span class="line"><span class="keyword">target_link_libraries</span>(demo PRIVATE SDL3::SDL3)</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_custom_command</span>(<span class="keyword">TARGET</span> demo POST_BUILD</span><br><span class="line">    <span class="keyword">COMMAND</span> <span class="variable">$&#123;CMAKE_COMMAND&#125;</span> -E copy_if_different</span><br><span class="line">        $&lt;TARGET_FILE:SDL3::SDL3&gt; $&lt;TARGET_FILE_DIR:demo&gt;</span><br><span class="line">    VERBATIM)</span><br></pre></td></tr></table></figure>
+<h3 id="6-拷-SDL3-dll，编译运行">6. 拷 SDL3.dll，编译运行</h3>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Copy-Item</span> SDL\bin\SDL3.dll .</span><br></pre></td></tr></table></figure>
+<p>然后 <strong>Ctrl+Shift+B</strong> 编译，双击 exe 运行。</p>
+<hr>
+<h2 id="二、命令行编译（不依赖-VS-Code）">二、命令行编译（不依赖 VS Code）</h2>
+<p>一行搞定，适合快速验证：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">g++ <span class="literal">-g</span> <span class="literal">-std</span>=c++<span class="number">17</span> <span class="literal">-I</span> SDL/include main.cpp <span class="literal">-o</span> demo.exe <span class="literal">-L</span> SDL/lib <span class="literal">-lSDL3</span> <span class="literal">-lws2_32</span></span><br><span class="line"><span class="built_in">Copy-Item</span> SDL\bin\SDL3.dll .</span><br><span class="line">.\demo.exe</span><br></pre></td></tr></table></figure>
+<p>完整参数用绝对路径写死：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\ccccc\cppenviro\w64devkit\bin\g++.exe <span class="literal">-g</span> <span class="literal">-std</span>=c++<span class="number">17</span> <span class="literal">-I</span> SDL/include main.cpp <span class="literal">-o</span> demo.exe <span class="literal">-L</span> SDL/lib <span class="literal">-lSDL3</span> <span class="literal">-lws2_32</span></span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-I SDL/include</code></td>
+<td>头文件搜索目录，让 <code>#include &lt;SDL3/SDL.h&gt;</code> 能找到</td>
+</tr>
+<tr>
+<td><code>-L SDL/lib</code></td>
+<td>链接库搜索目录，找到 <code>libSDL3.dll.a</code></td>
+</tr>
+<tr>
+<td><code>-lSDL3</code></td>
+<td>链接 SDL3 主库</td>
+</tr>
+<tr>
+<td><code>-lws2_32</code></td>
+<td>链接 WinSock（SDL3 在 Windows 上需要）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="三、常见报错速查">三、常见报错速查</h2>
+<table>
+<thead>
+<tr>
+<th>报错</th>
+<th>原因</th>
+<th>修法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SDL3/SDL.h: No such file or directory</code></td>
+<td>cppbuild 任务没补 <code>-I SDL/include</code></td>
+<td>改 <code>tasks.json</code> 的 args（见第 4 步）</td>
+</tr>
+<tr>
+<td><code>undefined reference to SDL_Init...</code></td>
+<td>没加 <code>-lSDL3 -lws2_32</code></td>
+<td>同上，args 补全链接参数</td>
+</tr>
+<tr>
+<td>双击 exe 报&quot;找不到 SDL3.dll&quot;</td>
+<td>DLL 没放对位置</td>
+<td>拷 <code>SDL/bin/SDL3.dll</code> 到 exe 同目录</td>
+</tr>
+<tr>
+<td>IntelliSense 报红波浪线</td>
+<td><code>c_cpp_properties.json</code> 缺路径</td>
+<td>在 <code>.vscode/c_cpp_properties.json</code> 的 <code>includePath</code> 加 <code>&quot;$&#123;workspaceFolder&#125;/SDL/include&quot;</code></td>
+</tr>
+<tr>
+<td>cppbuild 的 cwd 自动变成 <code>w64devkit/bin</code></td>
+<td>VS Code C/C++ 扩展的 bug</td>
+<td>手动把 <code>options.cwd</code> 改成 <code>&quot;$&#123;fileDirname&#125;&quot;</code></td>
+</tr>
+</tbody>
+</table>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/" data-id="cmv0mebsu0000hwma82ebhlsi" data-title="SDL的各个部分" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="http://example.com/2026/10/11/%E5%BF%AB%E9%80%9F-%E5%9C%A8vscode%E4%B8%AD%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8BSDL%E9%A1%B9%E7%9B%AE/" data-id="cmv2p1hpq0004qsmab1itb5zb" data-title="快速:在vscode中快速开始SDL项目" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F/" rel="tag">快速</a></li></ul>
 
     </footer>
   </div>
@@ -176,19 +241,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2026/10/09/C-%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97-SDL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E4%B8%8EC-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">前一篇</strong>
-      <div class="article-nav-title">
-        
-          C++开发日志:SDL环境配置与C++程序的编译过程
-        
-      </div>
-    </a>
   
-  
-    <a href="/2026/10/08/%E8%90%A8%E7%BB%B4%E5%BE%B7%E6%8B%89%E5%B1%80%E9%9D%A2%EF%BC%9A%E5%85%B5%E5%8D%87%E5%8F%98%E4%B8%BA%E8%BD%A6%E7%9A%84%E5%90%88%E7%90%86%E6%80%A7/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2026/10/09/C++%E4%BB%8E%E9%9B%B6%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91%E4%B8%8E%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83-%E5%AE%8C%E5%85%A8%E4%B8%8D%E4%BD%BF%E7%94%A8IDE/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">后一篇</strong>
-      <div class="article-nav-title">萨维德拉局面：兵升变为车的合理性</div>
+      <div class="article-nav-title">C++开发日志:SDL环境配置与C++程序的编译过程</div>
     </a>
   
 </nav>
