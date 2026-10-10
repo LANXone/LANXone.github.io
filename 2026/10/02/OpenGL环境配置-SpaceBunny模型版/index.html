@@ -1533,7 +1533,7 @@ VS Code 用 JSON 文件记录同样的信息，三者一一对应：</p>
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/OpenGL/" style="font-size: 13.33px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 13.33px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 16.67px;">学习规划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 13.33px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a>
+      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/OpenGL/" style="font-size: 12.5px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 12.5px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 15px;">学习规划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 12.5px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 17.5px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a>
     </div>
   </div>
 
@@ -1563,15 +1563,15 @@ VS Code 用 JSON 文件记录同样的信息，三者一一对应：</p>
           </li>
         
           <li>
+            <a href="/2026/10/09/VSCode%E4%BD%BF%E7%94%A8SDL3%E6%95%99%E7%A8%8B/">VS code中使用外部库：SDL</a>
+          </li>
+        
+          <li>
             <a href="/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/">SDL的各个部分</a>
           </li>
         
           <li>
             <a href="/2026/10/08/%E8%90%A8%E7%BB%B4%E5%BE%B7%E6%8B%89%E5%B1%80%E9%9D%A2%EF%BC%9A%E5%85%B5%E5%8D%87%E5%8F%98%E4%B8%BA%E8%BD%A6%E7%9A%84%E5%90%88%E7%90%86%E6%80%A7/">萨维德拉局面：兵升变为车的合理性</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/08/%E5%93%88%E5%B8%8C%E8%A1%A8-%E8%B5%8E%E9%87%91%E4%BF%A1/">哈希表:赎金信</a>
           </li>
         
       </ul>
@@ -1628,45 +1628,6 @@ VS Code 用 JSON 文件记录同样的信息，三者一一对应：</p>
 
   </div>
 <!-- hexo injector body_end start -->
-<style>
-  .visitor-stats { margin-top: 10px; color: #999; font-size: 13px; text-align: center; }
-  .visitor-stats .stat-item { display: inline-block; margin: 0 6px; }
-  .visitor-stats .stat-num { color: #555; font-weight: 600; }
-  @media (max-width: 500px) { .visitor-stats .stat-item { display: block; margin: 2px 0; } }
-</style>
-
-<script>
-// === 今日 & 本月访问(localStorage,仅反映当前浏览器) ===
-(function(){
-  var now = new Date();
-  var todayKey = 'visit_' + now.toISOString().slice(0, 10);
-  var monthKey = 'visit_' + now.getFullYear() + '_' + (now.getMonth()+1);
-  var todayCount = parseInt(localStorage.getItem(todayKey) || '0') + 1;
-  var monthCount = parseInt(localStorage.getItem(monthKey) || '0') + 1;
-  localStorage.setItem(todayKey, todayCount);
-  localStorage.setItem(monthKey, monthCount);
-
-  // 插入页脚统计区
-  function inject() {
-    var fi = document.querySelector('#footer-info');
-    if (!fi) { setTimeout(inject, 300); return; }
-    if (fi.querySelector('.visitor-stats')) return;
-    var div = document.createElement('div');
-    div.className = 'visitor-stats';
-    div.innerHTML =
-      '<span class="stat-item">📅 今日 <span class="stat-num">' + todayCount + '</span></span>' +
-      '<span class="stat-item">📆 本月 <span class="stat-num">' + monthCount + '</span></span>' +
-      '<span class="stat-item">👥 访客 <span id="busuanzi_value_site_uv" class="stat-num">--</span></span>' +
-      '<span class="stat-item">📄 浏览 <span id="busuanzi_value_site_pv" class="stat-num">--</span></span>';
-    fi.appendChild(div);
-  }
-  inject();
-})();
-</script>
-
-<!-- 不蒜子:站点总 PV/UV -->
-<script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
-  
 <style>
   #lanx-chess-root {
     --lanx-light: #f0d9b5;
@@ -3585,145 +3546,43 @@ function undo(){
 </script>
   
 <style>
-  /* --- 详情页大号点赞按钮 --- */
-  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
-  .like-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 24px; font-size: 15px;
-    border: 1px solid #e0e0e0; border-radius: 24px;
-    background: #fff; color: #555; cursor: pointer;
-    transition: all 0.25s ease; user-select: none;
-  }
-  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
-  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
-  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
-  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
-  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
-
-  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
-  .article-footer .lanx-action {
-    display: inline-flex; align-items: center; gap: 4px;
-    margin-right: 10px; font-size: 13px;
-    color: #666; text-decoration: none; cursor: pointer;
-    padding: 0 2px; border-radius: 4px;
-    transition: color 0.2s;
-  }
-  .article-footer .lanx-action:hover { color: #ff6b6b; }
-  .article-footer .lanx-action.liked { color: #ff6b6b; }
-  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
-  .article-footer .lanx-action .lanx-count {
-    margin-left: 2px; font-size: 12px; color: #999;
-  }
-  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
+  .visitor-stats { margin-top: 10px; color: #999; font-size: 13px; text-align: center; }
+  .visitor-stats .stat-item { display: inline-block; margin: 0 6px; }
+  .visitor-stats .stat-num { color: #555; font-weight: 600; }
+  @media (max-width: 500px) { .visitor-stats .stat-item { display: block; margin: 2px 0; } }
 </style>
 
 <script>
+// === 今日 & 本月访问(localStorage,仅反映当前浏览器) ===
 (function(){
-  var articles = document.querySelectorAll('article.article');
-  var isSinglePost = articles.length === 1;
+  var now = new Date();
+  var todayKey = 'visit_' + now.toISOString().slice(0, 10);
+  var monthKey = 'visit_' + now.getFullYear() + '_' + (now.getMonth()+1);
+  var todayCount = parseInt(localStorage.getItem(todayKey) || '0') + 1;
+  var monthCount = parseInt(localStorage.getItem(monthKey) || '0') + 1;
+  localStorage.setItem(todayKey, todayCount);
+  localStorage.setItem(monthKey, monthCount);
 
-  // 提取文章路径:从 share-link 的 data-url 里拿
-  function getArticlePath(articleEl) {
-    var link = articleEl.querySelector('.article-share-link');
-    if (link && link.dataset.url) {
-      try {
-        var u = new URL(link.dataset.url, location.origin);
-        return u.pathname;
-      } catch(e) {}
-    }
-    // fallback:用标题链接的 href
-    var titleLink = articleEl.querySelector('.article-title');
-    if (titleLink) return titleLink.getAttribute('href');
-    return '';
+  // 插入页脚统计区
+  function inject() {
+    var fi = document.querySelector('#footer-info');
+    if (!fi) { setTimeout(inject, 300); return; }
+    if (fi.querySelector('.visitor-stats')) return;
+    var div = document.createElement('div');
+    div.className = 'visitor-stats';
+    div.innerHTML =
+      '<span class="stat-item">📅 今日 <span class="stat-num">' + todayCount + '</span></span>' +
+      '<span class="stat-item">📆 本月 <span class="stat-num">' + monthCount + '</span></span>' +
+      '<span class="stat-item">👥 访客 <span id="busuanzi_value_site_uv" class="stat-num">--</span></span>' +
+      '<span class="stat-item">📄 浏览 <span id="busuanzi_value_site_pv" class="stat-num">--</span></span>';
+    fi.appendChild(div);
   }
-
-  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
-  if (!isSinglePost) {
-    articles.forEach(function(art) {
-      var af = art.querySelector('.article-footer');
-      var share = art.querySelector('.article-share-link');
-      var path = getArticlePath(art);
-      if (!af || !share || !path) return;
-
-      var likedKey = 'liked_' + path;
-      var countKey = 'likeCount_' + path;
-      var liked = !!localStorage.getItem(likedKey);
-      var count = parseInt(localStorage.getItem(countKey) || '0');
-
-      // 点赞按钮(小)
-      var likeHtml =
-        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
-          '<span class="fa fa-thumbs-up"></span>' +
-          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
-        '</a>';
-
-      // 评论按钮(小),跳到详情页评论区
-      var commentHtml =
-        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
-          '<span class="fa fa-comment"></span>' +
-        '</a>';
-
-      // 插入到分享按钮前面
-      var temp = document.createElement('span');
-      temp.innerHTML = likeHtml + commentHtml;
-      share.parentNode.insertBefore(temp.firstChild, share);
-      share.parentNode.insertBefore(temp.firstChild, share);
-
-      // 绑定点赞事件
-      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
-      if (likeBtn) {
-        likeBtn.addEventListener('click', function(e) {
-          e.preventDefault(); e.stopPropagation();
-          if (likeBtn.classList.contains('liked')) return;
-          likeBtn.classList.add('liked');
-          localStorage.setItem(likedKey, '1');
-          count++;
-          localStorage.setItem(countKey, count);
-          var c = likeBtn.querySelector('.lanx-count');
-          c.textContent = count; c.style.display = '';
-        });
-      }
-    });
-    return; // 多文章页到此为止
-  }
-
-  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
-  var path = location.pathname;
-  var likedKey = 'liked_' + path;
-  var countKey = 'likeCount_' + path;
-  var liked = localStorage.getItem(likedKey);
-  var count = parseInt(localStorage.getItem(countKey) || '0');
-
-  var wrap = document.createElement('div');
-  wrap.className = 'like-wrap';
-  wrap.innerHTML =
-    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
-      '<span class="fa fa-thumbs-up"></span>' +
-      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
-      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
-    '</button>';
-  var af = document.querySelector('.article-footer');
-  if (af) af.after(wrap);
-
-  var btn = document.getElementById('likeBtn');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      if (btn.classList.contains('liked')) return;
-      btn.classList.add('liked');
-      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
-      localStorage.setItem(likedKey, '1');
-      count++;
-      localStorage.setItem(countKey, count);
-      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
-      btn.querySelector('#likeCountDisplay').style.display = '';
-      var inline = document.getElementById('lanx_like_inline');
-      if (inline) { inline.textContent = count; inline.style.display = ''; }
-    });
-  }
-
-  window.__LANX_LIKE_COUNT__ = count;
+  inject();
 })();
 </script>
+
+<!-- 不蒜子:站点总 PV/UV -->
+<script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
   
 <style>
   /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
@@ -4106,6 +3965,147 @@ window.addEventListener('load', function(){
   }
   // 留言板:立即初始化;文章页:等用户点展开按钮
   if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
+})();
+</script>
+  
+<style>
+  /* --- 详情页大号点赞按钮 --- */
+  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
+  .like-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 24px; font-size: 15px;
+    border: 1px solid #e0e0e0; border-radius: 24px;
+    background: #fff; color: #555; cursor: pointer;
+    transition: all 0.25s ease; user-select: none;
+  }
+  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
+  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
+  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
+  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
+
+  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
+  .article-footer .lanx-action {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-right: 10px; font-size: 13px;
+    color: #666; text-decoration: none; cursor: pointer;
+    padding: 0 2px; border-radius: 4px;
+    transition: color 0.2s;
+  }
+  .article-footer .lanx-action:hover { color: #ff6b6b; }
+  .article-footer .lanx-action.liked { color: #ff6b6b; }
+  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
+  .article-footer .lanx-action .lanx-count {
+    margin-left: 2px; font-size: 12px; color: #999;
+  }
+  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
+</style>
+
+<script>
+(function(){
+  var articles = document.querySelectorAll('article.article');
+  var isSinglePost = articles.length === 1;
+
+  // 提取文章路径:从 share-link 的 data-url 里拿
+  function getArticlePath(articleEl) {
+    var link = articleEl.querySelector('.article-share-link');
+    if (link && link.dataset.url) {
+      try {
+        var u = new URL(link.dataset.url, location.origin);
+        return u.pathname;
+      } catch(e) {}
+    }
+    // fallback:用标题链接的 href
+    var titleLink = articleEl.querySelector('.article-title');
+    if (titleLink) return titleLink.getAttribute('href');
+    return '';
+  }
+
+  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
+  if (!isSinglePost) {
+    articles.forEach(function(art) {
+      var af = art.querySelector('.article-footer');
+      var share = art.querySelector('.article-share-link');
+      var path = getArticlePath(art);
+      if (!af || !share || !path) return;
+
+      var likedKey = 'liked_' + path;
+      var countKey = 'likeCount_' + path;
+      var liked = !!localStorage.getItem(likedKey);
+      var count = parseInt(localStorage.getItem(countKey) || '0');
+
+      // 点赞按钮(小)
+      var likeHtml =
+        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
+          '<span class="fa fa-thumbs-up"></span>' +
+          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
+        '</a>';
+
+      // 评论按钮(小),跳到详情页评论区
+      var commentHtml =
+        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
+          '<span class="fa fa-comment"></span>' +
+        '</a>';
+
+      // 插入到分享按钮前面
+      var temp = document.createElement('span');
+      temp.innerHTML = likeHtml + commentHtml;
+      share.parentNode.insertBefore(temp.firstChild, share);
+      share.parentNode.insertBefore(temp.firstChild, share);
+
+      // 绑定点赞事件
+      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
+      if (likeBtn) {
+        likeBtn.addEventListener('click', function(e) {
+          e.preventDefault(); e.stopPropagation();
+          if (likeBtn.classList.contains('liked')) return;
+          likeBtn.classList.add('liked');
+          localStorage.setItem(likedKey, '1');
+          count++;
+          localStorage.setItem(countKey, count);
+          var c = likeBtn.querySelector('.lanx-count');
+          c.textContent = count; c.style.display = '';
+        });
+      }
+    });
+    return; // 多文章页到此为止
+  }
+
+  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
+  var path = location.pathname;
+  var likedKey = 'liked_' + path;
+  var countKey = 'likeCount_' + path;
+  var liked = localStorage.getItem(likedKey);
+  var count = parseInt(localStorage.getItem(countKey) || '0');
+
+  var wrap = document.createElement('div');
+  wrap.className = 'like-wrap';
+  wrap.innerHTML =
+    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
+      '<span class="fa fa-thumbs-up"></span>' +
+      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
+      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
+    '</button>';
+  var af = document.querySelector('.article-footer');
+  if (af) af.after(wrap);
+
+  var btn = document.getElementById('likeBtn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('liked')) return;
+      btn.classList.add('liked');
+      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
+      localStorage.setItem(likedKey, '1');
+      count++;
+      localStorage.setItem(countKey, count);
+      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
+      btn.querySelector('#likeCountDisplay').style.display = '';
+      var inline = document.getElementById('lanx_like_inline');
+      if (inline) { inline.textContent = count; inline.style.display = ''; }
+    });
+  }
+
+  window.__LANX_LIKE_COUNT__ = count;
 })();
 </script>
   <!-- hexo injector body_end end --></body>

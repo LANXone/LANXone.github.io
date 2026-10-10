@@ -2746,6 +2746,189 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
 
 
   
+    <article id="post-VSCode使用SDL3教程" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/09/VSCode%E4%BD%BF%E7%94%A8SDL3%E6%95%99%E7%A8%8B/" class="article-date">
+  <time class="dt-published" datetime="2026-10-09T15:44:21.000Z" itemprop="datePublished">2026-10-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/10/09/VSCode%E4%BD%BF%E7%94%A8SDL3%E6%95%99%E7%A8%8B/">VS code中使用外部库：SDL</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>在 VSCode 中使用 SDL3</h1>
+<p>SDL3 是 2024 年底发布的重大版本更新，相比 SDL2 带来了原生 Metal 支持、重写的音频 API、更强的高 DPI 支持，以及大量 API 现代化改进。</p>
+<p>本文带你从零开始，在 VSCode 中搭建 SDL3 开发环境，并跑起第一个窗口。文中所有代码均经过实际编译运行验证。</p>
+<hr>
+<h2 id="一、下载-SDL3">一、下载 SDL3</h2>
+<p>访问官方发布页：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/libsdl-org/SDL/releases</span><br></pre></td></tr></table></figure>
+<p>找到最新的 <strong>3.x</strong> 版本，按你的编译器下载对应工具链的包：</p>
+<table>
+<thead>
+<tr>
+<th>文件名后缀</th>
+<th>适用工具链</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-mingw.zip</code> / <code>-mingw.tar.gz</code></td>
+<td><strong>MinGW-w64</strong></td>
+</tr>
+<tr>
+<td><code>-VC.zip</code></td>
+<td><strong>MSVC</strong>（Visual Studio）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>两者不能混用</strong>，下错会导致链接错误。</p>
+<p>解压到一个不含空格、不含中文字符的路径，例如 <code>D:\tools\SDL3-mingw</code>。解压后确认存在这个文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">D:\tools\SDL3-mingw\cmake\SDL3Config.cmake</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>路径建议避开空格和中文，否则某些工具链下会出现莫名的编译错误。</p>
+</blockquote>
+<hr>
+<h2 id="二、安装-VSCode-扩展">二、安装 VSCode 扩展</h2>
+<p>按 <code>Ctrl+Shift+X</code> 打开扩展面板，搜索并安装两个微软官方扩展：</p>
+<ul>
+<li><strong>C/C++</strong> — 代码补全与调试支持</li>
+<li><strong>CMake Tools</strong> — 集成 CMake 构建系统</li>
+</ul>
+<p>安装后重启 VSCode。</p>
+<hr>
+<h2 id="三、创建项目">三、创建项目</h2>
+<h3 id="3-1-建立目录">3.1 建立目录</h3>
+<p>新建项目文件夹，例如 <code>D:\projects\hello-sdl3</code>，结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">D:\projects\hello-sdl3\</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">└── src\</span><br><span class="line">    └── main.c</span><br></pre></td></tr></table></figure>
+<p>只有两个文件，刻意保持最小。</p>
+<h3 id="3-2-编写-CMakeLists-txt">3.2 编写 CMakeLists.txt</h3>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.20</span>)</span><br><span class="line"><span class="keyword">project</span>(HelloSDL3 LANGUAGES C)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CMAKE_C_STANDARD <span class="number">17</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指向 SDL3 的 cmake 配置目录，替换为你自己的解压路径</span></span><br><span class="line"><span class="keyword">set</span>(SDL3_DIR <span class="string">&quot;D:/tools/SDL3-mingw/cmake&quot;</span> CACHE PATH <span class="string">&quot;SDL3 cmake config directory&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">find_package</span>(SDL3 REQUIRED CONFIG)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 官方预编译包只提供 SDL3::SDL3-shared</span></span><br><span class="line"><span class="comment"># 这里给它个别名，后续统一用 SDL3::SDL3 引用</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">NOT</span> <span class="keyword">TARGET</span> SDL3::SDL3)</span><br><span class="line">    <span class="keyword">add_library</span>(SDL3::SDL3 ALIAS SDL3::SDL3-shared)</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_executable</span>(HelloSDL3 src/main.c)</span><br><span class="line"><span class="keyword">target_link_libraries</span>(HelloSDL3 PRIVATE SDL3::SDL3)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译完自动把 SDL3.dll 复制到 exe 所在目录</span></span><br><span class="line"><span class="keyword">add_custom_command</span>(<span class="keyword">TARGET</span> HelloSDL3 POST_BUILD</span><br><span class="line">    <span class="keyword">COMMAND</span> <span class="variable">$&#123;CMAKE_COMMAND&#125;</span> -E copy_if_different</span><br><span class="line">        $&lt;TARGET_FILE:SDL3::SDL3&gt; $&lt;TARGET_FILE_DIR:HelloSDL3&gt;</span><br><span class="line">    VERBATIM)</span><br></pre></td></tr></table></figure>
+<p>最后那段的作用：SDL3 默认以动态库发布，运行时需要 <code>SDL3.dll</code> 在 exe 旁边，用 CMake 自动拷贝可以省掉手动操作。</p>
+<h3 id="3-3-编写主程序">3.3 编写主程序</h3>
+<p>新建 <code>src/main.c</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;SDL3/SDL.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    (<span class="type">void</span>)argc;</span><br><span class="line">    (<span class="type">void</span>)argv;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// SDL3 中初始化失败返回 false</span></span><br><span class="line">    <span class="keyword">if</span> (!SDL_Init(SDL_INIT_VIDEO)) &#123;</span><br><span class="line">        SDL_Log(<span class="string">&quot;初始化失败: %s&quot;</span>, SDL_GetError());</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// SDL3 的窗口创建函数不再接受 x / y 参数</span></span><br><span class="line">    SDL_Window *window = SDL_CreateWindow(<span class="string">&quot;Hello SDL3&quot;</span>,</span><br><span class="line">                                          <span class="number">800</span>, <span class="number">600</span>,</span><br><span class="line">                                          SDL_WINDOW_RESIZABLE);</span><br><span class="line">    <span class="keyword">if</span> (!window) &#123;</span><br><span class="line">        SDL_Log(<span class="string">&quot;创建窗口失败: %s&quot;</span>, SDL_GetError());</span><br><span class="line">        SDL_Quit();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 第二个参数是渲染驱动名，传 NULL 让 SDL 自动选择</span></span><br><span class="line">    SDL_Renderer *renderer = SDL_CreateRenderer(window, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span> (!renderer) &#123;</span><br><span class="line">        SDL_Log(<span class="string">&quot;创建渲染器失败: %s&quot;</span>, SDL_GetError());</span><br><span class="line">        SDL_DestroyWindow(window);</span><br><span class="line">        SDL_Quit();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">bool</span> running = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (running) &#123;</span><br><span class="line">        SDL_Event event;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// SDL3 中返回 false 表示事件队列已取空</span></span><br><span class="line">        <span class="keyword">while</span> (SDL_PollEvent(&amp;event)) &#123;</span><br><span class="line">            <span class="keyword">if</span> (event.type == SDL_EVENT_QUIT) &#123;</span><br><span class="line">                running = <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (event.type == SDL_EVENT_KEY_DOWN &amp;&amp;</span><br><span class="line">                event.key.key == SDLK_ESCAPE) &#123;</span><br><span class="line">                running = <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        SDL_SetRenderDrawColor(renderer, <span class="number">40</span>, <span class="number">90</span>, <span class="number">160</span>, <span class="number">255</span>);</span><br><span class="line">        SDL_RenderClear(renderer);</span><br><span class="line"></span><br><span class="line">        SDL_SetRenderDrawColor(renderer, <span class="number">255</span>, <span class="number">200</span>, <span class="number">60</span>, <span class="number">255</span>);</span><br><span class="line">        SDL_RenderFillRect(renderer, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">        SDL_RenderPresent(renderer);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    SDL_DestroyRenderer(renderer);</span><br><span class="line">    SDL_DestroyWindow(window);</span><br><span class="line">    SDL_Quit();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序会创建一个 800×600 的可缩放窗口，蓝色背景上一个黄色矩形。按 <code>Esc</code> 退出。</p>
+<hr>
+<h2 id="四、编译运行">四、编译运行</h2>
+<p>在项目根目录打开终端（VSCode 中按 `Ctrl+`` ），执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DSDL3_DIR=<span class="string">&quot;D:/tools/SDL3-mingw/cmake&quot;</span></span><br><span class="line">cmake --build build</span><br></pre></td></tr></table></figure>
+<p><strong>运行：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./build/HelloSDL3.exe</span><br></pre></td></tr></table></figure>
+<p>看到终端输出 <code>Configuring done</code> 和 <code>Generating done</code> 表示配置成功；编译完成后 <code>build/</code> 下会出现 <code>HelloSDL3.exe</code> 和 <code>SDL3.dll</code>。</p>
+<p>改了代码后只需重复后两条命令。</p>
+<blockquote>
+<p><strong>使用 MSVC 的读者</strong>：把生成器换成 <code>-G &quot;Visual Studio 17 2022&quot; -A x64</code>，并删除 <code>-DCMAKE_C_COMPILER=gcc</code>，此时不需要单独执行编译命令。</p>
+</blockquote>
+<hr>
+<h2 id="五、在-VSCode-中便捷操作">五、在 VSCode 中便捷操作</h2>
+<p>装好 CMake Tools 后，可以用预设省去每次输入长命令。在项目根目录新建 <code>CMakePresets.json</code>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="number">3</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;cmakeMinimumRequired&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;major&quot;</span><span class="punctuation">:</span> <span class="number">3</span><span class="punctuation">,</span> <span class="attr">&quot;minor&quot;</span><span class="punctuation">:</span> <span class="number">20</span><span class="punctuation">,</span> <span class="attr">&quot;patch&quot;</span><span class="punctuation">:</span> <span class="number">0</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;configurePresets&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;mingw&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;displayName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;MinGW-w64 / Ninja&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;generator&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Ninja&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;binaryDir&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;sourceDir&#125;/build&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;cacheVariables&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;CMAKE_BUILD_TYPE&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Debug&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;CMAKE_C_COMPILER&quot;</span><span class="punctuation">:</span> <span class="string">&quot;gcc&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;SDL3_DIR&quot;</span><span class="punctuation">:</span> <span class="string">&quot;D:/tools/SDL3-mingw/cmake&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;buildPresets&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;debug&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;configurePreset&quot;</span><span class="punctuation">:</span> <span class="string">&quot;mingw&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;configuration&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Debug&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>把 <code>SDL3_DIR</code> 改成自己的路径。之后配置和编译变成两条短命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmake --preset mingw</span><br><span class="line">cmake --build --preset debug</span><br></pre></td></tr></table></figure>
+<p>在 VSCode 中：按 <code>Ctrl+Shift+P</code> 执行 <strong>CMake: Select Configure Preset</strong> → <strong>CMake: Configure</strong> → <code>F7</code> 编译 → <code>F5</code> 调试。</p>
+<p>若头文件没有自动补全，新建 <code>.vscode/c_cpp_properties.json</code>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;configurations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Win32&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;includePath&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;$&#123;workspaceFolder&#125;/**&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;D:/tools/SDL3-mingw/x86_64-w64-mingw32/include&quot;</span></span><br><span class="line">      <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;compilerPath&quot;</span><span class="punctuation">:</span> <span class="string">&quot;gcc&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;cStandard&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c17&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;intelliSenseMode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;windows-gcc-x64&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p><code>includePath</code> 要和实际解压位置一致。</p>
+<hr>
+<h2 id="六、常见问题">六、常见问题</h2>
+<h3 id="找不到-SDL3Config-cmake">找不到 SDL3Config.cmake</h3>
+<p>报错 <code>Could not find a package configuration file provided by &quot;SDL3&quot;</code>。</p>
+<p><code>SDL3_DIR</code> 路径不对，确认该目录下确实存在 <code>SDL3Config.cmake</code>。注意 MinGW 包内还有一层 <code>x86_64-w64-mingw32</code> 子目录，<code>cmake</code> 与它同级。</p>
+<h3 id="运行时提示找不到-SDL3-dll">运行时提示找不到 SDL3.dll</h3>
+<p>若 <code>POST_BUILD</code> 没生效，手动复制：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cp</span> D:/tools/SDL3-mingw/x86_64-w64-mingw32/bin/SDL3.dll build/</span><br></pre></td></tr></table></figure>
+<h3 id="链接错误-undefined-reference">链接错误 undefined reference</h3>
+<p>通常是下载了错误工具链的包——用 MinGW 编译却用了 <code>-VC</code> 包。重新下载对应版本即可。</p>
+<h3 id="找不到-Ninja">找不到 Ninja</h3>
+<p>配置报生成器不可用。改用其他生成器即可，无需额外安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake -S . -B build -G <span class="string">&quot;MinGW Makefiles&quot;</span> -DCMAKE_C_COMPILER=gcc -DSDL3_DIR=<span class="string">&quot;...&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="窗口一闪而过">窗口一闪而过</h3>
+<p>程序崩溃退出了。用 <code>F5</code> 启动调试查看，或添加日志定位：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SDL_Log(<span class="string">&quot;Renderer: %s&quot;</span>, SDL_GetRendererName(renderer));</span><br></pre></td></tr></table></figure>
+<p>开启 SDL 自身的日志能获得更多信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SDL_LOGGING=1 SDL_LOGGING_PRIORITY=info ./build/HelloSDL3.exe</span><br></pre></td></tr></table></figure>
+<p>PowerShell 中写法为 <code>$env:SDL_LOGGING=1</code>。</p>
+<hr>
+<h2 id="七、SDL2-到-SDL3-的主要变化">七、SDL2 到 SDL3 的主要变化</h2>
+<p>如果你有 SDL2 基础，注意以下改动。这部分也是网上多数 SDL3 教程尚未更新的地方。</p>
+<p><strong>头文件路径</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;SDL.h&gt;</span>        <span class="comment">// SDL2</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;SDL3/SDL.h&gt;</span>   <span class="comment">// SDL3</span></span></span><br></pre></td></tr></table></figure>
+<p><strong>返回值改为 bool</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SDL2</span></span><br><span class="line"><span class="keyword">if</span> (SDL_Init(SDL_INIT_VIDEO) &lt; <span class="number">0</span>) &#123; <span class="comment">/* 失败 */</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// SDL3</span></span><br><span class="line"><span class="keyword">if</span> (!SDL_Init(SDL_INIT_VIDEO)) &#123; <span class="comment">/* 失败 */</span> &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>SDLmain 库已被移除</strong></p>
+<p>这是最容易踩的坑。SDL3 不再提供 <code>SDL3main</code> 库，如果 CMake 配置写成这样，<strong>配置阶段就会直接失败</strong>：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">target_link_libraries</span>(MyApp SDL3::SDL3main SDL3::SDL3)   <span class="comment"># ← SDL3 中无效</span></span><br></pre></td></tr></table></figure>
+<p>官方预编译包实际只提供这几个 target：</p>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SDL3::SDL3-shared</code></td>
+<td>动态库</td>
+</tr>
+<tr>
+<td><code>SDL3::Headers</code></td>
+<td>仅头文件</td>
+</tr>
+<tr>
+<td><code>SDL3::SDL3_test</code></td>
+<td>测试用库</td>
+</tr>
+</tbody>
+</table>
+<p>所以本文用别名做了兼容处理，<code>SDL3::SDL3</code> 在动态库和源码编译两种情况下都能用。</p>
+<p><strong>窗口与渲染器</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SDL2</span></span><br><span class="line">SDL_CreateWindow(title, x, y, w, h, flags);</span><br><span class="line">SDL_CreateRenderer(window, <span class="number">-1</span>, flags);</span><br><span class="line"></span><br><span class="line"><span class="comment">// SDL3</span></span><br><span class="line">SDL_CreateWindow(title, w, h, flags);        <span class="comment">// 不再传位置</span></span><br><span class="line">SDL_CreateRenderer(window, <span class="literal">NULL</span>, flags);     <span class="comment">// 传驱动名，NULL 表示自动选择</span></span><br></pre></td></tr></table></figure>
+<p><strong>事件处理</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SDL2</span></span><br><span class="line">SDL_Event event;</span><br><span class="line"><span class="keyword">while</span> (SDL_PollEvent(&amp;event) == <span class="number">0</span>) &#123; <span class="comment">/* 处理 */</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// SDL3</span></span><br><span class="line">SDL_Event event;</span><br><span class="line"><span class="keyword">while</span> (SDL_PollEvent(&amp;event)) &#123; <span class="comment">/* 处理，false 表示取完了 */</span> &#125;</span><br></pre></td></tr></table></figure>
+<p><code>SDL_Event</code> 也已从联合体改为结构体，事件数据位于具名字段（如 <code>event.key.key</code>）。</p>
+<p>完整官方迁移文档：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://wiki.libsdl.org/SDL3/README-migration</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="八、下一步">八、下一步</h2>
+<p>窗口跑起来之后可以继续探索：图形绘制与图像加载（需 SDL_image，注意头文件路径同样变为 <code>&lt;SDL3_image/SDL_image.h&gt;</code>）、键盘鼠标输入处理、<code>SDL_GPU</code> 硬件加速抽象层（支持 Vulkan / D3D12 / Metal）。</p>
+<p>音频部分请注意：SDL3 的音频 API 已经重写为基于 <code>SDL_AudioStream</code> 的流式模型，与 SDL2 差异较大，建议查阅官方文档重新学习。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://wiki.libsdl.org/SDL3/FrontPage</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="结语">结语</h2>
+<p>SDL3 的 API 相比 SDL2 有不小变化，网上流传的很多「SDL3 教程」实际上是 SDL2 内容改个版本号，直接照抄会编译失败。本文中的 CMake 配置和代码均经过实际编译运行验证，可以放心使用。</p>
+<p>祝开发愉快。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/10/09/VSCode%E4%BD%BF%E7%94%A8SDL3%E6%95%99%E7%A8%8B/" data-id="cmv1ug4lw0000gsma56jb6oa3" data-title="VS code中使用外部库：SDL" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-SDL的各个部分" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/" class="article-date">
@@ -2906,310 +3089,6 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
 
 
   
-    <article id="post-哈希表-赎金信" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/10/08/%E5%93%88%E5%B8%8C%E8%A1%A8-%E8%B5%8E%E9%87%91%E4%BF%A1/" class="article-date">
-  <time class="dt-published" datetime="2026-10-08T02:01:33.000Z" itemprop="datePublished">2026-10-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/08/%E5%93%88%E5%B8%8C%E8%A1%A8-%E8%B5%8E%E9%87%91%E4%BF%A1/">哈希表:赎金信</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1>383. 赎金信 —— 计数型哈希表的入门课</h1>
-<blockquote>
-<p>题目：给两个字符串 <code>randomNote</code> 和 <code>magazine</code>，判断 <code>randomNote</code> 能不能由 <code>magazine</code> 里的字符构成。<br>
-<code>magazine</code> 中的每个字符只能在 <code>randomNote</code> 中使用一次。</p>
-</blockquote>
-<hr>
-<h2 id="一、我的解法复盘（双数组计数）">一、我的解法复盘（双数组计数）</h2>
-<h3 id="思路">思路</h3>
-<p>用两个长度为 26 的数组，分别统计「信」和「杂志」里每个字母出现的次数，然后逐位比较：</p>
-<ul>
-<li>如果信里某个字母的需求量 &gt; 杂志里的供给量 → <code>false</code></li>
-<li>26 位全部满足 → <code>true</code></li>
-</ul>
-<h3 id="代码">代码</h3>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">canConstruct</span><span class="params">(string ransomNote, string magazine)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">letter1</span><span class="params">(<span class="number">26</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">letter2</span><span class="params">(<span class="number">26</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">char</span> a : ransomNote) &#123;</span><br><span class="line">            letter1[a - <span class="string">&#x27;a&#x27;</span>]++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">char</span> b : magazine) &#123;</span><br><span class="line">            letter2[b - <span class="string">&#x27;a&#x27;</span>]++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (letter1[i] &gt; letter2[i]) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h3 id="正确性说明">正确性说明</h3>
-<p>这题的关键约束是「每个字符<strong>只能用一次</strong>」，所以判断的不是「集合是否包含」，而是「<strong>频次是否够</strong>」。<br>
-<code>letter1[i] &lt;= letter2[i]</code> 对所有 i 成立 ⟺ 信里任意字母的出现次数都不超过杂志供给 ⟺ 可构造。</p>
-<h3 id="复杂度">复杂度</h3>
-<p>设 n = <code>ransomNote</code> 长度，m = <code>magazine</code> 长度。</p>
-<table>
-<thead>
-<tr>
-<th>项目</th>
-<th>复杂度</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>时间</td>
-<td><strong>O(n + m)</strong></td>
-<td>两次单层遍历 + 26 次比较，26 是常数</td>
-</tr>
-<tr>
-<td>空间</td>
-<td><strong>O(1)</strong></td>
-<td>两个固定长度 26 的数组，与输入规模无关</td>
-</tr>
-</tbody>
-</table>
-<h3 id="优点与可改进处">优点与可改进处</h3>
-<table>
-<thead>
-<tr>
-<th>做法</th>
-<th>评价</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>排序后双指针 O(n log n)</td>
-<td>能做，但要排序，浪费</td>
-</tr>
-<tr>
-<td>每次 <code>find</code> 单个字符 O(n·m)</td>
-<td>暴力，慢</td>
-</tr>
-<tr>
-<td>双数组计数 O(n+m)</td>
-<td>✅ 正确且最优量级</td>
-</tr>
-<tr>
-<td><strong>单数组差分</strong></td>
-<td>⭐ 同为 O(n+m)，空间再省一半，代码更短</td>
-</tr>
-</tbody>
-</table>
-<p><strong>一个小细节</strong>：可以先加一条 <code>if (ransomNote.size() &gt; magazine.size()) return false;</code> 的剪枝，<br>
-长度都不够时直接返回，能省掉后面两次遍历（虽然复杂度不变，但常数很可观）。</p>
-<hr>
-<h2 id="二、进阶优化：一个数组-负值检测">二、进阶优化：一个数组 + 负值检测</h2>
-<p>「两个数组比较」可以合并成「一个数组做加减」：</p>
-<ul>
-<li>遍历 <code>randomNote</code>：对应位置 <code>+1</code>（需求）</li>
-<li>遍历 <code>magazine</code>：对应位置 <code>-1</code>（供给）</li>
-<li>最后只要存在某一位 <strong>&gt; 0</strong>，说明需求没被填平 → <code>false</code></li>
-</ul>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">canConstruct</span><span class="params">(string ransomNote, string magazine)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (ransomNote.<span class="built_in">size</span>() &gt; magazine.<span class="built_in">size</span>()) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> cnt[<span class="number">26</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">char</span> c : ransomNote) ++cnt[c - <span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">char</span> c : magazine) --cnt[c - <span class="string">&#x27;a&#x27;</span>];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (cnt[i] &gt; <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>更进一步的「边扫边判」版本：遍历 magazine 时，每消耗一个字符就 <code>cnt--</code>，若某字符被消耗到负数立刻 <code>return false</code><br>
-（需要额外记录需求量，或先把 <code>randomNote</code> 的 cnt 记下来后靠 <code>magazine.size() - i</code> 判断）。这个写法能在 O(m) 就返回，<br>
-但可读性下降，面试中先把上面的版本写清楚更好。</p>
-</blockquote>
-<hr>
-<h2 id="三、边界与易错点">三、边界与易错点</h2>
-<ol>
-<li><strong>值域假设</strong>：<code>c - 'a'</code> 依赖「只含小写字母」。若含大写/空格/中文，需要扩展：
-<ul>
-<li>题目限定 <code>a~z</code>：直接用 <code>int[26]</code></li>
-<li>只知是 ASCII：<code>int[128]</code>，索引用 <code>(int)c</code></li>
-<li>字符集不固定（如 Unicode）：改用 <code>unordered_map&lt;char, int&gt;</code>，这才是「哈希表」的本体形态</li>
-</ul>
-</li>
-<li><strong>不能只判子集</strong>：用 <code>set</code> 判「信里的字符都在杂志里」会漏掉重复情况。<br>
-例：<code>ransomNote = &quot;aa&quot;</code>, <code>magazine = &quot;ab&quot;</code> → 集合判断会误判为 <code>true</code>，正确答案是 <code>false</code>。</li>
-<li><strong>不能用 <code>bitset</code></strong>：<code>bitset&lt;26&gt;</code> 同样丢失了频次信息，是错误的。</li>
-<li><strong>长度剪枝</strong>：<code>ransomNote.size() &gt; magazine.size()</code> 直接返回 false。</li>
-<li><strong>溢出</strong>：计数最大 10^5，<code>int</code> 足够，无需 <code>long long</code>。</li>
-<li><strong>是否原地改参数</strong>：<code>string</code> 是值传递，改它不影响调用方，安全；但若要追求极致性能，可用 <code>const string&amp;</code> 避免拷贝（本题按值传参是因为函数签名要求）。</li>
-</ol>
-<hr>
-<h2 id="四、哈希表的实际意义：空间换时间">四、哈希表的实际意义：空间换时间</h2>
-<p>这题是「计数型哈希表」最纯粹的例子，把它讲透，比记 10 道题更有价值。</p>
-<h3 id="4-1-三种做法的代价对比">4.1 三种做法的代价对比</h3>
-<table>
-<thead>
-<tr>
-<th>方案</th>
-<th>时间</th>
-<th>额外空间</th>
-<th>本质</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>双指针 + 找字符 <code>string::find</code></td>
-<td>O(n·m)</td>
-<td>O(1)</td>
-<td>用时间换空间（最坏）</td>
-</tr>
-<tr>
-<td>排序 + 归并比较</td>
-<td>O(n log n + m log m)</td>
-<td>O(log n) 栈</td>
-<td>用空间换时间（排序本身就是）</td>
-</tr>
-<tr>
-<td><strong>频次数组</strong></td>
-<td><strong>O(n + m)</strong></td>
-<td><strong>O(1) 固定 26 格</strong></td>
-<td><strong>用「一点」空间把查找降到 O(1)</strong></td>
-</tr>
-</tbody>
-</table>
-<p>关键在于：字符集只有 26 种可能，<strong>状态空间极小</strong>，所以哪怕只是开一个定长数组（哈希表的退化形态），<br>
-也能把「查某个字符还有没有」从 O(字符集长度) 降到 O(1)。</p>
-<blockquote>
-<p>这就是哈希表的本质：<strong>用额外的存储空间换取 O(1) 的定位能力</strong>，把「比较」从「反复扫描」变成「一次索引」。</p>
-</blockquote>
-<h3 id="4-2-什么时候该上哈希表">4.2 什么时候该上哈希表</h3>
-<ul>
-<li>✅ 值域小、且需要频繁 O(1) 查存在性 / 计频次（字符、数字、bool 状态）</li>
-<li>✅ 需要去重、分组、找重复（计数 + 遍历）</li>
-<li>✅ 想免掉排序的 O(n log n)（计数排序、桶排序的基数排序）</li>
-<li>✅ 滑动窗口里的「窗口内各字符还差几个」（配合 cnt 数组）</li>
-<li>❌ 值域极大（如 10^9 的用户 ID）且只查少量次 → 排序 / 二分更省内存</li>
-<li>❌ 内存极紧 → 定长数组 / 位图更省</li>
-</ul>
-<h3 id="4-3-同类题里的复用">4.3 同类题里的复用</h3>
-<table>
-<thead>
-<tr>
-<th>题目</th>
-<th>哈希表在这里的角色</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>242 有效的字母异位词</td>
-<td>频次完全相等，是本题的「加强版」</td>
-</tr>
-<tr>
-<td>49 字母异位词分组</td>
-<td>用「排序后的字符串」或「26 位计数元组」当 key，<strong>哈希表 + 计数</strong></td>
-</tr>
-<tr>
-<td>205 同构字符串</td>
-<td>双向映射哈希表（两个方向都要查），比计数更进一步</td>
-</tr>
-<tr>
-<td>387 字符串中第一个唯一字符</td>
-<td>只记出现一次的 key</td>
-</tr>
-<tr>
-<td>451 根据数字字符频率排序</td>
-<td>桶（哈希思想 + 排序思想）</td>
-</tr>
-<tr>
-<td>76 最小覆盖子串</td>
-<td>计数数组 + 滑动窗口，本题的大哥</td>
-</tr>
-<tr>
-<td>1 两数之和</td>
-<td>哈希表把 O(n) 查找压成 O(1)，是它的核心</td>
-</tr>
-<tr>
-<td>49/128 最长连续序列</td>
-<td>哈希表把 O(n log n) 压成 O(n)</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="五、可复用的「频次差分」模板">五、可复用的「频次差分」模板</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 适用：只需判断「A 的需求是否被 B 满足」的所有变体</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">canCover</span><span class="params">(<span class="type">const</span> string&amp; A, <span class="type">const</span> string&amp; B)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (A.<span class="built_in">size</span>() &gt; B.<span class="built_in">size</span>()) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="type">int</span> cnt[<span class="number">26</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">char</span> c : A) ++cnt[c - <span class="string">&#x27;a&#x27;</span>];   <span class="comment">// 需求</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">char</span> c : B) --cnt[c - <span class="string">&#x27;a&#x27;</span>];   <span class="comment">// 供给</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; i++) <span class="keyword">if</span> (cnt[i] &gt; <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>变体只需改一处判断：</p>
-<table>
-<thead>
-<tr>
-<th>变体</th>
-<th>最后的判断</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>包含关系（本题）</td>
-<td>存在 <code>&gt; 0</code> → false</td>
-</tr>
-<tr>
-<td>完全相等（242）</td>
-<td>存在 <code>!= 0</code> → false</td>
-</tr>
-<tr>
-<td>杂志字符无限用（1394）</td>
-<td>不需要统计次数，<code>set</code> 判断子集即可</td>
-</tr>
-<tr>
-<td>magazine 不能用（290）</td>
-<td>存在 <code>&gt;= 0</code> → false</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="六、复杂度速查">六、复杂度速查</h2>
-<table>
-<thead>
-<tr>
-<th>题</th>
-<th>时间</th>
-<th>空间</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>双数组计数</td>
-<td>O(n + m)</td>
-<td>O(1)（2×26）</td>
-</tr>
-<tr>
-<td>单数组差分</td>
-<td>O(n + m)</td>
-<td>O(1)（1×26）</td>
-</tr>
-<tr>
-<td>排序比较</td>
-<td>O(n log n + m log m)</td>
-<td>O(log n)</td>
-</tr>
-<tr>
-<td><code>unordered_map</code> 版</td>
-<td>O(n + m) 均摊</td>
-<td>O(k)，k 为字符种类数</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="七、复盘要点（下次遇到同类题怎么想）">七、复盘要点（下次遇到同类题怎么想）</h2>
-<ol>
-<li><strong>先看值域</strong>：题目限定小写字母 → 直接想到定长数组；字符集不定 → 才需要 <code>unordered_map</code>。</li>
-<li><strong>看清约束是「存在」还是「次数够」</strong>：这题是次数够，所以必须计数，set / bitset 都不行。</li>
-<li><strong>两段统计可以合并</strong>：单数组做加减，最后统一判残留，省一半空间、也少一次遍历逻辑。</li>
-<li><strong>哈希表的收益公式</strong>：当 <code>值域 K ≪ 输入规模 n</code> 且「查找」出现 <code>m</code> 次时，<br>
-哈希表把 O(n·K) 或 O(n log K) 降到 O(n + m)，代价是 O(K) 空间。判断该不该用，就套这个公式。</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/10/08/%E5%93%88%E5%B8%8C%E8%A1%A8-%E8%B5%8E%E9%87%91%E4%BF%A1/" data-id="cmuyw71sc0000hgma1c416odk" data-title="哈希表:赎金信" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
@@ -3238,7 +3117,7 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/OpenGL/" style="font-size: 13.33px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 13.33px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 16.67px;">学习规划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 13.33px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a>
+      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/OpenGL/" style="font-size: 12.5px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 12.5px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 15px;">学习规划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 12.5px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 17.5px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a>
     </div>
   </div>
 
@@ -3268,15 +3147,15 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
           </li>
         
           <li>
+            <a href="/2026/10/09/VSCode%E4%BD%BF%E7%94%A8SDL3%E6%95%99%E7%A8%8B/">VS code中使用外部库：SDL</a>
+          </li>
+        
+          <li>
             <a href="/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/">SDL的各个部分</a>
           </li>
         
           <li>
             <a href="/2026/10/08/%E8%90%A8%E7%BB%B4%E5%BE%B7%E6%8B%89%E5%B1%80%E9%9D%A2%EF%BC%9A%E5%85%B5%E5%8D%87%E5%8F%98%E4%B8%BA%E8%BD%A6%E7%9A%84%E5%90%88%E7%90%86%E6%80%A7/">萨维德拉局面：兵升变为车的合理性</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/08/%E5%93%88%E5%B8%8C%E8%A1%A8-%E8%B5%8E%E9%87%91%E4%BF%A1/">哈希表:赎金信</a>
           </li>
         
       </ul>
@@ -3333,45 +3212,6 @@ MinGW 程序配了 MSVC 版 DLL。解法见第 12 页。</p>
 
   </div>
 <!-- hexo injector body_end start -->
-<style>
-  .visitor-stats { margin-top: 10px; color: #999; font-size: 13px; text-align: center; }
-  .visitor-stats .stat-item { display: inline-block; margin: 0 6px; }
-  .visitor-stats .stat-num { color: #555; font-weight: 600; }
-  @media (max-width: 500px) { .visitor-stats .stat-item { display: block; margin: 2px 0; } }
-</style>
-
-<script>
-// === 今日 & 本月访问(localStorage,仅反映当前浏览器) ===
-(function(){
-  var now = new Date();
-  var todayKey = 'visit_' + now.toISOString().slice(0, 10);
-  var monthKey = 'visit_' + now.getFullYear() + '_' + (now.getMonth()+1);
-  var todayCount = parseInt(localStorage.getItem(todayKey) || '0') + 1;
-  var monthCount = parseInt(localStorage.getItem(monthKey) || '0') + 1;
-  localStorage.setItem(todayKey, todayCount);
-  localStorage.setItem(monthKey, monthCount);
-
-  // 插入页脚统计区
-  function inject() {
-    var fi = document.querySelector('#footer-info');
-    if (!fi) { setTimeout(inject, 300); return; }
-    if (fi.querySelector('.visitor-stats')) return;
-    var div = document.createElement('div');
-    div.className = 'visitor-stats';
-    div.innerHTML =
-      '<span class="stat-item">📅 今日 <span class="stat-num">' + todayCount + '</span></span>' +
-      '<span class="stat-item">📆 本月 <span class="stat-num">' + monthCount + '</span></span>' +
-      '<span class="stat-item">👥 访客 <span id="busuanzi_value_site_uv" class="stat-num">--</span></span>' +
-      '<span class="stat-item">📄 浏览 <span id="busuanzi_value_site_pv" class="stat-num">--</span></span>';
-    fi.appendChild(div);
-  }
-  inject();
-})();
-</script>
-
-<!-- 不蒜子:站点总 PV/UV -->
-<script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
-  
 <style>
   #lanx-chess-root {
     --lanx-light: #f0d9b5;
@@ -5290,145 +5130,43 @@ function undo(){
 </script>
   
 <style>
-  /* --- 详情页大号点赞按钮 --- */
-  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
-  .like-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 24px; font-size: 15px;
-    border: 1px solid #e0e0e0; border-radius: 24px;
-    background: #fff; color: #555; cursor: pointer;
-    transition: all 0.25s ease; user-select: none;
-  }
-  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
-  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
-  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
-  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
-  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
-
-  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
-  .article-footer .lanx-action {
-    display: inline-flex; align-items: center; gap: 4px;
-    margin-right: 10px; font-size: 13px;
-    color: #666; text-decoration: none; cursor: pointer;
-    padding: 0 2px; border-radius: 4px;
-    transition: color 0.2s;
-  }
-  .article-footer .lanx-action:hover { color: #ff6b6b; }
-  .article-footer .lanx-action.liked { color: #ff6b6b; }
-  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
-  .article-footer .lanx-action .lanx-count {
-    margin-left: 2px; font-size: 12px; color: #999;
-  }
-  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
+  .visitor-stats { margin-top: 10px; color: #999; font-size: 13px; text-align: center; }
+  .visitor-stats .stat-item { display: inline-block; margin: 0 6px; }
+  .visitor-stats .stat-num { color: #555; font-weight: 600; }
+  @media (max-width: 500px) { .visitor-stats .stat-item { display: block; margin: 2px 0; } }
 </style>
 
 <script>
+// === 今日 & 本月访问(localStorage,仅反映当前浏览器) ===
 (function(){
-  var articles = document.querySelectorAll('article.article');
-  var isSinglePost = articles.length === 1;
+  var now = new Date();
+  var todayKey = 'visit_' + now.toISOString().slice(0, 10);
+  var monthKey = 'visit_' + now.getFullYear() + '_' + (now.getMonth()+1);
+  var todayCount = parseInt(localStorage.getItem(todayKey) || '0') + 1;
+  var monthCount = parseInt(localStorage.getItem(monthKey) || '0') + 1;
+  localStorage.setItem(todayKey, todayCount);
+  localStorage.setItem(monthKey, monthCount);
 
-  // 提取文章路径:从 share-link 的 data-url 里拿
-  function getArticlePath(articleEl) {
-    var link = articleEl.querySelector('.article-share-link');
-    if (link && link.dataset.url) {
-      try {
-        var u = new URL(link.dataset.url, location.origin);
-        return u.pathname;
-      } catch(e) {}
-    }
-    // fallback:用标题链接的 href
-    var titleLink = articleEl.querySelector('.article-title');
-    if (titleLink) return titleLink.getAttribute('href');
-    return '';
+  // 插入页脚统计区
+  function inject() {
+    var fi = document.querySelector('#footer-info');
+    if (!fi) { setTimeout(inject, 300); return; }
+    if (fi.querySelector('.visitor-stats')) return;
+    var div = document.createElement('div');
+    div.className = 'visitor-stats';
+    div.innerHTML =
+      '<span class="stat-item">📅 今日 <span class="stat-num">' + todayCount + '</span></span>' +
+      '<span class="stat-item">📆 本月 <span class="stat-num">' + monthCount + '</span></span>' +
+      '<span class="stat-item">👥 访客 <span id="busuanzi_value_site_uv" class="stat-num">--</span></span>' +
+      '<span class="stat-item">📄 浏览 <span id="busuanzi_value_site_pv" class="stat-num">--</span></span>';
+    fi.appendChild(div);
   }
-
-  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
-  if (!isSinglePost) {
-    articles.forEach(function(art) {
-      var af = art.querySelector('.article-footer');
-      var share = art.querySelector('.article-share-link');
-      var path = getArticlePath(art);
-      if (!af || !share || !path) return;
-
-      var likedKey = 'liked_' + path;
-      var countKey = 'likeCount_' + path;
-      var liked = !!localStorage.getItem(likedKey);
-      var count = parseInt(localStorage.getItem(countKey) || '0');
-
-      // 点赞按钮(小)
-      var likeHtml =
-        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
-          '<span class="fa fa-thumbs-up"></span>' +
-          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
-        '</a>';
-
-      // 评论按钮(小),跳到详情页评论区
-      var commentHtml =
-        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
-          '<span class="fa fa-comment"></span>' +
-        '</a>';
-
-      // 插入到分享按钮前面
-      var temp = document.createElement('span');
-      temp.innerHTML = likeHtml + commentHtml;
-      share.parentNode.insertBefore(temp.firstChild, share);
-      share.parentNode.insertBefore(temp.firstChild, share);
-
-      // 绑定点赞事件
-      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
-      if (likeBtn) {
-        likeBtn.addEventListener('click', function(e) {
-          e.preventDefault(); e.stopPropagation();
-          if (likeBtn.classList.contains('liked')) return;
-          likeBtn.classList.add('liked');
-          localStorage.setItem(likedKey, '1');
-          count++;
-          localStorage.setItem(countKey, count);
-          var c = likeBtn.querySelector('.lanx-count');
-          c.textContent = count; c.style.display = '';
-        });
-      }
-    });
-    return; // 多文章页到此为止
-  }
-
-  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
-  var path = location.pathname;
-  var likedKey = 'liked_' + path;
-  var countKey = 'likeCount_' + path;
-  var liked = localStorage.getItem(likedKey);
-  var count = parseInt(localStorage.getItem(countKey) || '0');
-
-  var wrap = document.createElement('div');
-  wrap.className = 'like-wrap';
-  wrap.innerHTML =
-    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
-      '<span class="fa fa-thumbs-up"></span>' +
-      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
-      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
-    '</button>';
-  var af = document.querySelector('.article-footer');
-  if (af) af.after(wrap);
-
-  var btn = document.getElementById('likeBtn');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      if (btn.classList.contains('liked')) return;
-      btn.classList.add('liked');
-      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
-      localStorage.setItem(likedKey, '1');
-      count++;
-      localStorage.setItem(countKey, count);
-      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
-      btn.querySelector('#likeCountDisplay').style.display = '';
-      var inline = document.getElementById('lanx_like_inline');
-      if (inline) { inline.textContent = count; inline.style.display = ''; }
-    });
-  }
-
-  window.__LANX_LIKE_COUNT__ = count;
+  inject();
 })();
 </script>
+
+<!-- 不蒜子:站点总 PV/UV -->
+<script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
   
 <style>
   /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
@@ -5811,6 +5549,147 @@ window.addEventListener('load', function(){
   }
   // 留言板:立即初始化;文章页:等用户点展开按钮
   if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
+})();
+</script>
+  
+<style>
+  /* --- 详情页大号点赞按钮 --- */
+  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
+  .like-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 24px; font-size: 15px;
+    border: 1px solid #e0e0e0; border-radius: 24px;
+    background: #fff; color: #555; cursor: pointer;
+    transition: all 0.25s ease; user-select: none;
+  }
+  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
+  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
+  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
+  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
+
+  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
+  .article-footer .lanx-action {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-right: 10px; font-size: 13px;
+    color: #666; text-decoration: none; cursor: pointer;
+    padding: 0 2px; border-radius: 4px;
+    transition: color 0.2s;
+  }
+  .article-footer .lanx-action:hover { color: #ff6b6b; }
+  .article-footer .lanx-action.liked { color: #ff6b6b; }
+  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
+  .article-footer .lanx-action .lanx-count {
+    margin-left: 2px; font-size: 12px; color: #999;
+  }
+  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
+</style>
+
+<script>
+(function(){
+  var articles = document.querySelectorAll('article.article');
+  var isSinglePost = articles.length === 1;
+
+  // 提取文章路径:从 share-link 的 data-url 里拿
+  function getArticlePath(articleEl) {
+    var link = articleEl.querySelector('.article-share-link');
+    if (link && link.dataset.url) {
+      try {
+        var u = new URL(link.dataset.url, location.origin);
+        return u.pathname;
+      } catch(e) {}
+    }
+    // fallback:用标题链接的 href
+    var titleLink = articleEl.querySelector('.article-title');
+    if (titleLink) return titleLink.getAttribute('href');
+    return '';
+  }
+
+  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
+  if (!isSinglePost) {
+    articles.forEach(function(art) {
+      var af = art.querySelector('.article-footer');
+      var share = art.querySelector('.article-share-link');
+      var path = getArticlePath(art);
+      if (!af || !share || !path) return;
+
+      var likedKey = 'liked_' + path;
+      var countKey = 'likeCount_' + path;
+      var liked = !!localStorage.getItem(likedKey);
+      var count = parseInt(localStorage.getItem(countKey) || '0');
+
+      // 点赞按钮(小)
+      var likeHtml =
+        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
+          '<span class="fa fa-thumbs-up"></span>' +
+          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
+        '</a>';
+
+      // 评论按钮(小),跳到详情页评论区
+      var commentHtml =
+        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
+          '<span class="fa fa-comment"></span>' +
+        '</a>';
+
+      // 插入到分享按钮前面
+      var temp = document.createElement('span');
+      temp.innerHTML = likeHtml + commentHtml;
+      share.parentNode.insertBefore(temp.firstChild, share);
+      share.parentNode.insertBefore(temp.firstChild, share);
+
+      // 绑定点赞事件
+      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
+      if (likeBtn) {
+        likeBtn.addEventListener('click', function(e) {
+          e.preventDefault(); e.stopPropagation();
+          if (likeBtn.classList.contains('liked')) return;
+          likeBtn.classList.add('liked');
+          localStorage.setItem(likedKey, '1');
+          count++;
+          localStorage.setItem(countKey, count);
+          var c = likeBtn.querySelector('.lanx-count');
+          c.textContent = count; c.style.display = '';
+        });
+      }
+    });
+    return; // 多文章页到此为止
+  }
+
+  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
+  var path = location.pathname;
+  var likedKey = 'liked_' + path;
+  var countKey = 'likeCount_' + path;
+  var liked = localStorage.getItem(likedKey);
+  var count = parseInt(localStorage.getItem(countKey) || '0');
+
+  var wrap = document.createElement('div');
+  wrap.className = 'like-wrap';
+  wrap.innerHTML =
+    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
+      '<span class="fa fa-thumbs-up"></span>' +
+      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
+      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
+    '</button>';
+  var af = document.querySelector('.article-footer');
+  if (af) af.after(wrap);
+
+  var btn = document.getElementById('likeBtn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('liked')) return;
+      btn.classList.add('liked');
+      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
+      localStorage.setItem(likedKey, '1');
+      count++;
+      localStorage.setItem(countKey, count);
+      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
+      btn.querySelector('#likeCountDisplay').style.display = '';
+      var inline = document.getElementById('lanx_like_inline');
+      if (inline) { inline.textContent = count; inline.style.display = ''; }
+    });
+  }
+
+  window.__LANX_LIKE_COUNT__ = count;
 })();
 </script>
   <!-- hexo injector body_end end --></body>

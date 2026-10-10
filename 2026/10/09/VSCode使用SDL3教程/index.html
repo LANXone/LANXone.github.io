@@ -4,17 +4,19 @@
   <meta charset="utf-8">
   
   
-  <title>归档: 2026 | LANXone的博客</title>
+  <title>VS code中使用外部库：SDL | LANXone的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="记录我的学习和心路历程">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LANXone的博客">
-<meta property="og:url" content="http://example.com/archives/2026/page/3/index.html">
+  <meta name="description" content="在 VSCode 中使用 SDL3 SDL3 是 2024 年底发布的重大版本更新，相比 SDL2 带来了原生 Metal 支持、重写的音频 API、更强的高 DPI 支持，以及大量 API 现代化改进。 本文带你从零开始，在 VSCode 中搭建 SDL3 开发环境，并跑起第一个窗口。文中所有代码均经过实际编译运行验证。  一、下载 SDL3 访问官方发布页： 1https:&#x2F;&#x2F;github.c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VS code中使用外部库：SDL">
+<meta property="og:url" content="http://example.com/2026/10/09/VSCode%E4%BD%BF%E7%94%A8SDL3%E6%95%99%E7%A8%8B/index.html">
 <meta property="og:site_name" content="LANXone的博客">
-<meta property="og:description" content="记录我的学习和心路历程">
+<meta property="og:description" content="在 VSCode 中使用 SDL3 SDL3 是 2024 年底发布的重大版本更新，相比 SDL2 带来了原生 Metal 支持、重写的音频 API、更强的高 DPI 支持，以及大量 API 现代化改进。 本文带你从零开始，在 VSCode 中搭建 SDL3 开发环境，并跑起第一个窗口。文中所有代码均经过实际编译运行验证。  一、下载 SDL3 访问官方发布页： 1https:&#x2F;&#x2F;github.c">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-09T15:44:21.000Z">
+<meta property="article:modified_time" content="2026-10-10T03:36:56.346Z">
 <meta property="article:author" content="LANXone">
-<meta property="article:tag" content="编程,游戏,算法练习与感悟">
+<meta property="article:tag" content="C++开发笔记">
 <meta name="twitter:card" content="summary">
   
   
@@ -78,64 +80,207 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2026" class="archive-year">2026</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/09/14/%E7%AC%AC%E4%B8%80%E6%AC%A1%E6%96%87%E7%AB%A0%E6%B5%8B%E8%AF%95/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-09-14T06:56:02.000Z" itemprop="datePublished">9月 14</time>
+        <section id="main"><article id="post-VSCode使用SDL3教程" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/09/VSCode%E4%BD%BF%E7%94%A8SDL3%E6%95%99%E7%A8%8B/" class="article-date">
+  <time class="dt-published" datetime="2026-10-09T15:44:21.000Z" itemprop="datePublished">2026-10-09</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/09/14/%E7%AC%AC%E4%B8%80%E6%AC%A1%E6%96%87%E7%AB%A0%E6%B5%8B%E8%AF%95/">第一次文章测试</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      VS code中使用外部库：SDL
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/08/18/hello-world/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-08-18T12:45:58.177Z" itemprop="datePublished">8月 18</time>
-</a>
+    <div class="e-content article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/08/18/hello-world/">Hello World</a>
-    </h1>
-  
+        <h1>在 VSCode 中使用 SDL3</h1>
+<p>SDL3 是 2024 年底发布的重大版本更新，相比 SDL2 带来了原生 Metal 支持、重写的音频 API、更强的高 DPI 支持，以及大量 API 现代化改进。</p>
+<p>本文带你从零开始，在 VSCode 中搭建 SDL3 开发环境，并跑起第一个窗口。文中所有代码均经过实际编译运行验证。</p>
+<hr>
+<h2 id="一、下载-SDL3">一、下载 SDL3</h2>
+<p>访问官方发布页：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/libsdl-org/SDL/releases</span><br></pre></td></tr></table></figure>
+<p>找到最新的 <strong>3.x</strong> 版本，按你的编译器下载对应工具链的包：</p>
+<table>
+<thead>
+<tr>
+<th>文件名后缀</th>
+<th>适用工具链</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-mingw.zip</code> / <code>-mingw.tar.gz</code></td>
+<td><strong>MinGW-w64</strong></td>
+</tr>
+<tr>
+<td><code>-VC.zip</code></td>
+<td><strong>MSVC</strong>（Visual Studio）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>两者不能混用</strong>，下错会导致链接错误。</p>
+<p>解压到一个不含空格、不含中文字符的路径，例如 <code>D:\tools\SDL3-mingw</code>。解压后确认存在这个文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">D:\tools\SDL3-mingw\cmake\SDL3Config.cmake</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>路径建议避开空格和中文，否则某些工具链下会出现莫名的编译错误。</p>
+</blockquote>
+<hr>
+<h2 id="二、安装-VSCode-扩展">二、安装 VSCode 扩展</h2>
+<p>按 <code>Ctrl+Shift+X</code> 打开扩展面板，搜索并安装两个微软官方扩展：</p>
+<ul>
+<li><strong>C/C++</strong> — 代码补全与调试支持</li>
+<li><strong>CMake Tools</strong> — 集成 CMake 构建系统</li>
+</ul>
+<p>安装后重启 VSCode。</p>
+<hr>
+<h2 id="三、创建项目">三、创建项目</h2>
+<h3 id="3-1-建立目录">3.1 建立目录</h3>
+<p>新建项目文件夹，例如 <code>D:\projects\hello-sdl3</code>，结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">D:\projects\hello-sdl3\</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">└── src\</span><br><span class="line">    └── main.c</span><br></pre></td></tr></table></figure>
+<p>只有两个文件，刻意保持最小。</p>
+<h3 id="3-2-编写-CMakeLists-txt">3.2 编写 CMakeLists.txt</h3>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.20</span>)</span><br><span class="line"><span class="keyword">project</span>(HelloSDL3 LANGUAGES C)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CMAKE_C_STANDARD <span class="number">17</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指向 SDL3 的 cmake 配置目录，替换为你自己的解压路径</span></span><br><span class="line"><span class="keyword">set</span>(SDL3_DIR <span class="string">&quot;D:/tools/SDL3-mingw/cmake&quot;</span> CACHE PATH <span class="string">&quot;SDL3 cmake config directory&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">find_package</span>(SDL3 REQUIRED CONFIG)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 官方预编译包只提供 SDL3::SDL3-shared</span></span><br><span class="line"><span class="comment"># 这里给它个别名，后续统一用 SDL3::SDL3 引用</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">NOT</span> <span class="keyword">TARGET</span> SDL3::SDL3)</span><br><span class="line">    <span class="keyword">add_library</span>(SDL3::SDL3 ALIAS SDL3::SDL3-shared)</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_executable</span>(HelloSDL3 src/main.c)</span><br><span class="line"><span class="keyword">target_link_libraries</span>(HelloSDL3 PRIVATE SDL3::SDL3)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译完自动把 SDL3.dll 复制到 exe 所在目录</span></span><br><span class="line"><span class="keyword">add_custom_command</span>(<span class="keyword">TARGET</span> HelloSDL3 POST_BUILD</span><br><span class="line">    <span class="keyword">COMMAND</span> <span class="variable">$&#123;CMAKE_COMMAND&#125;</span> -E copy_if_different</span><br><span class="line">        $&lt;TARGET_FILE:SDL3::SDL3&gt; $&lt;TARGET_FILE_DIR:HelloSDL3&gt;</span><br><span class="line">    VERBATIM)</span><br></pre></td></tr></table></figure>
+<p>最后那段的作用：SDL3 默认以动态库发布，运行时需要 <code>SDL3.dll</code> 在 exe 旁边，用 CMake 自动拷贝可以省掉手动操作。</p>
+<h3 id="3-3-编写主程序">3.3 编写主程序</h3>
+<p>新建 <code>src/main.c</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;SDL3/SDL.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    (<span class="type">void</span>)argc;</span><br><span class="line">    (<span class="type">void</span>)argv;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// SDL3 中初始化失败返回 false</span></span><br><span class="line">    <span class="keyword">if</span> (!SDL_Init(SDL_INIT_VIDEO)) &#123;</span><br><span class="line">        SDL_Log(<span class="string">&quot;初始化失败: %s&quot;</span>, SDL_GetError());</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// SDL3 的窗口创建函数不再接受 x / y 参数</span></span><br><span class="line">    SDL_Window *window = SDL_CreateWindow(<span class="string">&quot;Hello SDL3&quot;</span>,</span><br><span class="line">                                          <span class="number">800</span>, <span class="number">600</span>,</span><br><span class="line">                                          SDL_WINDOW_RESIZABLE);</span><br><span class="line">    <span class="keyword">if</span> (!window) &#123;</span><br><span class="line">        SDL_Log(<span class="string">&quot;创建窗口失败: %s&quot;</span>, SDL_GetError());</span><br><span class="line">        SDL_Quit();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 第二个参数是渲染驱动名，传 NULL 让 SDL 自动选择</span></span><br><span class="line">    SDL_Renderer *renderer = SDL_CreateRenderer(window, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span> (!renderer) &#123;</span><br><span class="line">        SDL_Log(<span class="string">&quot;创建渲染器失败: %s&quot;</span>, SDL_GetError());</span><br><span class="line">        SDL_DestroyWindow(window);</span><br><span class="line">        SDL_Quit();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">bool</span> running = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (running) &#123;</span><br><span class="line">        SDL_Event event;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// SDL3 中返回 false 表示事件队列已取空</span></span><br><span class="line">        <span class="keyword">while</span> (SDL_PollEvent(&amp;event)) &#123;</span><br><span class="line">            <span class="keyword">if</span> (event.type == SDL_EVENT_QUIT) &#123;</span><br><span class="line">                running = <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (event.type == SDL_EVENT_KEY_DOWN &amp;&amp;</span><br><span class="line">                event.key.key == SDLK_ESCAPE) &#123;</span><br><span class="line">                running = <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        SDL_SetRenderDrawColor(renderer, <span class="number">40</span>, <span class="number">90</span>, <span class="number">160</span>, <span class="number">255</span>);</span><br><span class="line">        SDL_RenderClear(renderer);</span><br><span class="line"></span><br><span class="line">        SDL_SetRenderDrawColor(renderer, <span class="number">255</span>, <span class="number">200</span>, <span class="number">60</span>, <span class="number">255</span>);</span><br><span class="line">        SDL_RenderFillRect(renderer, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">        SDL_RenderPresent(renderer);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    SDL_DestroyRenderer(renderer);</span><br><span class="line">    SDL_DestroyWindow(window);</span><br><span class="line">    SDL_Quit();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序会创建一个 800×600 的可缩放窗口，蓝色背景上一个黄色矩形。按 <code>Esc</code> 退出。</p>
+<hr>
+<h2 id="四、编译运行">四、编译运行</h2>
+<p>在项目根目录打开终端（VSCode 中按 `Ctrl+`` ），执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DSDL3_DIR=<span class="string">&quot;D:/tools/SDL3-mingw/cmake&quot;</span></span><br><span class="line">cmake --build build</span><br></pre></td></tr></table></figure>
+<p><strong>运行：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./build/HelloSDL3.exe</span><br></pre></td></tr></table></figure>
+<p>看到终端输出 <code>Configuring done</code> 和 <code>Generating done</code> 表示配置成功；编译完成后 <code>build/</code> 下会出现 <code>HelloSDL3.exe</code> 和 <code>SDL3.dll</code>。</p>
+<p>改了代码后只需重复后两条命令。</p>
+<blockquote>
+<p><strong>使用 MSVC 的读者</strong>：把生成器换成 <code>-G &quot;Visual Studio 17 2022&quot; -A x64</code>，并删除 <code>-DCMAKE_C_COMPILER=gcc</code>，此时不需要单独执行编译命令。</p>
+</blockquote>
+<hr>
+<h2 id="五、在-VSCode-中便捷操作">五、在 VSCode 中便捷操作</h2>
+<p>装好 CMake Tools 后，可以用预设省去每次输入长命令。在项目根目录新建 <code>CMakePresets.json</code>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="number">3</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;cmakeMinimumRequired&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;major&quot;</span><span class="punctuation">:</span> <span class="number">3</span><span class="punctuation">,</span> <span class="attr">&quot;minor&quot;</span><span class="punctuation">:</span> <span class="number">20</span><span class="punctuation">,</span> <span class="attr">&quot;patch&quot;</span><span class="punctuation">:</span> <span class="number">0</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;configurePresets&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;mingw&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;displayName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;MinGW-w64 / Ninja&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;generator&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Ninja&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;binaryDir&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;sourceDir&#125;/build&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;cacheVariables&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;CMAKE_BUILD_TYPE&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Debug&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;CMAKE_C_COMPILER&quot;</span><span class="punctuation">:</span> <span class="string">&quot;gcc&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;SDL3_DIR&quot;</span><span class="punctuation">:</span> <span class="string">&quot;D:/tools/SDL3-mingw/cmake&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;buildPresets&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;debug&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;configurePreset&quot;</span><span class="punctuation">:</span> <span class="string">&quot;mingw&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;configuration&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Debug&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>把 <code>SDL3_DIR</code> 改成自己的路径。之后配置和编译变成两条短命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmake --preset mingw</span><br><span class="line">cmake --build --preset debug</span><br></pre></td></tr></table></figure>
+<p>在 VSCode 中：按 <code>Ctrl+Shift+P</code> 执行 <strong>CMake: Select Configure Preset</strong> → <strong>CMake: Configure</strong> → <code>F7</code> 编译 → <code>F5</code> 调试。</p>
+<p>若头文件没有自动补全，新建 <code>.vscode/c_cpp_properties.json</code>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;configurations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Win32&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;includePath&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;$&#123;workspaceFolder&#125;/**&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;D:/tools/SDL3-mingw/x86_64-w64-mingw32/include&quot;</span></span><br><span class="line">      <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;compilerPath&quot;</span><span class="punctuation">:</span> <span class="string">&quot;gcc&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;cStandard&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c17&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;intelliSenseMode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;windows-gcc-x64&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p><code>includePath</code> 要和实际解压位置一致。</p>
+<hr>
+<h2 id="六、常见问题">六、常见问题</h2>
+<h3 id="找不到-SDL3Config-cmake">找不到 SDL3Config.cmake</h3>
+<p>报错 <code>Could not find a package configuration file provided by &quot;SDL3&quot;</code>。</p>
+<p><code>SDL3_DIR</code> 路径不对，确认该目录下确实存在 <code>SDL3Config.cmake</code>。注意 MinGW 包内还有一层 <code>x86_64-w64-mingw32</code> 子目录，<code>cmake</code> 与它同级。</p>
+<h3 id="运行时提示找不到-SDL3-dll">运行时提示找不到 SDL3.dll</h3>
+<p>若 <code>POST_BUILD</code> 没生效，手动复制：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cp</span> D:/tools/SDL3-mingw/x86_64-w64-mingw32/bin/SDL3.dll build/</span><br></pre></td></tr></table></figure>
+<h3 id="链接错误-undefined-reference">链接错误 undefined reference</h3>
+<p>通常是下载了错误工具链的包——用 MinGW 编译却用了 <code>-VC</code> 包。重新下载对应版本即可。</p>
+<h3 id="找不到-Ninja">找不到 Ninja</h3>
+<p>配置报生成器不可用。改用其他生成器即可，无需额外安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake -S . -B build -G <span class="string">&quot;MinGW Makefiles&quot;</span> -DCMAKE_C_COMPILER=gcc -DSDL3_DIR=<span class="string">&quot;...&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="窗口一闪而过">窗口一闪而过</h3>
+<p>程序崩溃退出了。用 <code>F5</code> 启动调试查看，或添加日志定位：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SDL_Log(<span class="string">&quot;Renderer: %s&quot;</span>, SDL_GetRendererName(renderer));</span><br></pre></td></tr></table></figure>
+<p>开启 SDL 自身的日志能获得更多信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SDL_LOGGING=1 SDL_LOGGING_PRIORITY=info ./build/HelloSDL3.exe</span><br></pre></td></tr></table></figure>
+<p>PowerShell 中写法为 <code>$env:SDL_LOGGING=1</code>。</p>
+<hr>
+<h2 id="七、SDL2-到-SDL3-的主要变化">七、SDL2 到 SDL3 的主要变化</h2>
+<p>如果你有 SDL2 基础，注意以下改动。这部分也是网上多数 SDL3 教程尚未更新的地方。</p>
+<p><strong>头文件路径</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;SDL.h&gt;</span>        <span class="comment">// SDL2</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;SDL3/SDL.h&gt;</span>   <span class="comment">// SDL3</span></span></span><br></pre></td></tr></table></figure>
+<p><strong>返回值改为 bool</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SDL2</span></span><br><span class="line"><span class="keyword">if</span> (SDL_Init(SDL_INIT_VIDEO) &lt; <span class="number">0</span>) &#123; <span class="comment">/* 失败 */</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// SDL3</span></span><br><span class="line"><span class="keyword">if</span> (!SDL_Init(SDL_INIT_VIDEO)) &#123; <span class="comment">/* 失败 */</span> &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>SDLmain 库已被移除</strong></p>
+<p>这是最容易踩的坑。SDL3 不再提供 <code>SDL3main</code> 库，如果 CMake 配置写成这样，<strong>配置阶段就会直接失败</strong>：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">target_link_libraries</span>(MyApp SDL3::SDL3main SDL3::SDL3)   <span class="comment"># ← SDL3 中无效</span></span><br></pre></td></tr></table></figure>
+<p>官方预编译包实际只提供这几个 target：</p>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SDL3::SDL3-shared</code></td>
+<td>动态库</td>
+</tr>
+<tr>
+<td><code>SDL3::Headers</code></td>
+<td>仅头文件</td>
+</tr>
+<tr>
+<td><code>SDL3::SDL3_test</code></td>
+<td>测试用库</td>
+</tr>
+</tbody>
+</table>
+<p>所以本文用别名做了兼容处理，<code>SDL3::SDL3</code> 在动态库和源码编译两种情况下都能用。</p>
+<p><strong>窗口与渲染器</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SDL2</span></span><br><span class="line">SDL_CreateWindow(title, x, y, w, h, flags);</span><br><span class="line">SDL_CreateRenderer(window, <span class="number">-1</span>, flags);</span><br><span class="line"></span><br><span class="line"><span class="comment">// SDL3</span></span><br><span class="line">SDL_CreateWindow(title, w, h, flags);        <span class="comment">// 不再传位置</span></span><br><span class="line">SDL_CreateRenderer(window, <span class="literal">NULL</span>, flags);     <span class="comment">// 传驱动名，NULL 表示自动选择</span></span><br></pre></td></tr></table></figure>
+<p><strong>事件处理</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SDL2</span></span><br><span class="line">SDL_Event event;</span><br><span class="line"><span class="keyword">while</span> (SDL_PollEvent(&amp;event) == <span class="number">0</span>) &#123; <span class="comment">/* 处理 */</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// SDL3</span></span><br><span class="line">SDL_Event event;</span><br><span class="line"><span class="keyword">while</span> (SDL_PollEvent(&amp;event)) &#123; <span class="comment">/* 处理，false 表示取完了 */</span> &#125;</span><br></pre></td></tr></table></figure>
+<p><code>SDL_Event</code> 也已从联合体改为结构体，事件数据位于具名字段（如 <code>event.key.key</code>）。</p>
+<p>完整官方迁移文档：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://wiki.libsdl.org/SDL3/README-migration</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="八、下一步">八、下一步</h2>
+<p>窗口跑起来之后可以继续探索：图形绘制与图像加载（需 SDL_image，注意头文件路径同样变为 <code>&lt;SDL3_image/SDL_image.h&gt;</code>）、键盘鼠标输入处理、<code>SDL_GPU</code> 硬件加速抽象层（支持 Vulkan / D3D12 / Metal）。</p>
+<p>音频部分请注意：SDL3 的音频 API 已经重写为基于 <code>SDL_AudioStream</code> 的流式模型，与 SDL2 差异较大，建议查阅官方文档重新学习。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://wiki.libsdl.org/SDL3/FrontPage</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="结语">结语</h2>
+<p>SDL3 的 API 相比 SDL2 有不小变化，网上流传的很多「SDL3 教程」实际上是 SDL2 内容改个版本号，直接照抄会编译失败。本文中的 CMake 配置和代码均经过实际编译运行验证，可以放心使用。</p>
+<p>祝开发愉快。</p>
 
-    </header>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/10/09/VSCode%E4%BD%BF%E7%94%A8SDL3%E6%95%99%E7%A8%8B/" data-id="cmv1ug4lw0000gsma56jb6oa3" data-title="VS code中使用外部库：SDL" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li></ul>
+
+    </footer>
   </div>
-</article>
   
-  
-    </div></section>
-  
-
-
-  <nav id="page-nav">
     
-    <a class="extend prev" rel="prev" href="/archives/2026/page/2/">&laquo; 上一页</a><a class="page-number" href="/archives/2026/">1</a><a class="page-number" href="/archives/2026/page/2/">2</a><span class="page-number current">3</span>
-  </nav>
+<nav id="article-nav">
+  
+    <a href="/2026/10/09/%E6%97%A0IDE%E9%93%BE%E6%8E%A5%E5%A4%96%E9%83%A8%E5%BA%93%E5%AE%9E%E6%88%98-%E4%BB%A5SDL%E4%B8%BA%E4%BE%8B/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          C++开发日志:C++程序怎么连接外部库文件
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2026/10/09/SDL%E7%9A%84%E5%90%84%E4%B8%AA%E9%83%A8%E5%88%86/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">SDL的各个部分</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
 
 </section>
         
