@@ -359,7 +359,7 @@ ${jsonLine}
     root.innerHTML = `
       <div class="lt-file-screen lt-enter">
         <div class="lt-file-icon">📋</div>
-        <h2 class="lt-file-title">自律打卡纸</h2>
+        <h2 class="lt-file-title">打卡器</h2>
         <p class="lt-file-desc">所有数据存储在你的本地 .md 文件中 · 无需注册 · 无需密码</p>
         <div class="lt-file-actions">
           <button class="lt-btn lt-btn-primary" id="lt-btn-open">📂 打开我的打卡纸</button>
@@ -443,7 +443,7 @@ ${jsonLine}
 
       <div class="lt-toolbar">
         <div class="lt-toolbar-left">
-          <h2 class="lt-title">📝 自律日志</h2>
+          <h2 class="lt-title">📝 打卡器</h2>
           <span class="lt-file-badge">📄 ${escapeHtml(FileIO.fileName || '未命名.md')}</span>
         </div>
         <div class="lt-toolbar-right">
