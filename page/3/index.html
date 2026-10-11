@@ -82,6 +82,50 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-赛博朋克的编剧应该想什么" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/05/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B%E7%9A%84%E7%BC%96%E5%89%A7%E5%BA%94%E8%AF%A5%E6%83%B3%E4%BB%80%E4%B9%88/" class="article-date">
+  <time class="dt-published" datetime="2026-10-05T14:04:58.000Z" itemprop="datePublished">2026-10-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/10/05/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B%E7%9A%84%E7%BC%96%E5%89%A7%E5%BA%94%E8%AF%A5%E6%83%B3%E4%BB%80%E4%B9%88/">赛博朋克的编剧应该想什么?</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/cyberpunk.png" alt=""></p>
+<blockquote>
+<p><strong>Only death and misery</strong> --Bartosz Sztybor《赛博朋克：边缘行者》第一季核心编剧、第二季节目统筹 在核电波里如是说到</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/10/05/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B%E7%9A%84%E7%BC%96%E5%89%A7%E5%BA%94%E8%AF%A5%E6%83%B3%E4%BB%80%E4%B9%88/" data-id="cmv3ghxav0017n8mafnouctag" data-title="赛博朋克的编剧应该想什么?" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ACGN/" rel="tag">ACGN</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%81%B5%E6%84%9F/" rel="tag">灵感</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" rel="tag">赛博朋克</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-职业规划-嵌入式工程师" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/10/02/%E8%81%8C%E4%B8%9A%E8%A7%84%E5%88%92-%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%B7%A5%E7%A8%8B%E5%B8%88/" class="article-date">
@@ -3234,218 +3278,6 @@ Debug版本会额外嵌入大量调试信息、符号表。同样代码，Debug�
 
 
   
-    <article id="post-自学规划" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/" class="article-date">
-  <time class="dt-published" datetime="2026-09-28T10:30:05.000Z" itemprop="datePublished">2026-09-28</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/">自学规划</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1>从零手写同步回合制游戏（不使用成品引擎）学习规划笔记</h1>
-<blockquote>
-<p>对话整理：目标游戏玩法参考《紫色晶石》《节奏地牢》，<strong>自制底层引擎（仅使用SDL/SFML等基础底层库，不使用Unity/Godot/UE）</strong></p>
-</blockquote>
-<h2 id="需求概述">需求概述</h2>
-<p>目标：从零开发游戏，不依赖现成游戏引擎。核心玩法为同步回合制，网格地图，类似紫色晶石（玩家行动消耗AP，玩家一轮行动结束后所有敌人统一行动）、节奏地牢（回合驱动）。想了解需要学习的内容、技术栈，以及C++内存难点、配套学习教程。</p>
-<hr>
-<h1>一、技术方案选型</h1>
-<blockquote>
-<p>区分概念：不使用成品引擎 ≠ 不能用底层库；底层库仅负责窗口、渲染、输入、音频；回合逻辑、战斗、AI、地图全部手写。</p>
-</blockquote>
-<h2 id="两条路线">两条路线</h2>
-<h3 id="路线A：C-底层库（推荐，Stoneshard-使用C-）">路线A：C++ + 底层库（推荐，Stoneshard 使用C++）</h3>
-<ul>
-<li>图形库：<strong>SDL2（首选，跨平台2D像素）</strong>；备选 SFML（API更友好）</li>
-<li>音频：SDL_mixer / FMOD</li>
-<li>字体渲染：SDL_ttf</li>
-<li>构建工具：CMake</li>
-<li>数据解析：nlohmann/json（读取地图、配置）</li>
-<li>地图编辑器：Tiled，导出json，自行写解析器</li>
-</ul>
-<h3 id="路线B：Rust-Macroquad-Piston">路线B：Rust + Macroquad / Piston</h3>
-<p>优势：内存安全，编译期规避悬垂指针、内存泄漏；适合独立开发者快速原型。缺点是生态相对C++小。</p>
-<blockquote>
-<p>❌ 不推荐直接裸写Win32+原生OpenGL，前期大量精力消耗在图形底层，耽误回合玩法原型开发。</p>
-</blockquote>
-<h2 id="核心架构思想">核心架构思想</h2>
-<ol>
-<li><strong>游戏主循环</strong>：初始化 → 循环（读取输入 → 更新游戏逻辑 → 渲染画面 → 控制帧率）</li>
-<li><strong>同步回合状态拆分</strong>
-<ul>
-<li>WAIT_PLAYER：等待玩家输入，生成行动意图</li>
-<li>PLAYER_ACT：执行玩家行动，消耗行动点AP</li>
-<li>ENEMY_TURN：全部敌人依次执行AI行动</li>
-<li>ANIM_PLAY：播放动作动画，暂停逻辑</li>
-</ul>
-</li>
-<li><strong>逻辑与渲染严格分离</strong>：回合逻辑使用固定tick，渲染帧率不受限制，保证战斗逻辑稳定。</li>
-<li>推荐简易ECS（实体组件系统）：实体Entity，属性Hp/Ap/Position/Buff为Component；原型阶段可以先用结构体数组，后期重构。</li>
-</ol>
-<h2 id="核心模块清单">核心模块清单</h2>
-<ol>
-<li>网格Grid系统：格子坐标、世界坐标互转、可通行标记、墙壁</li>
-<li>FOV视野：Recursive Shadow Casting（紫色晶石黑暗视野）</li>
-<li>A*网格寻路：敌人寻路</li>
-<li>行动队列 Action Queue：行动入队，回合阶段顺序执行</li>
-<li>AP行动点系统：移动、攻击、技能消耗行动点</li>
-<li>Buff/状态系统：在【回合开始】【行动前】【受伤】【回合结束】触发</li>
-<li>伤害计算、命中判定</li>
-<li>AI逻辑：仅敌人回合执行，原型先用简单AI（靠近→可攻击则攻击）</li>
-<li>像素渲染、精灵表、相机视口</li>
-<li>输入解耦：输入只生成行动意图，不在输入回调直接修改游戏世界</li>
-<li>资源加载、存档序列化</li>
-</ol>
-<h2 id="开发迭代顺序（MVP优先，禁止先做美术）">开发迭代顺序（MVP优先，禁止先做美术）</h2>
-<ol>
-<li><strong>阶段1：最小引擎骨架（1~2周）</strong><br>
-SDL窗口，游戏循环，键盘输入，绘制方块，网格移动。目标：黑白方块地图，可以移动玩家方块。</li>
-<li><strong>阶段2：同步回合原型（核心MVP）</strong><br>
-修改为回合模式，移动消耗AP；玩家操作结束，全体敌人统一行动；实现状态机、行动队列。此时全是方块，但核心玩法跑通。</li>
-<li><strong>阶段3：战斗与实体系统</strong><br>
-血量、攻击判定，buff系统，A*敌人寻路。</li>
-<li><strong>阶段4：FOV视野、Tiled地图加载</strong><br>
-黑暗视野，解析Tiled地图json。</li>
-<li><strong>阶段5：动画、音效，替换方块为像素精灵</strong><br>
-帧动画、攻击音效，动画阻塞回合逻辑。</li>
-<li><strong>阶段6：UI、物品、存档、敌人种类、数值平衡</strong><br>
-血条、物品栏、拾取装备、存档读档。</li>
-<li><strong>阶段7：优化、打包发布</strong></li>
-</ol>
-<hr>
-<h1>二、C++内存管理难点（游戏开发场景）</h1>
-<blockquote>
-<p>C++没有GC，内存生命周期完全由程序员手动控制。错误常表现为间歇性bug，Debug正常Release随机崩溃。</p>
-</blockquote>
-<ol>
-<li><strong>栈 vs 堆</strong><br>
-栈：局部变量，函数退出自动销毁；栈空间很小，大数组容易栈溢出。<br>
-堆：<code>new</code>分配，<strong>必须手动delete</strong>；适合大量实体、地图数据。</li>
-</ol>
-<blockquote>
-<p>坑：保存栈对象指针到全局队列，函数退出对象销毁 → <strong>悬垂指针</strong>。</p>
-</blockquote>
-<ol start="2">
-<li><strong>悬垂指针（野指针）</strong><br>
-指针还存在，但指向内存已经释放。访问时属于未定义行为，可能乱数据、随机崩溃。回合行动队列极易踩坑。</li>
-<li><strong>内存泄漏</strong><code>new</code>之后忘记<code>delete</code>。敌人死亡不释放内存，长时间游玩内存持续上涨。程序不会报错，只会慢慢吃内存。</li>
-<li><strong>重复释放 double free</strong><br>
-一块内存delete后再次delete，破坏堆结构，随机崩溃。典型场景：ECS实体多处写删除逻辑。</li>
-<li><strong>浅拷贝陷阱</strong><br>
-默认拷贝仅复制指针，两个对象共用同一块堆内存；一个析构后另一个指针失效。角色、物品结构体高频踩坑。<br>
-解决：手写深拷贝，或禁用拷贝。</li>
-<li><strong>内存所有权问题</strong><br>
-谁负责释放内存？行动队列保存Action指针时，如果所有权约定不清，极易出现泄漏或double free。<br>
-现代C++方案：<code>std::unique_ptr</code>（单一所有权，优先推荐）；谨慎使用<code>std::shared_ptr</code>（循环引用会泄漏）。</li>
-<li><strong>new[] / delete[] 必须配对</strong><br>
-数组分配<code>new[]</code>，释放必须用<code>delete[]</code>，混用为未定义行为。</li>
-<li><strong>未定义行为 UB</strong><br>
-内存错误没有固定报错表现：可能正常运行、随机崩溃、只在打包后出错，bug根源和崩溃位置不在一起。</li>
-</ol>
-<h2 id="✅-降低C-内存风险的工程规范（回合引擎推荐）">✅ 降低C++内存风险的工程规范（回合引擎推荐）</h2>
-<ol>
-<li>优先栈对象，临时Action、小结构体尽量栈分配。</li>
-<li>容器优先值语义：<code>std::vector&lt;Entity&gt;</code>，而不是<code>vector&lt;Entity*&gt;</code>，vector自动管理内存。ECS组件数组推荐这种写法。</li>
-<li>堆对象优先<code>std::unique_ptr</code>，少用shared_ptr。</li>
-<li><strong>实体用ID代替裸指针（强烈推荐）</strong><br>
-实体使用uint64_t整数ID；维护<code>unordered_map&lt;uint64_t, Entity&gt;</code>。所有Action、buff、AI只存实体ID，访问实体通过ID查找。实体销毁直接删除map条目，<strong>直接消灭悬垂指针</strong>。</li>
-</ol>
-<blockquote>
-<p>一句话总结：C++内存难不在于语法，而在于<strong>手动管理生命周期与所有权；错误行为飘忽，难以定位</strong>。</p>
-</blockquote>
-<hr>
-<h1>三、推荐教程资源（不使用成品引擎，SDL底层 + Roguelike同步回合）</h1>
-<h2 id="首选教程">首选教程</h2>
-<ol>
-<li><strong>Game Code School Traditional Roguelike（最匹配你的项目）</strong>
-<ul>
-<li>SDL3 + C++，不使用游戏引擎，从零搭建roguelike</li>
-<li>覆盖：窗口、网格地图、<strong>同步回合循环、RSC FOV视野、A*寻路、怪物AI、buff、存档、HUD</strong></li>
-<li>配套书籍 <em>Using C++ to Build a Traditional Roguelike</em>，每章独立工程，源码可下载</li>
-<li>特点：现代C++，专门讲解内存组织，规避裸指针坑</li>
-<li>链接：<a target="_blank" rel="noopener" href="https://gamecodeschool.com/roguelikes/">https://gamecodeschool.com/roguelikes/</a></li>
-<li>缺点：英文文档</li>
-</ul>
-</li>
-<li><strong>Parallel Realities C Roguelike Tutorial</strong>
-<ul>
-<li>C语言 + SDL2，极简代码，学习底层内存原理；思路可以移植C++</li>
-<li>链接：<a target="_blank" rel="noopener" href="https://www.parallelrealities.co.uk/tutorials/rogue/rogue.php">https://www.parallelrealities.co.uk/tutorials/rogue/rogue.php</a></li>
-</ul>
-</li>
-</ol>
-<h2 id="算法参考网站">算法参考网站</h2>
-<ol>
-<li><strong>RogueBasin（Roguelike维基宝库）</strong><br>
-大量roguelike经典算法：RSC视野、A*、回合时序、地图生成<br>
-Python libtcod教程：架构完全可迁移到C++，适合学习回合系统思想。<br>
-<a target="_blank" rel="noopener" href="https://roguebasin.com/">https://roguebasin.com/</a></li>
-<li><strong>Red Blob Games</strong><br>
-A*、网格坐标可视化教程，敌人寻路必看<br>
-<a target="_blank" rel="noopener" href="https://www.redblobgames.com/">https://www.redblobgames.com/</a></li>
-</ol>
-<h2 id="书籍">书籍</h2>
-<ol>
-<li><strong>Game Programming Patterns（游戏编程模式，免费在线阅读）</strong><br>
-核心：状态机、事件队列、组件模式、ECS、事件总线；学习游戏架构，设计内存所有权。<br>
-<a target="_blank" rel="noopener" href="https://gameprogrammingpatterns.com/">https://gameprogrammingpatterns.com/</a></li>
-<li>2D Game Engine Programming with C（SDL3自制引擎）</li>
-<li>Dragonfly（大学自制引擎教材）</li>
-</ol>
-<h2 id="视频教程">视频教程</h2>
-<ol>
-<li>Handmade Hero：C从零写引擎，学习内存管理、数据导向编程；不包含回合制，底层思想极强。</li>
-<li>Lazy Foo' SDL2 Tutorials：SDL入门，窗口、贴图、输入、音频，搭建引擎骨架<br>
-<a target="_blank" rel="noopener" href="https://lazyfoo.net/tutorials/SDL/">https://lazyfoo.net/tutorials/SDL/</a></li>
-</ol>
-<h2 id="Rust备选教程（避开C-内存问题）">Rust备选教程（避开C++内存问题）</h2>
-<p>Gridbugs Roguelike 2020 教程：Rust + Macroquad，无引擎同步回合roguelike<br>
-<a target="_blank" rel="noopener" href="https://www.gridbugs.org/roguelike-tutorial-2020/">https://www.gridbugs.org/roguelike-tutorial-2020/</a></p>
-<h2 id="❌-需要避开的教程">❌ 需要避开的教程</h2>
-<ul>
-<li>Unity/Godot写roguelike教程：属于引擎脚本开发，<strong>不是从零写引擎</strong>，不符合需求</li>
-<li>老libtcod教程：libtcod封装渲染底层，只能借鉴逻辑，不要依赖它的渲染模块</li>
-</ul>
-<h2 id="推荐学习顺序">推荐学习顺序</h2>
-<ol>
-<li>Lazy Foo SDL2 → SDL基础，搭建窗口、输入、渲染骨架</li>
-<li>Game Code School Roguelike，跟着实现方块原型、同步回合、FOV</li>
-<li>Game Programming Patterns，学习状态机、Action队列，优化内存所有权，实体ID方案</li>
-<li>RogueBasin、Red Blob Games补充A*、地图生成</li>
-<li>Handmade Hero选看内存、数据导向章节</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/09/28/%E8%87%AA%E5%AD%A6%E8%A7%84%E5%88%92/" data-id="cmv3ghxav0019n8ma4x858k5k" data-title="自学规划" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" rel="tag">学习规划</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
@@ -3464,7 +3296,7 @@ A*、网格坐标可视化教程，敌人寻路必看<br>
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACGN/" rel="tag">ACGN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Chess/" rel="tag">Chess</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGL/" rel="tag">OpenGL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" rel="tag">功能测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" rel="tag">学习规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" rel="tag">开发方案</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F/" rel="tag">快速</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" rel="tag">游戏开发日志</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%81%B5%E6%84%9F/" rel="tag">灵感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" rel="tag">赛博朋克</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACGN/" rel="tag">ACGN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" rel="tag">C++开发笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Chess/" rel="tag">Chess</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGL/" rel="tag">OpenGL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" rel="tag">功能测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" rel="tag">学习规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" rel="tag">开发方案</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F/" rel="tag">快速</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" rel="tag">游戏开发日志</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%81%B5%E6%84%9F/" rel="tag">灵感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" rel="tag">赛博朋克</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a></li></ul>
     </div>
   </div>
 
@@ -3474,7 +3306,7 @@ A*、网格坐标可视化教程，敌人寻路必看<br>
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/OpenGL/" style="font-size: 12.5px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 12.5px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 15px;">学习规划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 10px;">快速</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 12.5px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 17.5px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a>
+      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/OpenGL/" style="font-size: 12.5px;">OpenGL</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 12.5px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 15px;">学习规划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 10px;">快速</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 15px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 17.5px;">算法感悟</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 10px;">随笔</a>
     </div>
   </div>
 
@@ -3496,6 +3328,10 @@ A*、网格坐标可视化教程，敌人寻路必看<br>
       <ul>
         
           <li>
+            <a href="/2026/10/11/%E8%8E%AB%E6%96%AF%E7%A7%91%E5%9F%8E%E5%A4%96%E5%86%BB%E5%83%B5%E7%9A%84%E8%80%81%E9%BC%A0/">莫斯科城外冻僵的老鼠</a>
+          </li>
+        
+          <li>
             <a href="/2026/10/11/%E5%BF%AB%E9%80%9F-%E5%9C%A8vscode%E4%B8%AD%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8BSDL%E9%A1%B9%E7%9B%AE/">快速:在vscode中快速开始SDL项目</a>
           </li>
         
@@ -3509,10 +3345,6 @@ A*、网格坐标可视化教程，敌人寻路必看<br>
         
           <li>
             <a href="/2026/10/09/%E6%97%A0IDE%E9%93%BE%E6%8E%A5%E5%A4%96%E9%83%A8%E5%BA%93%E5%AE%9E%E6%88%98-%E4%BB%A5SDL%E4%B8%BA%E4%BE%8B/">C++开发日志:C++程序怎么连接外部库文件</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/09/C-%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97-SDL%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E4%B8%8EC-%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">C++开发日志:SDL环境配置与C++程序的编译过程</a>
           </li>
         
       </ul>
@@ -3897,456 +3729,6 @@ window.addEventListener('load', function(){
 })();
 </script>
   
-<style>
-/* ======== 独立页面模式: 隐藏 landscape 主题元素 ======== */
-body.lanx-todo-active header#header,
-body.lanx-todo-active footer#footer,
-body.lanx-todo-active nav,
-body.lanx-todo-active aside { display: none !important; }
-body.lanx-todo-active header.article-header,
-body.lanx-todo-active footer.article-footer,
-body.lanx-todo-active .article-meta,
-body.lanx-todo-active .post-nav,
-body.lanx-todo-active .share,
-body.lanx-todo-active .comment,
-body.lanx-todo-active .post-tags,
-body.lanx-todo-active .archives,
-body.lanx-todo-active .likes,
-body.lanx-todo-active .twikoo,
-body.lanx-todo-active #tcomments,
-body.lanx-todo-active .article-share-link,
-body.lanx-todo-active .busuanzi,
-body.lanx-todo-active .visitor-stats,
-body.lanx-todo-active .lanx-action,
-body.lanx-todo-active .lanx-comment,
-body.lanx-todo-active .lanx-like,
-body.lanx-todo-active .like-btn,
-body.lanx-todo-active .like-count-inline,
-body.lanx-todo-active .article-share,
-body.lanx-todo-active .share-buttons { display: none !important; }
-body.lanx-todo-active { background: #f5f7fa !important; padding: 0 !important; }
-body.lanx-todo-active #container { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: none !important; }
-body.lanx-todo-active section#main { margin: 0 !important; padding: 0 !important; width: 100% !important; }
-body.lanx-todo-active article { background: transparent !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
-body.lanx-todo-active .article-inner { padding: 0 !important; }
-body.lanx-todo-active .article-entry { padding: 0 !important; }
-body.lanx-todo-active article > footer,
-body.lanx-todo-active article > section,
-body.lanx-todo-active article .post-footer,
-body.lanx-todo-active article .comment-wrap { display: none !important; }
-body.lanx-todo-active .article-inner > *:not(.article-entry) { display: none !important; }
-#lanx-todo-mount { min-height: 100vh; }
-
-/* ======== 根容器 ======== */
-#lanx-todo-root {
-  width: 100%;
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 24px 28px 40px;
-  font-size: 14px;
-  color: #333;
-  box-sizing: border-box;
-}
-#lanx-todo-root * { box-sizing: border-box; }
-
-/* ======== 顶部工具栏 ======== */
-.lt-toolbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-bottom: 16px; margin-bottom: 20px;
-  border-bottom: 1px solid #e5e7eb; flex-wrap: wrap; gap: 10px;
-}
-.lt-toolbar-left { display: flex; align-items: center; gap: 12px; }
-.lt-title { font-size: 22px; font-weight: 700; margin: 0; color: #111827; letter-spacing: -0.3px; }
-.lt-file-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 11px; padding: 2px 10px; border-radius: 10px;
-  background: #eef2ff; color: #4f46e5; font-weight: 500;
-  max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.lt-toolbar-right { display: flex; gap: 8px; }
-.lt-btn {
-  padding: 6px 14px; border: 1px solid #d1d5db;
-  border-radius: 8px; background: #fff; color: #374151;
-  font-size: 13px; cursor: pointer; transition: all .15s;
-}
-.lt-btn:hover { border-color: #9ca3af; background: #f9fafb; }
-.lt-btn-primary { background: #4f46e5; color: #fff; border-color: #4f46e5; }
-.lt-btn-primary:hover { background: #4338ca; border-color: #4338ca; }
-
-/* ======== 周时间轴 ======== */
-.lt-week-nav {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
-  background: #fff; border-radius: 12px; padding: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-}
-.lt-week-arrow {
-  width: 36px; height: 40px; border: none;
-  border-radius: 8px; background: #f3f4f6; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: #6b7280; transition: all .15s;
-  flex-shrink: 0;
-}
-.lt-week-arrow:hover { background: #e5e7eb; color: #111; }
-.lt-week-days {
-  flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
-}
-.lt-week-day {
-  display: flex; flex-direction: column; align-items: center;
-  padding: 8px 4px; border-radius: 8px; cursor: pointer;
-  border: 2px solid transparent; transition: all .15s;
-  min-width: 0;
-}
-.lt-week-day:hover { background: #f9fafb; }
-.lt-week-day.lt-today {
-  border-color: #4f46e5; background: #eef2ff;
-}
-.lt-week-day.lt-selected {
-  background: #4f46e5; border-color: #4f46e5; color: #fff;
-}
-.lt-week-day.lt-selected .lt-day-count,
-.lt-week-day.lt-selected .lt-day-date { color: #fff; }
-.lt-day-name { font-size: 11px; color: #9ca3af; line-height: 1; }
-.lt-week-day.lt-today .lt-day-name { color: #4f46e5; font-weight: 600; }
-.lt-day-date { font-size: 15px; font-weight: 700; margin: 4px 0 2px; color: #111827; }
-.lt-day-count { font-size: 10px; color: #9ca3af; line-height: 1; }
-.lt-week-day.lt-today .lt-day-count { color: #4f46e5; }
-
-/* ======== 主布局 ======== */
-.lt-main { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-@media (max-width: 720px) { .lt-main { grid-template-columns: 1fr; } }
-
-/* ======== 通用面板 ======== */
-.lt-panel {
-  border-radius: 12px; padding: 18px;
-  background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-}
-.lt-panel-title {
-  font-size: 15px; font-weight: 700; margin: 0 0 14px; color: #111827;
-  display: flex; align-items: center; gap: 6px;
-}
-
-/* ======== 今日记录列表 ======== */
-.lt-log-list { display: flex; flex-direction: column; gap: 6px; }
-.lt-log-empty {
-  text-align: center; padding: 28px 12px; color: #9ca3af;
-  font-size: 13px;
-}
-.lt-log-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; border-radius: 8px;
-  border-left: 4px solid; transition: all .15s;
-  position: relative;
-}
-.lt-log-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-.lt-log-cat {
-  padding: 1px 8px; border-radius: 10px; font-size: 11px;
-  font-weight: 500; white-space: nowrap;
-}
-.lt-log-text { flex: 1; font-size: 14px; color: #374151; word-break: break-word; }
-.lt-log-del {
-  opacity: 0; border: none; background: transparent;
-  color: #9ca3af; cursor: pointer; font-size: 16px;
-  padding: 2px 6px; border-radius: 4px; transition: all .15s;
-}
-.lt-log-item:hover .lt-log-del { opacity: 1; }
-.lt-log-del:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
-
-.lt-add-row { margin-top: 12px; }
-.lt-add-btn {
-  width: 100%; padding: 10px; border: 2px dashed #e5e7eb;
-  border-radius: 8px; background: transparent; cursor: pointer;
-  font-size: 13px; color: #9ca3af; transition: all .15s;
-}
-.lt-add-btn:hover { border-color: #4f46e5; color: #4f46e5; background: #eef2ff; }
-
-/* ======== 月度数据 ======== */
-.lt-chart-section { margin-bottom: 18px; }
-.lt-chart-section:last-child { margin-bottom: 0; }
-.lt-chart-label {
-  font-size: 12px; color: #6b7280; margin-bottom: 8px;
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-}
-.lt-chart-label span { display: inline-flex; align-items: center; gap: 3px; }
-.lt-legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-.lt-chart-no-data {
-  text-align: center; padding: 24px; color: #9ca3af; font-size: 12px;
-}
-
-.lt-line-chart { width: 100%; height: 140px; }
-.lt-line-chart svg { width: 100%; height: 100%; overflow: visible; }
-
-/* ======== 热力图 - 日历布局 ======== */
-.lt-heatmap-wrap { }
-.lt-heatmap-header {
-  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
-  margin-bottom: 4px;
-}
-.lt-heatmap-header span {
-  text-align: center; font-size: 10px; color: #9ca3af; font-weight: 500;
-}
-.lt-heatmap {
-  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
-}
-.lt-heat-blank { aspect-ratio: 1; }
-.lt-heat-cell {
-  aspect-ratio: 1; border-radius: 3px; cursor: pointer;
-  position: relative; min-width: 0; min-height: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; color: #9ca3af; font-weight: 500;
-  transition: transform .1s;
-}
-.lt-heat-cell:hover { transform: scale(1.08); z-index: 1; }
-.lt-heat-cell:hover::after {
-  content: attr(title); position: absolute; bottom: 100%;
-  left: 50%; transform: translateX(-50%); white-space: nowrap;
-  background: #111827; color: #fff; padding: 3px 7px; border-radius: 4px;
-  font-size: 11px; z-index: 10; pointer-events: none; font-weight: 400;
-}
-.lt-heat-l0 { background: #f3f4f6; }
-.lt-heat-l1 { background: #bbf7d0; color: #166534; }
-.lt-heat-l2 { background: #4ade80; color: #fff; }
-.lt-heat-l3 { background: #16a34a; color: #fff; }
-.lt-heat-today { outline: 2px solid #4f46e5; outline-offset: 1px; }
-.lt-heat-selected { outline: 2px solid #f59e0b; outline-offset: 1px; }
-
-/* ======== 周总结 ======== */
-.lt-summary { margin-top: 20px; padding: 18px; background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-.lt-summary-title { font-size: 15px; font-weight: 700; margin: 0 0 14px; color: #111827; }
-.lt-summary-content { display: grid; grid-template-columns: 1fr 160px; gap: 20px; align-items: center; }
-@media (max-width: 600px) { .lt-summary-content { grid-template-columns: 1fr; } }
-.lt-summary-text { display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
-.lt-summary-line { display: flex; flex-direction: column; gap: 3px; }
-.lt-summary-bar {
-  height: 8px; border-radius: 4px; background: #f3f4f6; overflow: hidden;
-}
-.lt-summary-bar-fill { height: 100%; border-radius: 4px; transition: width .3s; }
-.lt-summary-meta {
-  display: flex; justify-content: space-between; font-size: 12px;
-  color: #6b7280; margin-bottom: 2px;
-}
-.lt-pie-wrap { display: flex; justify-content: center; align-items: center; }
-.lt-pie-wrap svg { max-width: 160px; max-height: 160px; }
-
-/* ======== 弹窗 ======== */
-.lt-modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 9999; backdrop-filter: blur(2px);
-}
-.lt-modal {
-  background: #fff; border-radius: 14px; padding: 24px;
-  width: 400px; max-width: 92vw; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-}
-.lt-modal-title { font-size: 17px; font-weight: 700; margin: 0 0 18px; color: #111827; }
-.lt-modal-label { font-size: 12px; color: #6b7280; font-weight: 500; display: block; margin-bottom: 6px; }
-.lt-modal-input {
-  width: 100%; padding: 10px 12px; border: 1px solid #d1d5db;
-  border-radius: 8px; font-size: 14px; margin-bottom: 14px;
-  transition: border-color .15s; background: #fff;
-}
-.lt-modal-input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
-.lt-modal-row { display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-end; }
-.lt-modal-row > div { flex: 1; }
-.lt-color-picker-wrap { flex: 0 0 auto; }
-.lt-color-input {
-  width: 48px; height: 42px; border: 1px solid #d1d5db;
-  border-radius: 8px; cursor: pointer; padding: 2px; background: #fff;
-}
-.lt-color-preview {
-  width: 48px; height: 24px; border-radius: 6px; margin-top: 4px;
-  border: 1px solid #e5e7eb;
-}
-.lt-modal-hint { font-size: 11px; color: #9ca3af; margin-bottom: 14px; }
-.lt-modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
-
-.lt-preset-cats { margin-bottom: 12px; }
-.lt-preset-label { font-size: 11px; color: #9ca3af; display: block; margin-bottom: 6px; }
-.lt-preset-cats { display: flex; flex-wrap: wrap; gap: 6px; }
-.lt-preset-cat {
-  padding: 4px 10px; border: 1.5px solid; border-radius: 14px;
-  background: transparent; cursor: pointer; font-size: 12px;
-  transition: all .12s; font-weight: 500;
-}
-.lt-preset-cat:hover { background: currentColor; }
-.lt-preset-cat.active { background: currentColor; color: #fff !important; }
-.lt-cat-new { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
-.lt-cat-new .lt-modal-input { flex: 1; margin-bottom: 0; }
-.lt-color-input {
-  width: 42px; height: 40px; border: 1px solid #d1d5db;
-  border-radius: 8px; cursor: pointer; padding: 2px; background: #fff; flex-shrink: 0;
-}
-
-/* ======== 文件屏幕 (初始界面) ======== */
-.lt-file-screen {
-  text-align: center; padding: 80px 20px;
-  background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  max-width: 480px; margin: 60px auto 0;
-}
-.lt-file-icon { font-size: 56px; margin-bottom: 20px; }
-.lt-file-title { font-size: 24px; font-weight: 700; margin: 0 0 8px; color: #111827; }
-.lt-file-desc { color: #6b7280; font-size: 14px; margin: 0 0 28px; line-height: 1.6; }
-.lt-file-actions { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
-.lt-file-hint {
-  font-size: 12px; color: #9ca3af; line-height: 1.8;
-  padding-top: 16px; border-top: 1px solid #f3f4f6;
-}
-
-/* ======== 问候横幅 ======== */
-.lt-greeting {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 22px 24px; margin-bottom: 20px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #f0f4ff 0%, #fef3f2 50%, #fff7ed 100%);
-  position: relative; overflow: hidden;
-}
-.lt-greeting::before {
-  content: ''; position: absolute; top: -40px; right: -40px;
-  width: 180px; height: 180px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%);
-}
-.lt-greet-text { position: relative; z-index: 1; }
-.lt-greet-hello { font-size: 14px; color: #6b7280; margin-bottom: 4px; }
-.lt-greet-name { font-size: 26px; font-weight: 800; color: #111827; letter-spacing: -0.5px; }
-.lt-greet-streak { font-size: 15px; color: #4b5563; margin-top: 6px; }
-.lt-greet-num {
-  font-size: 24px; font-weight: 800; color: #f97316;
-  padding: 2px 10px; background: rgba(249,115,22,0.1); border-radius: 8px;
-}
-.lt-greet-sub { font-size: 12px; color: #9ca3af; margin-top: 6px; }
-.lt-greet-visual { position: relative; width: 70px; height: 70px; flex-shrink: 0; }
-.lt-fire-emoji {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%); font-size: 30px;
-  animation: lt-fire-bob 2s ease-in-out infinite; z-index: 2;
-}
-.lt-streak-ring {
-  position: absolute; top: 0; left: 0; width: 70px; height: 70px;
-}
-.lt-streak-ring svg { width: 100%; height: 100%; }
-
-/* ======== 动画 keyframes ======== */
-@keyframes lt-particle {
-  0% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
-  100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.2); opacity: 0; }
-}
-@keyframes lt-floatup {
-  0% { transform: translate(-50%,-50%) scale(0.5); opacity: 0; }
-  20% { transform: translate(-50%,-80%) scale(1.2); opacity: 1; }
-  100% { transform: translate(-50%,-160%) scale(0.8); opacity: 0; }
-}
-@keyframes lt-confetti {
-  0% { transform: translateY(-10vh) rotate(0); opacity: 1; }
-  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-}
-@keyframes lt-pulse {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16,185,129,0.6); }
-  50% { transform: scale(1.15); box-shadow: 0 0 0 8px rgba(16,185,129,0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16,185,129,0); }
-}
-@keyframes lt-fire-bob {
-  0%, 100% { transform: translate(-50%,-50%) scale(1) rotate(-5deg); }
-  50% { transform: translate(-50%,-52%) scale(1.08) rotate(5deg); }
-}
-@keyframes lt-ring-draw {
-  from { stroke-dashoffset: 110; }
-}
-.lt-ring-draw { animation: lt-ring-draw 1.2s ease-out forwards; }
-
-@keyframes lt-enter {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.lt-enter { animation: lt-enter 0.5s ease-out both; }
-.lt-greeting.lt-enter { animation-delay: 0.1s; }
-
-@keyframes lt-log-pop {
-  from { opacity: 0; transform: translateX(-12px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-.lt-log-item.lt-log-new { animation: lt-log-pop 0.4s ease-out both; }
-
-/* 折线图生长 */
-.lt-line-chart path {
-  stroke-dasharray: 2000; stroke-dashoffset: 2000;
-  animation: lt-line-draw 1.2s ease-out forwards;
-}
-@keyframes lt-line-draw {
-  to { stroke-dashoffset: 0; }
-}
-.lt-line-chart circle {
-  opacity: 0; animation: lt-dot-pop 0.4s ease-out forwards;
-}
-@keyframes lt-dot-pop {
-  to { opacity: 1; }
-}
-
-/* 饼图展开 */
-.lt-pie-wrap svg {
-  animation: lt-pie-pop 0.6s cubic-bezier(.25,.46,.45,.94) both;
-}
-@keyframes lt-pie-pop {
-  from { opacity: 0; transform: scale(0.6); }
-  to { opacity: 1; transform: scale(1); }
-}
-.lt-pie-slice {
-  opacity: 0; transform-origin: 70px 70px;
-  animation: lt-slice-in 0.5s ease-out both;
-}
-@keyframes lt-slice-in {
-  from { opacity: 0; transform: scale(0) rotate(-45deg); }
-  to { opacity: 1; transform: scale(1) rotate(0); }
-}
-
-/* 条形生长 */
-.lt-summary-bar-fill { width: 0 !important; animation: lt-bar-grow 0.8s cubic-bezier(.25,.46,.45,.94) forwards; }
-@keyframes lt-bar-grow {
-  from { width: 0 !important; }
-}
-
-/* 热力图新点亮 */
-.lt-heat-cell.lt-heat-new { animation: lt-heat-glow 1s ease-out both; }
-@keyframes lt-heat-glow {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.25); box-shadow: 0 0 12px rgba(16,185,129,0.5); }
-  100% { transform: scale(1); }
-}
-
-/* ======== 移动端适配 (≤ 768px) ======== */
-@media (max-width: 768px) {
-  #lanx-todo-root { padding: 14px 14px 30px; font-size: 13px; }
-  .lt-title { font-size: 18px; }
-  .lt-toolbar { padding-bottom: 12px; margin-bottom: 14px; gap: 8px; }
-  .lt-toolbar-left { gap: 8px; flex-wrap: wrap; }
-  .lt-toolbar-right { gap: 6px; flex-wrap: wrap; }
-  .lt-btn { padding: 6px 10px; font-size: 12px; }
-  .lt-main { gap: 14px; }
-  .lt-panel { padding: 14px; border-radius: 10px; }
-  .lt-greeting { padding: 16px 18px; flex-direction: column; text-align: left; gap: 10px; }
-  .lt-greet-hello { font-size: 22px; }
-  .lt-greet-num { font-size: 32px; }
-  .lt-week-nav { padding: 8px; gap: 4px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .lt-week-nav::-webkit-scrollbar { display: none; }
-  .lt-week-days { flex: none; grid-template-columns: repeat(7, 48px); gap: 4px; }
-  .lt-week-day { min-width: 48px; padding: 6px 2px; }
-  .lt-day-name { font-size: 10px; }
-  .lt-day-date { font-size: 14px; margin: 3px 0 1px; }
-  .lt-day-count { font-size: 9px; }
-  .lt-chart-row { flex-direction: column; gap: 14px; }
-  .lt-heatmap-wrap { overflow-x: auto; }
-  .lt-summary-content { grid-template-columns: 1fr; }
-  .lt-summary-bar-label { font-size: 12px; }
-  .lt-pie-wrap { width: 120px; height: 120px; }
-  .lt-pie-wrap svg { width: 120px; height: 120px; }
-}
-@media (max-width: 480px) {
-  .lt-greet-hello { font-size: 18px; }
-  .lt-greet-num { font-size: 26px; }
-  .lt-file-actions { flex-direction: column; gap: 8px; }
-  .lt-file-actions .lt-btn { width: 100%; }
-}
-</style>
-<script src="/js/todolist-app.js"></script>
-
 <style>
   #lanx-chess-root {
     --lanx-light: #f0d9b5;
@@ -6264,6 +5646,456 @@ function undo(){
 })();
 </script>
   
+<style>
+/* ======== 独立页面模式: 隐藏 landscape 主题元素 ======== */
+body.lanx-todo-active header#header,
+body.lanx-todo-active footer#footer,
+body.lanx-todo-active nav,
+body.lanx-todo-active aside { display: none !important; }
+body.lanx-todo-active header.article-header,
+body.lanx-todo-active footer.article-footer,
+body.lanx-todo-active .article-meta,
+body.lanx-todo-active .post-nav,
+body.lanx-todo-active .share,
+body.lanx-todo-active .comment,
+body.lanx-todo-active .post-tags,
+body.lanx-todo-active .archives,
+body.lanx-todo-active .likes,
+body.lanx-todo-active .twikoo,
+body.lanx-todo-active #tcomments,
+body.lanx-todo-active .article-share-link,
+body.lanx-todo-active .busuanzi,
+body.lanx-todo-active .visitor-stats,
+body.lanx-todo-active .lanx-action,
+body.lanx-todo-active .lanx-comment,
+body.lanx-todo-active .lanx-like,
+body.lanx-todo-active .like-btn,
+body.lanx-todo-active .like-count-inline,
+body.lanx-todo-active .article-share,
+body.lanx-todo-active .share-buttons { display: none !important; }
+body.lanx-todo-active { background: #f5f7fa !important; padding: 0 !important; }
+body.lanx-todo-active #container { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: none !important; }
+body.lanx-todo-active section#main { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+body.lanx-todo-active article { background: transparent !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+body.lanx-todo-active .article-inner { padding: 0 !important; }
+body.lanx-todo-active .article-entry { padding: 0 !important; }
+body.lanx-todo-active article > footer,
+body.lanx-todo-active article > section,
+body.lanx-todo-active article .post-footer,
+body.lanx-todo-active article .comment-wrap { display: none !important; }
+body.lanx-todo-active .article-inner > *:not(.article-entry) { display: none !important; }
+#lanx-todo-mount { min-height: 100vh; }
+
+/* ======== 根容器 ======== */
+#lanx-todo-root {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 28px 40px;
+  font-size: 14px;
+  color: #333;
+  box-sizing: border-box;
+}
+#lanx-todo-root * { box-sizing: border-box; }
+
+/* ======== 顶部工具栏 ======== */
+.lt-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 16px; margin-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb; flex-wrap: wrap; gap: 10px;
+}
+.lt-toolbar-left { display: flex; align-items: center; gap: 12px; }
+.lt-title { font-size: 22px; font-weight: 700; margin: 0; color: #111827; letter-spacing: -0.3px; }
+.lt-file-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; padding: 2px 10px; border-radius: 10px;
+  background: #eef2ff; color: #4f46e5; font-weight: 500;
+  max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.lt-toolbar-right { display: flex; gap: 8px; }
+.lt-btn {
+  padding: 6px 14px; border: 1px solid #d1d5db;
+  border-radius: 8px; background: #fff; color: #374151;
+  font-size: 13px; cursor: pointer; transition: all .15s;
+}
+.lt-btn:hover { border-color: #9ca3af; background: #f9fafb; }
+.lt-btn-primary { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+.lt-btn-primary:hover { background: #4338ca; border-color: #4338ca; }
+
+/* ======== 周时间轴 ======== */
+.lt-week-nav {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+  background: #fff; border-radius: 12px; padding: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.lt-week-arrow {
+  width: 36px; height: 40px; border: none;
+  border-radius: 8px; background: #f3f4f6; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: #6b7280; transition: all .15s;
+  flex-shrink: 0;
+}
+.lt-week-arrow:hover { background: #e5e7eb; color: #111; }
+.lt-week-days {
+  flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+}
+.lt-week-day {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 8px 4px; border-radius: 8px; cursor: pointer;
+  border: 2px solid transparent; transition: all .15s;
+  min-width: 0;
+}
+.lt-week-day:hover { background: #f9fafb; }
+.lt-week-day.lt-today {
+  border-color: #4f46e5; background: #eef2ff;
+}
+.lt-week-day.lt-selected {
+  background: #4f46e5; border-color: #4f46e5; color: #fff;
+}
+.lt-week-day.lt-selected .lt-day-count,
+.lt-week-day.lt-selected .lt-day-date { color: #fff; }
+.lt-day-name { font-size: 11px; color: #9ca3af; line-height: 1; }
+.lt-week-day.lt-today .lt-day-name { color: #4f46e5; font-weight: 600; }
+.lt-day-date { font-size: 15px; font-weight: 700; margin: 4px 0 2px; color: #111827; }
+.lt-day-count { font-size: 10px; color: #9ca3af; line-height: 1; }
+.lt-week-day.lt-today .lt-day-count { color: #4f46e5; }
+
+/* ======== 主布局 ======== */
+.lt-main { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 720px) { .lt-main { grid-template-columns: 1fr; } }
+
+/* ======== 通用面板 ======== */
+.lt-panel {
+  border-radius: 12px; padding: 18px;
+  background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.lt-panel-title {
+  font-size: 15px; font-weight: 700; margin: 0 0 14px; color: #111827;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ======== 今日记录列表 ======== */
+.lt-log-list { display: flex; flex-direction: column; gap: 6px; }
+.lt-log-empty {
+  text-align: center; padding: 28px 12px; color: #9ca3af;
+  font-size: 13px;
+}
+.lt-log-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 8px;
+  border-left: 4px solid; transition: all .15s;
+  position: relative;
+}
+.lt-log-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.lt-log-cat {
+  padding: 1px 8px; border-radius: 10px; font-size: 11px;
+  font-weight: 500; white-space: nowrap;
+}
+.lt-log-text { flex: 1; font-size: 14px; color: #374151; word-break: break-word; }
+.lt-log-del {
+  opacity: 0; border: none; background: transparent;
+  color: #9ca3af; cursor: pointer; font-size: 16px;
+  padding: 2px 6px; border-radius: 4px; transition: all .15s;
+}
+.lt-log-item:hover .lt-log-del { opacity: 1; }
+.lt-log-del:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
+
+.lt-add-row { margin-top: 12px; }
+.lt-add-btn {
+  width: 100%; padding: 10px; border: 2px dashed #e5e7eb;
+  border-radius: 8px; background: transparent; cursor: pointer;
+  font-size: 13px; color: #9ca3af; transition: all .15s;
+}
+.lt-add-btn:hover { border-color: #4f46e5; color: #4f46e5; background: #eef2ff; }
+
+/* ======== 月度数据 ======== */
+.lt-chart-section { margin-bottom: 18px; }
+.lt-chart-section:last-child { margin-bottom: 0; }
+.lt-chart-label {
+  font-size: 12px; color: #6b7280; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.lt-chart-label span { display: inline-flex; align-items: center; gap: 3px; }
+.lt-legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.lt-chart-no-data {
+  text-align: center; padding: 24px; color: #9ca3af; font-size: 12px;
+}
+
+.lt-line-chart { width: 100%; height: 140px; }
+.lt-line-chart svg { width: 100%; height: 100%; overflow: visible; }
+
+/* ======== 热力图 - 日历布局 ======== */
+.lt-heatmap-wrap { }
+.lt-heatmap-header {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+  margin-bottom: 4px;
+}
+.lt-heatmap-header span {
+  text-align: center; font-size: 10px; color: #9ca3af; font-weight: 500;
+}
+.lt-heatmap {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+}
+.lt-heat-blank { aspect-ratio: 1; }
+.lt-heat-cell {
+  aspect-ratio: 1; border-radius: 3px; cursor: pointer;
+  position: relative; min-width: 0; min-height: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: #9ca3af; font-weight: 500;
+  transition: transform .1s;
+}
+.lt-heat-cell:hover { transform: scale(1.08); z-index: 1; }
+.lt-heat-cell:hover::after {
+  content: attr(title); position: absolute; bottom: 100%;
+  left: 50%; transform: translateX(-50%); white-space: nowrap;
+  background: #111827; color: #fff; padding: 3px 7px; border-radius: 4px;
+  font-size: 11px; z-index: 10; pointer-events: none; font-weight: 400;
+}
+.lt-heat-l0 { background: #f3f4f6; }
+.lt-heat-l1 { background: #bbf7d0; color: #166534; }
+.lt-heat-l2 { background: #4ade80; color: #fff; }
+.lt-heat-l3 { background: #16a34a; color: #fff; }
+.lt-heat-today { outline: 2px solid #4f46e5; outline-offset: 1px; }
+.lt-heat-selected { outline: 2px solid #f59e0b; outline-offset: 1px; }
+
+/* ======== 周总结 ======== */
+.lt-summary { margin-top: 20px; padding: 18px; background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.lt-summary-title { font-size: 15px; font-weight: 700; margin: 0 0 14px; color: #111827; }
+.lt-summary-content { display: grid; grid-template-columns: 1fr 160px; gap: 20px; align-items: center; }
+@media (max-width: 600px) { .lt-summary-content { grid-template-columns: 1fr; } }
+.lt-summary-text { display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+.lt-summary-line { display: flex; flex-direction: column; gap: 3px; }
+.lt-summary-bar {
+  height: 8px; border-radius: 4px; background: #f3f4f6; overflow: hidden;
+}
+.lt-summary-bar-fill { height: 100%; border-radius: 4px; transition: width .3s; }
+.lt-summary-meta {
+  display: flex; justify-content: space-between; font-size: 12px;
+  color: #6b7280; margin-bottom: 2px;
+}
+.lt-pie-wrap { display: flex; justify-content: center; align-items: center; }
+.lt-pie-wrap svg { max-width: 160px; max-height: 160px; }
+
+/* ======== 弹窗 ======== */
+.lt-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; backdrop-filter: blur(2px);
+}
+.lt-modal {
+  background: #fff; border-radius: 14px; padding: 24px;
+  width: 400px; max-width: 92vw; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.lt-modal-title { font-size: 17px; font-weight: 700; margin: 0 0 18px; color: #111827; }
+.lt-modal-label { font-size: 12px; color: #6b7280; font-weight: 500; display: block; margin-bottom: 6px; }
+.lt-modal-input {
+  width: 100%; padding: 10px 12px; border: 1px solid #d1d5db;
+  border-radius: 8px; font-size: 14px; margin-bottom: 14px;
+  transition: border-color .15s; background: #fff;
+}
+.lt-modal-input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+.lt-modal-row { display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-end; }
+.lt-modal-row > div { flex: 1; }
+.lt-color-picker-wrap { flex: 0 0 auto; }
+.lt-color-input {
+  width: 48px; height: 42px; border: 1px solid #d1d5db;
+  border-radius: 8px; cursor: pointer; padding: 2px; background: #fff;
+}
+.lt-color-preview {
+  width: 48px; height: 24px; border-radius: 6px; margin-top: 4px;
+  border: 1px solid #e5e7eb;
+}
+.lt-modal-hint { font-size: 11px; color: #9ca3af; margin-bottom: 14px; }
+.lt-modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+.lt-preset-cats { margin-bottom: 12px; }
+.lt-preset-label { font-size: 11px; color: #9ca3af; display: block; margin-bottom: 6px; }
+.lt-preset-cats { display: flex; flex-wrap: wrap; gap: 6px; }
+.lt-preset-cat {
+  padding: 4px 10px; border: 1.5px solid; border-radius: 14px;
+  background: transparent; cursor: pointer; font-size: 12px;
+  transition: all .12s; font-weight: 500;
+}
+.lt-preset-cat:hover { background: currentColor; }
+.lt-preset-cat.active { background: currentColor; color: #fff !important; }
+.lt-cat-new { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
+.lt-cat-new .lt-modal-input { flex: 1; margin-bottom: 0; }
+.lt-color-input {
+  width: 42px; height: 40px; border: 1px solid #d1d5db;
+  border-radius: 8px; cursor: pointer; padding: 2px; background: #fff; flex-shrink: 0;
+}
+
+/* ======== 文件屏幕 (初始界面) ======== */
+.lt-file-screen {
+  text-align: center; padding: 80px 20px;
+  background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  max-width: 480px; margin: 60px auto 0;
+}
+.lt-file-icon { font-size: 56px; margin-bottom: 20px; }
+.lt-file-title { font-size: 24px; font-weight: 700; margin: 0 0 8px; color: #111827; }
+.lt-file-desc { color: #6b7280; font-size: 14px; margin: 0 0 28px; line-height: 1.6; }
+.lt-file-actions { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+.lt-file-hint {
+  font-size: 12px; color: #9ca3af; line-height: 1.8;
+  padding-top: 16px; border-top: 1px solid #f3f4f6;
+}
+
+/* ======== 问候横幅 ======== */
+.lt-greeting {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 24px; margin-bottom: 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f0f4ff 0%, #fef3f2 50%, #fff7ed 100%);
+  position: relative; overflow: hidden;
+}
+.lt-greeting::before {
+  content: ''; position: absolute; top: -40px; right: -40px;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%);
+}
+.lt-greet-text { position: relative; z-index: 1; }
+.lt-greet-hello { font-size: 14px; color: #6b7280; margin-bottom: 4px; }
+.lt-greet-name { font-size: 26px; font-weight: 800; color: #111827; letter-spacing: -0.5px; }
+.lt-greet-streak { font-size: 15px; color: #4b5563; margin-top: 6px; }
+.lt-greet-num {
+  font-size: 24px; font-weight: 800; color: #f97316;
+  padding: 2px 10px; background: rgba(249,115,22,0.1); border-radius: 8px;
+}
+.lt-greet-sub { font-size: 12px; color: #9ca3af; margin-top: 6px; }
+.lt-greet-visual { position: relative; width: 70px; height: 70px; flex-shrink: 0; }
+.lt-fire-emoji {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); font-size: 30px;
+  animation: lt-fire-bob 2s ease-in-out infinite; z-index: 2;
+}
+.lt-streak-ring {
+  position: absolute; top: 0; left: 0; width: 70px; height: 70px;
+}
+.lt-streak-ring svg { width: 100%; height: 100%; }
+
+/* ======== 动画 keyframes ======== */
+@keyframes lt-particle {
+  0% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.2); opacity: 0; }
+}
+@keyframes lt-floatup {
+  0% { transform: translate(-50%,-50%) scale(0.5); opacity: 0; }
+  20% { transform: translate(-50%,-80%) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%,-160%) scale(0.8); opacity: 0; }
+}
+@keyframes lt-confetti {
+  0% { transform: translateY(-10vh) rotate(0); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+@keyframes lt-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16,185,129,0.6); }
+  50% { transform: scale(1.15); box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+}
+@keyframes lt-fire-bob {
+  0%, 100% { transform: translate(-50%,-50%) scale(1) rotate(-5deg); }
+  50% { transform: translate(-50%,-52%) scale(1.08) rotate(5deg); }
+}
+@keyframes lt-ring-draw {
+  from { stroke-dashoffset: 110; }
+}
+.lt-ring-draw { animation: lt-ring-draw 1.2s ease-out forwards; }
+
+@keyframes lt-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.lt-enter { animation: lt-enter 0.5s ease-out both; }
+.lt-greeting.lt-enter { animation-delay: 0.1s; }
+
+@keyframes lt-log-pop {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.lt-log-item.lt-log-new { animation: lt-log-pop 0.4s ease-out both; }
+
+/* 折线图生长 */
+.lt-line-chart path {
+  stroke-dasharray: 2000; stroke-dashoffset: 2000;
+  animation: lt-line-draw 1.2s ease-out forwards;
+}
+@keyframes lt-line-draw {
+  to { stroke-dashoffset: 0; }
+}
+.lt-line-chart circle {
+  opacity: 0; animation: lt-dot-pop 0.4s ease-out forwards;
+}
+@keyframes lt-dot-pop {
+  to { opacity: 1; }
+}
+
+/* 饼图展开 */
+.lt-pie-wrap svg {
+  animation: lt-pie-pop 0.6s cubic-bezier(.25,.46,.45,.94) both;
+}
+@keyframes lt-pie-pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+.lt-pie-slice {
+  opacity: 0; transform-origin: 70px 70px;
+  animation: lt-slice-in 0.5s ease-out both;
+}
+@keyframes lt-slice-in {
+  from { opacity: 0; transform: scale(0) rotate(-45deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+/* 条形生长 */
+.lt-summary-bar-fill { width: 0 !important; animation: lt-bar-grow 0.8s cubic-bezier(.25,.46,.45,.94) forwards; }
+@keyframes lt-bar-grow {
+  from { width: 0 !important; }
+}
+
+/* 热力图新点亮 */
+.lt-heat-cell.lt-heat-new { animation: lt-heat-glow 1s ease-out both; }
+@keyframes lt-heat-glow {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); box-shadow: 0 0 12px rgba(16,185,129,0.5); }
+  100% { transform: scale(1); }
+}
+
+/* ======== 移动端适配 (≤ 768px) ======== */
+@media (max-width: 768px) {
+  #lanx-todo-root { padding: 14px 14px 30px; font-size: 13px; }
+  .lt-title { font-size: 18px; }
+  .lt-toolbar { padding-bottom: 12px; margin-bottom: 14px; gap: 8px; }
+  .lt-toolbar-left { gap: 8px; flex-wrap: wrap; }
+  .lt-toolbar-right { gap: 6px; flex-wrap: wrap; }
+  .lt-btn { padding: 6px 10px; font-size: 12px; }
+  .lt-main { gap: 14px; }
+  .lt-panel { padding: 14px; border-radius: 10px; }
+  .lt-greeting { padding: 16px 18px; flex-direction: column; text-align: left; gap: 10px; }
+  .lt-greet-hello { font-size: 22px; }
+  .lt-greet-num { font-size: 32px; }
+  .lt-week-nav { padding: 8px; gap: 4px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .lt-week-nav::-webkit-scrollbar { display: none; }
+  .lt-week-days { flex: none; grid-template-columns: repeat(7, 48px); gap: 4px; }
+  .lt-week-day { min-width: 48px; padding: 6px 2px; }
+  .lt-day-name { font-size: 10px; }
+  .lt-day-date { font-size: 14px; margin: 3px 0 1px; }
+  .lt-day-count { font-size: 9px; }
+  .lt-chart-row { flex-direction: column; gap: 14px; }
+  .lt-heatmap-wrap { overflow-x: auto; }
+  .lt-summary-content { grid-template-columns: 1fr; }
+  .lt-summary-bar-label { font-size: 12px; }
+  .lt-pie-wrap { width: 120px; height: 120px; }
+  .lt-pie-wrap svg { width: 120px; height: 120px; }
+}
+@media (max-width: 480px) {
+  .lt-greet-hello { font-size: 18px; }
+  .lt-greet-num { font-size: 26px; }
+  .lt-file-actions { flex-direction: column; gap: 8px; }
+  .lt-file-actions .lt-btn { width: 100%; }
+}
+</style>
+<script src="/js/todolist-app.js"></script>
+
 <!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
 <style>
   /* --- Toast 提示 --- */
