@@ -301,26 +301,88 @@
   }
 
   /* ---------------- 存储层 ---------------- */
+  // 写入(POST)仍然用请求头带 apikey——实测没问题,而且 keepalive 要它。
   var HEAD = {
     'apikey': SB_KEY,
     'Authorization': 'Bearer ' + SB_KEY,
     'Content-Type': 'application/json'
   };
 
+  // 读取(GET)改用 ?apikey= 查询参数,**不带任何自定义请求头**。
+  // 原因:带 Authorization / Content-Type 的跨域 GET 会触发 CORS 预检(OPTIONS),
+  // 百度、UC 这类 App 内置 WebView 对预检的处理不稳,表现为 fetch 直接失败。
+  // 只放在 URL 里就退化成"简单请求",不预检,兼容性最好。
+  // anon key 本来就是公开的(它就在页面 HTML 里),放 URL 不增加风险。
+  function sbUrl(path) {
+    var sep = path.indexOf('?') === -1 ? '?' : '&';
+    return SB_URL + '/rest/v1/' + path + sep + 'apikey=' + encodeURIComponent(SB_KEY);
+  }
+
+  function withTimeout(p, ms, label) {
+    return new Promise(function (resolve, reject) {
+      var t = setTimeout(function () {
+        reject(new Error(label + '超时(' + Math.round(ms / 1000) + 's)'));
+      }, ms);
+      p.then(function (v) { clearTimeout(t); resolve(v); },
+             function (e) { clearTimeout(t); reject(e); });
+    });
+  }
+
+  // fetch 失败时的兜底通道。部分 WebView 的 fetch 会被注入脚本干扰,
+  // 但 XMLHttpRequest 一直能正常用。
+  function xhrJson(url, ms) {
+    return new Promise(function (resolve, reject) {
+      var x = new XMLHttpRequest();
+      x.open('GET', url, true);
+      x.timeout = ms;
+      x.onload = function () {
+        if (x.status >= 200 && x.status < 300) {
+          var d = null;
+          try { d = x.responseText ? JSON.parse(x.responseText) : null; } catch (e) { d = null; }
+          resolve(d);
+        } else {
+          reject(new Error('HTTP ' + x.status));
+        }
+      };
+      x.onerror = function () { reject(new Error('网络请求失败')); };
+      x.ontimeout = function () { reject(new Error('请求超时')); };
+      x.send(null);
+    });
+  }
+
+  // 把浏览器给的原话翻译成人能看懂的
+  function humanError(e) {
+    var m = (e && e.message) || '未知错误';
+    if (/Failed to fetch|NetworkError|Load failed|网络/i.test(m)) {
+      return '网络请求被拦截或中断(可能是浏览器/网络环境限制)';
+    }
+    if (/abort|超时|timeout/i.test(m)) return '请求超时,网络太慢或被拦截';
+    if (/^HTTP 401|^HTTP 403/.test(m)) return m + '(密钥或权限有问题)';
+    if (/^HTTP 404/.test(m)) return m + '(数据表不存在,SQL 可能没执行)';
+    if (/^HTTP 5/.test(m)) return m + '(Supabase 项目可能被暂停了)';
+    return m;
+  }
+
   function sbGet(path) {
-    var ctl = typeof AbortController === 'function' ? new AbortController() : null;
-    var timer = ctl ? setTimeout(function () { ctl.abort(); }, 9000) : null;
-    return fetch(SB_URL + '/rest/v1/' + path, {
-      headers: HEAD,
-      cache: 'no-store',
-      signal: ctl ? ctl.signal : undefined
-    }).then(function (r) {
-      if (timer) clearTimeout(timer);
-      if (!r.ok) throw new Error('HTTP ' + r.status);
+    var url = sbUrl(path);
+
+    var req = fetch(url, { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) {
+        var err = new Error('HTTP ' + r.status);
+        err.isHttp = true;
+        throw err;
+      }
       return r.json();
-    }).catch(function (e) {
-      if (timer) clearTimeout(timer);
-      throw e;
+    });
+
+    return withTimeout(req, 12000, '请求').catch(function (e1) {
+      // 服务端已经明确回了状态码,换通道没有意义
+      if (e1 && e1.isHttp) throw new Error(humanError(e1));
+      // 否则可能是 fetch 通道本身的问题,用 XHR 再试一次
+      return withTimeout(xhrJson(url, 12000), 13000, '请求').catch(function (e2) {
+        if (e2 && /^HTTP /.test(e2.message || '')) throw new Error(humanError(e2));
+        throw new Error(humanError(e1));
+      });
     });
   }
 
@@ -723,19 +785,28 @@
   }
 
   // 把常见的接入失败翻译成人话,省得去翻控制台
+  function isAppWebView() {
+    var ua = navigator.userAgent || '';
+    return /baiduboxapp|MicroMessenger|MQQBrowser|QQ\/|UCBrowser|Quark|Weibo|AlipayClient|DingTalk|aweme/i.test(ua);
+  }
+
   function errorTip(msg) {
     msg = String(msg || '');
     if (/HTTP 401|HTTP 403/.test(msg)) {
       return 'anon key 不对,或者 SQL 里的 RLS 策略 / GRANT 没跑完。';
     }
-    if (/HTTP 404/.test(msg)) {
+    if (/HTTP 40\d/.test(msg)) {
       return '表还不存在 —— visitor-setup.sql 里的 SQL 还没在 Supabase 执行。';
     }
     if (/HTTP 5\d\d/.test(msg)) {
       return 'Supabase 那边出错了,稍后再试;项目如果是 Free 版长时间没人访问会被暂停,去控制台恢复一下。';
     }
-    if (/Failed to fetch|NetworkError|load failed/i.test(msg)) {
-      return '连不上数据库:检查 _config.yml 里的 supabase_url 是否写对,或者网络被挡了。';
+    if (/拦截|超时|网络|连不上/i.test(msg)) {
+      if (isAppWebView()) {
+        return '你现在用的是 App 内置浏览器(百度/微信/UC 这类),它常常会拦掉跨域的数据请求。'
+          + '点右上角「…」选「在浏览器中打开」,用系统浏览器再看一次。';
+      }
+      return '连不上数据库:换个网络(或关掉代理/广告拦截)再试;也可以在电脑上打开确认 Supabase 项目没被暂停。';
     }
     return '';
   }
