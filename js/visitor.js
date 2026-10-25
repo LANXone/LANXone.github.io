@@ -194,6 +194,64 @@
   }
 
   /* ---------------- 大致位置(可选) ---------------- */
+  // 国家代码 → 中文名。ipinfo 只给 "CN" 这种代码,直接显示不好看。
+  var COUNTRY_CN = {
+    CN: '中国', HK: '中国香港', MO: '中国澳门', TW: '中国台湾',
+    US: '美国', JP: '日本', KR: '韩国', SG: '新加坡', MY: '马来西亚',
+    TH: '泰国', VN: '越南', PH: '菲律宾', ID: '印度尼西亚', IN: '印度',
+    GB: '英国', DE: '德国', FR: '法国', NL: '荷兰', IT: '意大利',
+    ES: '西班牙', RU: '俄罗斯', CA: '加拿大', AU: '澳大利亚', BR: '巴西',
+    AE: '阿联酋', NZ: '新西兰', CH: '瑞士', SE: '瑞典'
+  };
+
+  // 依次尝试,前一个失败才降级到下一个。实测 ipapi.co 现在会被 Cloudflare
+  // 拦成验证页(返回 HTML 而不是 JSON),所以它只能排最后。
+  var GEO_PROVIDERS = [
+    {
+      url: 'https://ipinfo.io/json',
+      map: function (d) {
+        if (!d || !d.country) return null;
+        return {
+          country: COUNTRY_CN[d.country] || d.country,
+          region: d.region,
+          city: d.city
+        };
+      }
+    },
+    {
+      url: 'https://ipwho.is/',
+      map: function (d) {
+        if (!d || d.success === false) return null;
+        return {
+          country: d.country || COUNTRY_CN[d.country_code] || '',
+          region: d.region,
+          city: d.city
+        };
+      }
+    },
+    {
+      url: 'https://ipapi.co/json/',
+      map: function (d) {
+        if (!d || d.error) return null;
+        return {
+          country: d.country_name || COUNTRY_CN[d.country_code] || '',
+          region: d.region,
+          city: d.city
+        };
+      }
+    }
+  ];
+
+  // 去掉空值/占位符/"Guangdong Sheng" 这类后缀
+  function geoClean(g) {
+    function s(v) {
+      if (!v || typeof v !== 'string') return '';
+      v = v.replace(/\s+(Sheng|Shi|Province|Municipality|Prefecture)$/i, '').trim();
+      return v === '-' ? '' : v.slice(0, 40);
+    }
+    return { country: s(g.country), region: s(g.region), city: s(g.city) };
+  }
+
   function getGeo() {
     if (!WITH_GEO) return Promise.resolve(null);
 
@@ -202,34 +260,41 @@
       return Promise.resolve(cached.d);
     }
 
-    function pick(o, keys) {
-      for (var i = 0; i < keys.length; i++) {
-        var v = o[keys[i]];
-        if (v && typeof v === 'string' && v !== '-') return v;
-      }
-      return '';
-    }
+    // 整条链共用一个总预算,别让访问记录等太久
+    var deadline = Date.now() + 3200;
 
-    function grab(url) {
-      return fetch(url, { mode: 'cors', cache: 'no-store' }).then(function (r) {
-        return r.ok ? r.json() : null;
+    function grab(url, ms) {
+      var timer = null;
+      var timeout = new Promise(function (resolve) {
+        timer = setTimeout(function () { resolve(null); }, ms);
+      });
+      var req = fetch(url, { mode: 'cors', cache: 'no-store' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .catch(function () { return null; });
+      return Promise.race([req, timeout]).then(function (d) {
+        if (timer) clearTimeout(timer);
+        return d;
       });
     }
 
-    var timeout = new Promise(function (resolve) {
-      setTimeout(function () { resolve(null); }, 3000);
-    });
+    function attempt(i) {
+      if (i >= GEO_PROVIDERS.length) return Promise.resolve(null);
+      var left = deadline - Date.now();
+      if (left < 500) return Promise.resolve(null);
 
-    var req = grab('https://ipapi.co/json/').then(function (d) {
-      if (!d || d.error) return null;
-      return {
-        country: pick(d, ['country_name', 'country_code', 'country']),
-        region: pick(d, ['region', 'region_code']),
-        city: pick(d, ['city'])
-      };
-    }).catch(function () { return null; });
+      var p = GEO_PROVIDERS[i];
+      return grab(p.url, Math.min(left, 2000)).then(function (d) {
+        var g = null;
+        try { g = d ? p.map(d) : null; } catch (e) { g = null; }
+        if (g) {
+          var c = geoClean(g);
+          if (c.country || c.region || c.city) return c;
+        }
+        return attempt(i + 1);
+      }).catch(function () { return attempt(i + 1); });
+    }
 
-    return Promise.race([req, timeout]).then(function (d) {
+    return attempt(0).then(function (d) {
       if (d) lsSet(LS_GEO, JSON.stringify({ t: Date.now(), d: d }));
       return d;
     }).catch(function () { return null; });
@@ -586,7 +651,12 @@
       tags.appendChild(el('span', unknown ? 'lv-tag is-unknown' : 'lv-tag', text));
     }
 
-    var loc = [i.country, i.region, i.city].filter(Boolean).join(' ');
+    // 去重:ipinfo 有时 region 与 city 同名(如 "Singapore"),拼起来会重复
+    var locParts = [];
+    [i.country, i.region, i.city].forEach(function (v) {
+      if (v && locParts.indexOf(v) === -1) locParts.push(v);
+    });
+    var loc = locParts.join(' · ');
     tag('📍 ' + (loc || '位置未知'), !loc);
     tag('🕐 ' + (i.tz || '时区未知'), !i.tz);
     tag('🗣 ' + (i.lang || '语言未知'), !i.lang);
