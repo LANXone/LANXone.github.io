@@ -82,6 +82,224 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Godot03-制作瓦片地图" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/26/Godot03-%E5%88%B6%E4%BD%9C%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE/" class="article-date">
+  <time class="dt-published" datetime="2026-10-26T12:15:00.000Z" itemprop="datePublished">2026-10-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/10/26/Godot03-%E5%88%B6%E4%BD%9C%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE/">Godot03:制作瓦片地图（TileMap 与 TileSet）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>前两篇已经让角色能站在场景里跑动，但脚下还是空的。这一篇给 <code>world</code> 节点铺上瓦片地图：先建 <code>TileSet</code> 资源，把素材图注册成图块，再手动划出真正要用的图块。</p>
+<blockquote>
+<p><strong>关于 TileMap 的弃用</strong>：Godot 4.3 起 <code>TileMap</code> 节点被标记为 Deprecated，官方推荐改用 <code>TileMapLayer</code>（一个图层一个节点）。本文按课程仍用 <code>TileMap</code>，因为 <code>TileSet</code>、图块、碰撞这些核心概念完全一致；文末附两种写法的对照表，以后新项目可以直接换。</p>
+</blockquote>
+<h2 id="第一步：给-world-添加-TileMap-节点">第一步：给 world 添加 TileMap 节点</h2>
+<p>和上一篇给角色加 <code>AnimatedSprite2D</code> 的方法一样，先选中场景里的 <code>world</code> 节点，让它成为父节点。</p>
+<ol>
+<li>点击场景面板左上角的 <code>+</code> 添加节点。</li>
+<li>在搜索框输入 <code>tile</code>。</li>
+<li>选中 <code>TileMap</code>，点击 <strong>Create</strong>。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot03-step1-add-tilemap.png" alt="在 world 节点下创建 TileMap"></p>
+<p>注意搜索结果的预览里有一条红色提示：<code>TileMap</code> 已经 Deprecated。它仍然可以用，只是不再增加新功能，所以按课程继续往下走没问题。</p>
+<h2 id="第二步：新建-TileSet-资源">第二步：新建 TileSet 资源</h2>
+<p>选中刚创建的 <code>TileMap</code>，在右侧 Inspector 里找到 <code>Tile Set</code> 属性，此时是 <code>&lt;empty&gt;</code>。</p>
+<ol>
+<li>点击 <code>&lt;empty&gt;</code> 右侧的下拉按钮。</li>
+<li>在 <code>New</code> 分组里选择 <strong>TileSet</strong>。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot03-step2-new-tileset.png" alt="Inspector 中为 TileMap 新建 TileSet"></p>
+<p>下拉里另外两项是 <code>Quick Load...</code> 和 <code>Load...</code>，用来复用已经存成 <code>.tres</code> 的瓦片集。同一个项目里做多张地图时，直接 Load 同一份 TileSet，图块和碰撞就不用重做一遍。</p>
+<p><code>TileSet</code> 是一个<strong>资源</strong>，不是节点。它保存&quot;有哪些图块、每个图块怎么切、带什么碰撞和地形&quot;；<code>TileMap</code> 节点只负责&quot;用这套 TileSet 在场景里画&quot;。两者分开，才能做到一张图块表被多张地图共用。</p>
+<p>建好后顺手看一眼 Inspector 里 <code>TileSet</code> 的 <code>Tile Size</code>（默认 16×16）。素材的单格不是 16×16 时必须先改成实际尺寸，否则画布上的网格和图案对不上，整张地图都会错位。想让别的场景也复用这张图块表，可以用资源下拉里的 <strong>Save As...</strong> 把它存成 <code>.tres</code>，之后再用 <code>Load...</code> 加载。</p>
+<h2 id="第三步：把瓦片素材拖进-Tile-Sources">第三步：把瓦片素材拖进 Tile Sources</h2>
+<p>新建好 TileSet 后，底部面板多出一个 <strong>TileSet</strong> 页签（和 <code>TileMap</code> 页签并排，别点错）。</p>
+<ol>
+<li>切到底部 <strong>TileSet</strong> 面板。</li>
+<li>左侧选中 <strong>Tile Sources</strong>。</li>
+<li>从 FileSystem（资源管理器）里把需要用的 png 直接拖进来。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot03-step3-drag-tiles.png" alt="把 plains、grass、objects 三张素材拖入 Tile Sources"></p>
+<p>每拖入一张 png，就会多一个 <strong>Atlas 图源</strong>，Godot 自动给它分配一个 <code>ID</code>（截图里分别是 0、1、2）。图源左侧的缩略图就是这个 png 的预览。</p>
+<h2 id="第四步：用橡皮擦清掉默认切分">第四步：用橡皮擦清掉默认切分</h2>
+<p>拖进来之后，Godot 会按 <code>Texture Region</code>（截图里是 16×16）把整张图<strong>自动切成格子</strong>，并把所有格子都登记成图块。问题是：</p>
+<ul>
+<li>素材图里通常有一大片空白、装饰线、水印，这些也会被切成图块；</li>
+<li>真正要用的图块可能不是 16×16，比如一棵树是 2×2 格。</li>
+</ul>
+<p>所以先把自动切分全部清掉，改成自己划。</p>
+<ol>
+<li>在 TileSet 面板的工具栏里选中<strong>橡皮擦</strong>（<code>Setup</code>、<code>Select</code>、<code>Paint</code> 右边那个橡皮图标）。</li>
+<li>在右侧网格上按住左键划过去，把默认的图块全部擦掉。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot03-step4-erase-default.png" alt="用橡皮擦去掉默认切分的图块"></p>
+<p>擦完之后网格还在，只是格子不再是&quot;图块&quot;。这一步的意义是：<strong>图块不是切开就有的，而是由你主动登记出来的</strong>，登记时才决定它占多大、带什么属性。</p>
+<h2 id="第五步：手动划出需要的图块">第五步：手动划出需要的图块</h2>
+<p>还是 <code>Setup</code> 模式，在右侧的图片网格上按需要创建图块：</p>
+<ul>
+<li><strong>单击</strong>一个格子 → 创建一个 1×1 的小图块；</li>
+<li><strong>按住 Ctrl 连续点击</strong> → 一次登记多个小图块；</li>
+<li><strong>按住 Shift 拖拽框选</strong> → 把框住的若干格合并成<strong>一个大图块</strong>，比如 2×2 的树、3×2 的石头。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot03-step5-create-tiles.png" alt="小图块用单击或 Ctrl 连续创建，大图块用 Shift 拖选"></p>
+<p>截图里 <code>ID 2</code> 对应 <code>objects.png</code>：左上角那些 1×1 的杂物是小图块，中间那棵树框住了 2×2 的范围，就是一个大图块。</p>
+<p>大图块虽然占多格，但在 TileMap 里仍然是一个整体：选一次、画一次就摆好一棵树，不用拼四块，碰撞也能按整棵树的形状设置。</p>
+<blockquote>
+<p><strong>Setup 不是作画的地方。</strong> 底部 <code>TileSet</code> 和 <code>TileMap</code> 是两个页签，<code>Setup</code> 只存在于 <code>TileSet</code> 页签里：右侧网格是选图块的地方，左侧 Atlas 参数（<code>ID</code>、<code>Texture Region</code> 等）是选中图块后调属性的地方。要真正把图块画进场景，必须切到 <code>TileMap</code> 页签，在 <code>Setup</code> 里怎么点都不会往地图上放东西。</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot03-step5b-setup-vs-paint.png" alt="Setup 只负责定图块，作画要切到 TileMap 页签"></p>
+<h2 id="第六步：选图块，把地图画出来">第六步：选图块，把地图画出来</h2>
+<p>图块划好了，把底部切到 <strong>TileMap</strong> 页签，开始铺地图。</p>
+<ol>
+<li>切到底部 <strong>TileMap</strong> 面板，左侧选中 <code>objects.png</code> 这个图源。</li>
+<li>点工具栏最左边的<strong>选择工具</strong>，在右侧图块列表里点选要用的图案；按住 <strong>Shift</strong> 可以多选。</li>
+<li>换成<strong>画笔</strong>（铅笔图标），回到画布按住左键拖动，图块就画上去了。</li>
+<li>画错了用<strong>右键</strong>擦除（右键就是临时橡皮擦，不用先切工具），或者 <code>Ctrl+Z</code> 撤销。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot03-step6-paint-map.png" alt="选择图块后用画笔在场景里绘制"></p>
+<p>截图里那四棵树是同一个 2×2 大图块画了四次。大图块落笔时以鼠标所在的格子为左上角，画一次就摆好整棵，不用拼四块。</p>
+<p>画布上的橙色网格就是格子边界，右侧那两个网格图标分别控制网格显示和当前图块高亮，对不准位置时可以打开看一眼。</p>
+<p>工具栏其余几个也常用：</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>直线 / 矩形</td>
+<td>拖一条线或一个矩形，一次铺一排、一片图块，铺地面很快</td>
+</tr>
+<tr>
+<td>吸管</td>
+<td>点画布上已有的图块，把它变成当前选中的图块</td>
+</tr>
+<tr>
+<td>旋转 / 镜像</td>
+<td>落笔前调整图块朝向，同一张素材能复用出更多变化</td>
+</tr>
+<tr>
+<td><code>Layer0</code> 下拉</td>
+<td>切换当前画在哪一层（层是在 TileSet 的 <code>Layers</code> 里定义的）</td>
+</tr>
+</tbody>
+</table>
+<p>按住 Shift 多选图块还有个用处：配合随机化（randomization），落笔会在选中的几个图块里随机挑一个。铺草地、碎石这类要自然散开的地面时，选三五种变体一起画，比手动一个个摆快得多。</p>
+<h3 id="图层：重命名、新建，还有-Y-Sort">图层：重命名、新建，还有 Y Sort</h3>
+<p>画完会发现地面和树混在同一个 <code>Layer0</code> 里，想单独藏起树来调地面就做不到。图层在 Inspector 里管理——选中 <code>TileMap</code>，最下面的 <code>Layers</code> 就是图层列表。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot03-step7-tilemap-layers.png" alt="重命名图层、新建图层与 Y Sort 设置"></p>
+<ol>
+<li><strong>重命名</strong>：点 <code>Name</code> 那一列，把 <code>Layer0</code> 改成看得懂的名字，比如 <code>ground</code>、<code>objects</code>。底部 <code>TileMap</code> 面板的层下拉会同步更新。</li>
+<li><strong>新建图层</strong>：点最下面的 <strong>+ Add Element</strong> 追加一层。建议地面一层、树和石头一层，方便分别隐藏、分别设碰撞。</li>
+<li><strong>Enabled</strong>：取消勾选可以临时隐藏这一层，对着地形摆装饰时很好用。</li>
+<li><strong>Y Sort Enabled</strong>：打开后这一层里的图块按 Y 坐标排序，站在树后面时树的下半部分会盖住角色的一部分，走到树前面角色又能盖住树。<code>Y Sort Origin</code> 是排序基准点，大图块（比如 2×2 的树）排序位置不对时调它。</li>
+</ol>
+<p><strong>图层顺序就是绘制顺序</strong>：列表越靠下越晚画、越靠上。所以地面放第一层，树、房子这类要挡住角色的放后面；角色能不能被树挡住，还要配合父节点的 Y 排序，这里先留个印象。</p>
+<h3 id="三个概念别搞混">三个概念别搞混</h3>
+<table>
+<thead>
+<tr>
+<th>名词</th>
+<th>是什么</th>
+<th>在哪看</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tile Source（Atlas）</td>
+<td>一张 png 素材在图集里的注册，带自己的 <code>ID</code></td>
+<td>TileSet 面板左侧列表</td>
+</tr>
+<tr>
+<td>Tile（图块）</td>
+<td>从图源里划出的一个矩形区域，可带碰撞、地形、偏移</td>
+<td>Setup 模式在网格上划出来</td>
+</tr>
+<tr>
+<td>TileSet</td>
+<td>以上所有图块的集合，是一个资源文件</td>
+<td>Inspector 的 <code>Tile Set</code> 属性</td>
+</tr>
+</tbody>
+</table>
+<p>画地图时选中的就是某个 Tile Source 下的某个 Tile（按 <code>ID</code> 定位），所以图块一旦划错位置，地图上已经画好的部分也会跟着错位。</p>
+<h2 id="附：以后新项目改用-TileMapLayer">附：以后新项目改用 TileMapLayer</h2>
+<p>Godot 4.3 之后 <code>TileMap</code> 被 <code>TileMapLayer</code> 取代，核心区别只有一个：<strong>一个图层就是一个节点</strong>。以前所有层都在同一个 <code>TileMap</code> 里、只能在 Inspector 的 <code>Layers</code> 里改；现在每层单独一个节点，可见性、<code>modulate</code>、碰撞层、Y 排序都能分开设，用时把节点摆好就行。</p>
+<p>操作对照：</p>
+<table>
+<thead>
+<tr>
+<th>要做的事</th>
+<th><code>TileMap</code>（本文写法）</th>
+<th><code>TileMapLayer</code>（新写法）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>建节点</td>
+<td>一个 <code>TileMap</code>，所有层塞在里面</td>
+<td>每层一个 <code>TileMapLayer</code> 节点</td>
+</tr>
+<tr>
+<td>切换当前层</td>
+<td>底部 <code>TileMap</code> 面板的 <code>Layer0</code> 下拉</td>
+<td>直接在场景面板里选中对应节点</td>
+</tr>
+<tr>
+<td>设置图块表</td>
+<td>Inspector → <code>Tile Set</code></td>
+<td>同样 Inspector → <code>Tile Set</code></td>
+</tr>
+<tr>
+<td>划图块</td>
+<td>底部 <code>TileSet</code> → <code>Setup</code></td>
+<td>完全相同</td>
+</tr>
+<tr>
+<td>画地图</td>
+<td>底部 <code>TileMap</code> → 画笔</td>
+<td>完全相同</td>
+</tr>
+</tbody>
+</table>
+<p>如果手上是旧项目，可以一键转换：选中 <code>TileMap</code> 节点，打开底部 <code>TileMap</code> 面板，点右上角的工具箱图标，选 <strong>Extract TileMap layers as individual TileMapLayer nodes</strong>，原来的每层都会变成单独的 <code>TileMapLayer</code> 节点。</p>
+<hr>
+<p>上一篇：<a href="/2026/10/25/Godot02-%E8%A7%92%E8%89%B2%E7%A7%BB%E5%8A%A8%E8%84%9A%E6%9C%AC/">Godot02：角色移动脚本（GDScript 语法复习）</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lanxone.github.io/2026/10/26/Godot03-%E5%88%B6%E4%BD%9C%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE/" data-id="cmvpaxipm0000cwmaer4ueue6" data-title="Godot03:制作瓦片地图（TileMap 与 TileSet）" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Godot/" rel="tag">Godot</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-二叉树遍历和递归" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/10/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86%E5%92%8C%E9%80%92%E5%BD%92/" class="article-date">
@@ -1168,105 +1386,6 @@
 
 
   
-    <article id="post-Godot01-创建一个能动的角色" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/" class="article-date">
-  <time class="dt-published" datetime="2026-10-24T14:38:23.000Z" itemprop="datePublished">2026-10-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/">Godot01:创建一个能动的角色</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="第一步：创建角色节点">第一步：创建角色节点</h2>
-<ol>
-<li>点击场景面板左上角的 <code>+</code>，添加新节点。</li>
-<li>在弹出窗口左侧选择 <strong>Other Node</strong>。</li>
-<li>搜索 <code>CharacterBody2D</code>，选中后点击 <strong>Create</strong>。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step1-add-node.png" alt="点击场景面板的 + 添加节点"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step1-characterbody2d.png" alt="选择 Other Node 并创建 CharacterBody2D"></p>
-<h2 id="第二步：添加-2D-精灵图">第二步：添加 2D 精灵图</h2>
-<ol>
-<li>点击场景面板左上角的 <code>+</code>，为角色节点添加子节点。</li>
-<li>新增 <code>AnimatedSprite2D</code> 节点。</li>
-<li>在右侧属性面板的 <code>Sprite Frames</code> 中选择 <code>&lt;empty&gt;</code> → <strong>New</strong> → <strong>SpriteFrames</strong>，新建动画资源。</li>
-<li>再添加一个 <code>CollisionShape2D</code> 节点，作为角色的碰撞体；在 <code>Shape</code> 属性里新建并调整碰撞形状。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step2-add-animatedsprite.png" alt="点击 + 添加 AnimatedSprite2D 节点"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step2-new-spriteframes.png" alt="在 Sprite Frames 中新建 SpriteFrames"></p>
-<h2 id="第三步：重命名动画并导入帧">第三步：重命名动画并导入帧</h2>
-<ol>
-<li>在底部 <code>SpriteFrames</code> 面板的 Animations 列表里，把 <code>default</code> 重命名为能让自己看懂的名字。</li>
-<li>点击 Animation Frames 工具栏的网格图标，从 png 精灵图导入动画帧。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step3-rename-import.png" alt="重命名动画并点击网格图标导入 png"></p>
-<h2 id="第四步：按素材切分并选择动画帧">第四步：按素材切分并选择动画帧</h2>
-<ol>
-<li>在 Select Frames 窗口中，按素材实际的排列设置 <code>Horizontal</code>（横向列数）和 <code>Vertical</code>（纵向行数）来切分 png。</li>
-<li>切分后按动画播放顺序依次点选需要的帧。</li>
-<li>选完后点击 <strong>Add N Frame(s)</strong> 确认导入。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step4-slice-grid.png" alt="按实际数量设置横向和纵向切分"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step4-select-frames.png" alt="按动画顺序点选帧并确认"></p>
-<h2 id="第五步：修复像素图模糊">第五步：修复像素图模糊</h2>
-<p>导入后会发现问题：图像模糊无比，和原素材根本不是一个清晰度。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step5-blurry.png" alt="导入后模糊的像素图"></p>
-<p>修复方式：</p>
-<ol>
-<li>菜单栏 <code>Project</code> → <strong>Project Settings...</strong></li>
-<li>左侧选择 <code>Rendering</code> → <code>Textures</code></li>
-<li>把 <code>Default Texture Filter</code> 从 <strong>Linear</strong> 改为 <strong>Nearest</strong></li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step5-project-menu.png" alt="打开 Project Settings"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step5-texture-filter.png" alt="把 Default Texture Filter 改为 Nearest"></p>
-<h3 id="原理：为什么-Linear-会把像素画糊掉">原理：为什么 Linear 会把像素画糊掉</h3>
-<p>纹理贴到屏幕上时，一个屏幕像素很少正好落在某个纹素（texel）的中心，通常落在几个 texel 之间。这时显卡要决定&quot;这个屏幕像素取什么颜色&quot;，纹理过滤就是这个取值规则：</p>
-<ul>
-<li><strong>Linear（双线性过滤）</strong>：取周围 4 个 texel 做加权平均。照片、高清贴图用它过渡自然，但像素画的色块边界是硬切的，平均之后会凭空混出中间色，放大后就成了糊成一团的效果。</li>
-<li><strong>Nearest（最近邻）</strong>：直接取离采样点最近的那个 texel，不做任何混合。每个 texel 放大后仍是纯色方块，边缘保持锐利，这才是像素素材想要的。</li>
-</ul>
-<p>所以像素风游戏要把默认过滤改成 Nearest。这个设置是项目级默认值，单个节点仍可以在 <code>CanvasItem</code> → <code>Texture</code> → <code>Filter</code> 里单独覆盖。</p>
-<h2 id="第六步：把其余动画全部加进去">第六步：把其余动画全部加进去</h2>
-<p>一个动作对应一个动画。在 Animations 面板点击 <strong>Add Animation</strong>（快捷键 <code>Ctrl+N</code>），输入动画名，然后重复第三步、第四步的流程，为它导入对应的帧。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step6-add-animation.png" alt="点击 Add Animation 新建动画"></p>
-<p>把所有动作（idle、run、jump 等）都按同样方式加完，<code>SpriteFrames</code> 里就有了完整的动画列表。</p>
-<h2 id="第七步：为角色挂上脚本">第七步：为角色挂上脚本</h2>
-<p>选中 <code>player</code> 节点，点击场景面板右上角的<strong>添加脚本</strong>按钮（脚本 + 绿色加号），创建并挂载脚本。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step7-attach-script.png" alt="给 player 节点添加脚本"></p>
-<p>写代码时语法不熟，可以直接查官方的 GDScript 手册：<a target="_blank" rel="noopener" href="https://docs.godotengine.org/zh-cn/stable/tutorials/scripting/gdscript/index.html">GDScript 参考文档</a></p>
-<hr>
-<p>完整代码与逐段讲解见：<a href="/2026/10/25/Godot02-%E8%A7%92%E8%89%B2%E7%A7%BB%E5%8A%A8%E8%84%9A%E6%9C%AC/">Godot02：角色移动脚本（GDScript 语法复习）</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://lanxone.github.io/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/" data-id="cmvp90fcp000id8ma4uq005eg" data-title="Godot01:创建一个能动的角色" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Godot/" rel="tag">Godot</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
@@ -1285,7 +1404,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 12.5px;">C++学习笔记</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 17.5px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/Godot/" style="font-size: 12.5px;">Godot</a> <a href="/tags/OpenGL/" style="font-size: 12.5px;">OpenGL</a> <a href="/tags/SDL/" style="font-size: 10px;">SDL</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 10px;">二叉树</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 12.5px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 15px;">学习规划</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E6%89%A7%E8%A1%8C%E8%A1%A8-6%E5%91%A8%E8%AE%A1%E5%88%92/" style="font-size: 10px;">学习路线,执行表,6周计划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 15px;">快速</a> <a href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" style="font-size: 12.5px;">栈和队列</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 15px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%84%9A%E6%9C%AC%E5%BC%80%E5%8F%91/" style="font-size: 10px;">脚本开发</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a> <a href="/tags/%E9%80%92%E5%BD%92/" style="font-size: 10px;">递归</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 10px;">随笔</a>
+      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 12.5px;">C++学习笔记</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 17.5px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/Godot/" style="font-size: 15px;">Godot</a> <a href="/tags/OpenGL/" style="font-size: 12.5px;">OpenGL</a> <a href="/tags/SDL/" style="font-size: 10px;">SDL</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 10px;">二叉树</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 12.5px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 15px;">学习规划</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E6%89%A7%E8%A1%8C%E8%A1%A8-6%E5%91%A8%E8%AE%A1%E5%88%92/" style="font-size: 10px;">学习路线,执行表,6周计划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 15px;">快速</a> <a href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" style="font-size: 12.5px;">栈和队列</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 15px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%84%9A%E6%9C%AC%E5%BC%80%E5%8F%91/" style="font-size: 10px;">脚本开发</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a> <a href="/tags/%E9%80%92%E5%BD%92/" style="font-size: 10px;">递归</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 10px;">随笔</a>
     </div>
   </div>
 
@@ -1307,6 +1426,10 @@
       <ul>
         
           <li>
+            <a href="/2026/10/26/Godot03-%E5%88%B6%E4%BD%9C%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE/">Godot03:制作瓦片地图（TileMap 与 TileSet）</a>
+          </li>
+        
+          <li>
             <a href="/2026/10/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86%E5%92%8C%E9%80%92%E5%BD%92/">二叉树遍历和递归</a>
           </li>
         
@@ -1320,10 +1443,6 @@
         
           <li>
             <a href="/2026/10/25/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97-%E7%AB%A0%E8%8A%82%E6%80%BB%E7%BB%93/">栈与队列-章节总结</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/">Godot01:创建一个能动的角色</a>
           </li>
         
       </ul>
@@ -1382,6 +1501,152 @@
 
   </div>
 <!-- hexo injector body_end start -->
+<style>
+  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
+  .lanx-sidebar-sticky {
+    display: flex; flex-direction: column; gap: 12px;
+    margin: 0 0 50px 0;
+    width: 100%;
+  }
+
+  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
+  .lanx-card {
+    box-sizing: border-box; width: 100%;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid #e8e8e8; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    font-size: 12px; color: #666; text-align: center;
+    line-height: 1.6; user-select: none;
+    transition: box-shadow 0.2s ease;
+  }
+  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+
+  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
+  .lanx-clock .clock-time {
+    font-size: 36px; font-weight: 700; color: #1a365d;
+    font-variant-numeric: tabular-nums; letter-spacing: 1px;
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
+      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
+      "Courier New", monospace;
+  }
+  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
+  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
+
+  /* 语录 */
+  .lanx-quote .quote-body {
+    font-size: 13px; color: #444; line-height: 1.75;
+    text-align: left; padding: 2px 0;
+  }
+  .lanx-quote .quote-meta {
+    font-size: 11px; color: #999; margin-top: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
+  .lanx-quote .quote-author { color: #888; }
+  .lanx-quote .quote-type {
+    font-size: 10px; padding: 1px 8px; border-radius: 10px;
+    background: #f0f0f0; color: #888;
+  }
+  .lanx-quote .quote-refresh {
+    cursor: pointer; padding: 2px 6px; border-radius: 4px;
+    color: #aaa; transition: all 0.2s;
+  }
+  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
+  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
+
+  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
+  @media (max-width: 767px) {
+    .lanx-sidebar-sticky { display: none; }
+    .lanx-sidebar-sticky.lanx-mobile-only {
+      display: flex; margin: 50px 0; width: 100%;
+    }
+  }
+</style>
+
+<script>
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    var sidebar = document.querySelector('#sidebar');
+    if (!sidebar) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'lanx-sidebar-sticky';
+
+    var weekdays = ['日','一','二','三','四','五','六'];
+
+    // 检测是否手机端(与 CSS 媒体查询断点一致)
+    var isMobile = window.innerWidth < 768;
+
+    // 时钟(上)
+    var clock = document.createElement('div');
+    clock.className = 'lanx-card lanx-clock';
+    clock.innerHTML =
+      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
+      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
+      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
+    wrap.appendChild(clock);
+
+    // 语录(下)
+    var quote = document.createElement('div');
+    quote.className = 'lanx-card lanx-quote';
+    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
+    wrap.appendChild(quote);
+
+    if (isMobile) {
+      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
+      wrap.classList.add('lanx-mobile-only');
+      sidebar.appendChild(wrap);
+    } else {
+      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
+      sidebar.insertBefore(wrap, sidebar.firstChild);
+      var firstInner = document.querySelector('article .article-inner');
+      if (firstInner) {
+        wrap.style.marginTop =
+          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
+      }
+    }
+
+    // 时钟
+    function tick(){
+      var d = new Date();
+      var p = function(n){ return n<10?'0'+n:n; };
+      document.getElementById('lanx_clock_time').textContent =
+        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+      document.getElementById('lanx_clock_date').textContent =
+        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
+      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
+    function loadQuotes(){
+      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
+        show(window.LANX_EXCERPTS);
+        return;
+      }
+      fetch('/excerpts.json')
+        .then(function(r){ return r.json(); })
+        .then(function(d){ show(d||[]); })
+        .catch(function(){ show([]); });
+    }
+    loadQuotes();
+    function show(data){
+      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
+      var it = data[Math.floor(Math.random()*data.length)];
+      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
+      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
+      quote.innerHTML =
+        '<div class="quote-body">'+it.content+'</div>' +
+        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
+        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
+      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
+    }
+  }, 500);
+});
+</script>
+  
 <style>
   #lanx-chess-root {
     --lanx-light: #f0d9b5;
@@ -3300,149 +3565,387 @@ function undo(){
 </script>
   
 <style>
-  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
-  .lanx-sidebar-sticky {
-    display: flex; flex-direction: column; gap: 12px;
-    margin: 0 0 50px 0;
-    width: 100%;
+  /* --- 详情页大号点赞按钮 --- */
+  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
+  .like-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 24px; font-size: 15px;
+    border: 1px solid #e0e0e0; border-radius: 24px;
+    background: #fff; color: #555; cursor: pointer;
+    transition: all 0.25s ease; user-select: none;
   }
+  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
+  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
+  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
+  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
 
-  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
-  .lanx-card {
-    box-sizing: border-box; width: 100%;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.94);
-    border: 1px solid #e8e8e8; border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    font-size: 12px; color: #666; text-align: center;
-    line-height: 1.6; user-select: none;
-    transition: box-shadow 0.2s ease;
+  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
+  .article-footer .lanx-action {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-right: 10px; font-size: 13px;
+    color: #666; text-decoration: none; cursor: pointer;
+    padding: 0 2px; border-radius: 4px;
+    transition: color 0.2s;
   }
-  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
-
-  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
-  .lanx-clock .clock-time {
-    font-size: 36px; font-weight: 700; color: #1a365d;
-    font-variant-numeric: tabular-nums; letter-spacing: 1px;
-    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
-      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
-      "Courier New", monospace;
+  .article-footer .lanx-action:hover { color: #ff6b6b; }
+  .article-footer .lanx-action.liked { color: #ff6b6b; }
+  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
+  .article-footer .lanx-action .lanx-count {
+    margin-left: 2px; font-size: 12px; color: #999;
   }
-  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
-  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
-
-  /* 语录 */
-  .lanx-quote .quote-body {
-    font-size: 13px; color: #444; line-height: 1.75;
-    text-align: left; padding: 2px 0;
-  }
-  .lanx-quote .quote-meta {
-    font-size: 11px; color: #999; margin-top: 8px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
-  .lanx-quote .quote-author { color: #888; }
-  .lanx-quote .quote-type {
-    font-size: 10px; padding: 1px 8px; border-radius: 10px;
-    background: #f0f0f0; color: #888;
-  }
-  .lanx-quote .quote-refresh {
-    cursor: pointer; padding: 2px 6px; border-radius: 4px;
-    color: #aaa; transition: all 0.2s;
-  }
-  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
-  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
-
-  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
-  @media (max-width: 767px) {
-    .lanx-sidebar-sticky { display: none; }
-    .lanx-sidebar-sticky.lanx-mobile-only {
-      display: flex; margin: 50px 0; width: 100%;
-    }
-  }
+  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
 </style>
 
 <script>
-window.addEventListener('load', function(){
-  setTimeout(function(){
-    var sidebar = document.querySelector('#sidebar');
-    if (!sidebar) return;
+(function(){
+  // 访客明细页不是文章页,不放点赞按钮
+  if (location.pathname.indexOf('/visitors') !== -1) return;
 
-    var wrap = document.createElement('div');
-    wrap.className = 'lanx-sidebar-sticky';
+  var articles = document.querySelectorAll('article.article');
+  var isSinglePost = articles.length === 1;
 
-    var weekdays = ['日','一','二','三','四','五','六'];
+  // 提取文章路径:从 share-link 的 data-url 里拿
+  function getArticlePath(articleEl) {
+    var link = articleEl.querySelector('.article-share-link');
+    if (link && link.dataset.url) {
+      try {
+        var u = new URL(link.dataset.url, location.origin);
+        return u.pathname;
+      } catch(e) {}
+    }
+    // fallback:用标题链接的 href
+    var titleLink = articleEl.querySelector('.article-title');
+    if (titleLink) return titleLink.getAttribute('href');
+    return '';
+  }
 
-    // 检测是否手机端(与 CSS 媒体查询断点一致)
-    var isMobile = window.innerWidth < 768;
+  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
+  if (!isSinglePost) {
+    articles.forEach(function(art) {
+      var af = art.querySelector('.article-footer');
+      var share = art.querySelector('.article-share-link');
+      var path = getArticlePath(art);
+      if (!af || !share || !path) return;
 
-    // 时钟(上)
-    var clock = document.createElement('div');
-    clock.className = 'lanx-card lanx-clock';
-    clock.innerHTML =
-      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
-      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
-      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
-    wrap.appendChild(clock);
+      var likedKey = 'liked_' + path;
+      var countKey = 'likeCount_' + path;
+      var liked = !!localStorage.getItem(likedKey);
+      var count = parseInt(localStorage.getItem(countKey) || '0');
 
-    // 语录(下)
-    var quote = document.createElement('div');
-    quote.className = 'lanx-card lanx-quote';
-    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
-    wrap.appendChild(quote);
+      // 点赞按钮(小)
+      var likeHtml =
+        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
+          '<span class="fa fa-thumbs-up"></span>' +
+          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
+        '</a>';
 
-    if (isMobile) {
-      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
-      wrap.classList.add('lanx-mobile-only');
-      sidebar.appendChild(wrap);
-    } else {
-      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
-      sidebar.insertBefore(wrap, sidebar.firstChild);
-      var firstInner = document.querySelector('article .article-inner');
-      if (firstInner) {
-        wrap.style.marginTop =
-          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
+      // 评论按钮(小),跳到详情页评论区
+      var commentHtml =
+        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
+          '<span class="fa fa-comment"></span>' +
+        '</a>';
+
+      // 插入到分享按钮前面
+      var temp = document.createElement('span');
+      temp.innerHTML = likeHtml + commentHtml;
+      share.parentNode.insertBefore(temp.firstChild, share);
+      share.parentNode.insertBefore(temp.firstChild, share);
+
+      // 绑定点赞事件
+      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
+      if (likeBtn) {
+        likeBtn.addEventListener('click', function(e) {
+          e.preventDefault(); e.stopPropagation();
+          if (likeBtn.classList.contains('liked')) return;
+          likeBtn.classList.add('liked');
+          localStorage.setItem(likedKey, '1');
+          count++;
+          localStorage.setItem(countKey, count);
+          var c = likeBtn.querySelector('.lanx-count');
+          c.textContent = count; c.style.display = '';
+        });
       }
-    }
+    });
+    return; // 多文章页到此为止
+  }
 
-    // 时钟
-    function tick(){
-      var d = new Date();
-      var p = function(n){ return n<10?'0'+n:n; };
-      document.getElementById('lanx_clock_time').textContent =
-        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
-      document.getElementById('lanx_clock_date').textContent =
-        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
-      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
-    }
-    tick();
-    setInterval(tick, 1000);
+  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
+  var path = location.pathname;
+  var likedKey = 'liked_' + path;
+  var countKey = 'likeCount_' + path;
+  var liked = localStorage.getItem(likedKey);
+  var count = parseInt(localStorage.getItem(countKey) || '0');
 
-    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
-    function loadQuotes(){
-      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
-        show(window.LANX_EXCERPTS);
+  var wrap = document.createElement('div');
+  wrap.className = 'like-wrap';
+  wrap.innerHTML =
+    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
+      '<span class="fa fa-thumbs-up"></span>' +
+      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
+      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
+    '</button>';
+  var af = document.querySelector('.article-footer');
+  if (af) af.after(wrap);
+
+  var btn = document.getElementById('likeBtn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('liked')) return;
+      btn.classList.add('liked');
+      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
+      localStorage.setItem(likedKey, '1');
+      count++;
+      localStorage.setItem(countKey, count);
+      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
+      btn.querySelector('#likeCountDisplay').style.display = '';
+      var inline = document.getElementById('lanx_like_inline');
+      if (inline) { inline.textContent = count; inline.style.display = ''; }
+    });
+  }
+
+  window.__LANX_LIKE_COUNT__ = count;
+})();
+</script>
+  
+<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
+<style>
+  /* --- Toast 提示 --- */
+  .lanx-toast {
+    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
+    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lanx-toast.success { background: #38a169; }
+  .lanx-toast.error { background: #e53e3e; }
+
+  /* --- Twikoo 评论区整体容器 --- */
+  #twikoo-comments {
+    margin-top: 48px; padding: 28px 28px 20px;
+    background: #fff; border-radius: 14px;
+    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
+  }
+  #twikoo-comments > h3 {
+    margin: 0 0 20px 0; padding-bottom: 14px;
+    font-size: 16px; font-weight: 600; color: #333;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  /* 留言板:不同的标题和背景 */
+  body.page-guestbook #twikoo-comments {
+    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
+    border: 1px solid #dbeafe;
+  }
+  body.page-guestbook #twikoo-comments > h3 {
+    border-bottom-color: #dbeafe;
+    color: #2563eb;
+  }
+
+  /* --- Twikoo 内部组件美化 --- */
+  .tk-comment-box {
+    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
+    padding: 14px 16px !important; margin-bottom: 16px !important;
+    transition: border-color 0.2s !important;
+  }
+  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
+  .tk-comment-box .el-textarea__inner {
+    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
+    font-size: 14px !important; line-height: 1.6 !important;
+  }
+  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
+  .tk-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    border: none !important; border-radius: 20px !important;
+    padding: 8px 22px !important; font-weight: 500 !important;
+  }
+  .tk-btn-primary:hover { opacity: 0.9; }
+
+  /* 评论列表卡片化 */
+  .tk-comment-item {
+    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
+    padding: 16px 18px !important; margin-bottom: 12px !important;
+    background: #fafbfc !important; transition: box-shadow 0.2s !important;
+  }
+  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+  /* 博主标识 */
+  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
+
+  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
+  .tk-powered-by,
+  .tk-comment-powered,
+  [class*="powered-by"],
+  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
+
+  /* 评论区底部工具条 */
+  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
+
+  /* 点赞/踩按钮 */
+  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
+
+  /* 头像 */
+  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
+
+  /* --- 分享按钮改复制链接 --- */
+  .article-share-link { cursor: pointer; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
+
+<script>
+(function(){
+  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
+  var path = location.pathname;
+  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
+  // 访客明细页也是一篇文章的形态,但它不需要评论区
+  var isPost = document.querySelectorAll('article.article').length === 1
+    && path.indexOf('/visitors') === -1;
+  var isGuestbook = path.indexOf('/guestbook') !== -1;
+
+  // ============ Toast 工具 ============
+  function showToast(msg, type) {
+    var t = document.createElement('div');
+    t.className = 'lanx-toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 1800);
+  }
+
+  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
+  function copyShareLink() {
+    var links = document.querySelectorAll('.article-share-link');
+    if (!links.length) return;
+    links.forEach(function(link) {
+      link.href = 'javascript:void(0)';
+      // 移除旧监听(防重复绑定)
+      link.replaceWith(link.cloneNode(true));
+    });
+    // 重新获取(因为 cloneNode 替换了)
+    links = document.querySelectorAll('.article-share-link');
+    links.forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
+        var url;
+        if (link.dataset.url) {
+          try { url = new URL(link.dataset.url, location.origin).href; }
+          catch(err) { url = location.origin + location.pathname; }
+        } else {
+          url = location.origin + location.pathname;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function(){
+            showToast('📋 链接已复制到剪贴板');
+          }).catch(function(){ fallbackCopy(url); });
+        } else {
+          fallbackCopy(url);
+        }
+      }, true);
+    });
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
+    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
+    ta.remove();
+  }
+
+  // ============ 2. 文章页访问量 + 评论容器 ============
+  if (isGuestbook) document.body.classList.add('page-guestbook');
+
+  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
+  copyShareLink();
+
+  if (isPost) {
+    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
+    setTimeout(function(){
+      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
+      var af = document.querySelector('.article-footer');
+      if (!af) return;
+      // 👁️ 阅读 + 👍 点赞 内联显示
+      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
+        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
+        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
+      '</span>';
+      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
+      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
+    }, 200);
+  }
+
+  if (isPost || isGuestbook) {
+    var commentDiv = document.createElement('div');
+    commentDiv.id = 'twikoo-comments';
+    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
+    var collapsible = !isGuestbook;
+    commentDiv.innerHTML =
+      (collapsible
+        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
+        : ''
+      ) +
+      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
+        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
+      '</div>';
+    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
+    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
+
+    // 折叠按钮点击
+    if (collapsible) {
+      var btn = document.getElementById('twikoo-toggle-btn');
+      var body = document.getElementById('twikoo-comments-body');
+      btn.addEventListener('click', function() {
+        if (body.style.display === 'none') {
+          body.style.display = '';
+          btn.textContent = '🙈 收起评论区';
+          btn.style.background = '#f5f5f5';
+          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
+          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
+        } else {
+          body.style.display = 'none';
+          btn.textContent = '💬 展开评论区';
+          btn.style.background = '#fff';
+        }
+      });
+    }
+  }
+
+  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
+  function initTwikooBody() {
+    var commentBox = document.getElementById('tcomments');
+    if (!commentBox) return;
+    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
+    var pinger = new Promise(function(resolve){
+      var timer = setTimeout(function(){ resolve(false); }, 5000);
+      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
+        .then(function(){ clearTimeout(timer); resolve(true); })
+        .catch(function(){ clearTimeout(timer); resolve(false); });
+    });
+    pinger.then(function(ok){
+      if (!ok) {
+        commentBox.innerHTML =
+          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
+            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
+            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
+          '</div>';
         return;
       }
-      fetch('/excerpts.json')
-        .then(function(r){ return r.json(); })
-        .then(function(d){ show(d||[]); })
-        .catch(function(){ show([]); });
-    }
-    loadQuotes();
-    function show(data){
-      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
-      var it = data[Math.floor(Math.random()*data.length)];
-      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
-      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
-      quote.innerHTML =
-        '<div class="quote-body">'+it.content+'</div>' +
-        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
-        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
-      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
-    }
-  }, 500);
-});
+      function waitTwikoo(){
+        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
+        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
+          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
+      }
+      waitTwikoo();
+    });
+  }
+  // 留言板:立即初始化;文章页:等用户点展开按钮
+  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
+})();
 </script>
   
 <style>
@@ -3894,389 +4397,5 @@ body.lanx-todo-active .article-inner > *:not(.article-entry) { display: none !im
 }
 </style>
 <script src="/js/todolist-app.js"></script>
-
-<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
-<style>
-  /* --- Toast 提示 --- */
-  .lanx-toast {
-    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
-    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
-    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  }
-  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .lanx-toast.success { background: #38a169; }
-  .lanx-toast.error { background: #e53e3e; }
-
-  /* --- Twikoo 评论区整体容器 --- */
-  #twikoo-comments {
-    margin-top: 48px; padding: 28px 28px 20px;
-    background: #fff; border-radius: 14px;
-    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
-  }
-  #twikoo-comments > h3 {
-    margin: 0 0 20px 0; padding-bottom: 14px;
-    font-size: 16px; font-weight: 600; color: #333;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  /* 留言板:不同的标题和背景 */
-  body.page-guestbook #twikoo-comments {
-    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
-    border: 1px solid #dbeafe;
-  }
-  body.page-guestbook #twikoo-comments > h3 {
-    border-bottom-color: #dbeafe;
-    color: #2563eb;
-  }
-
-  /* --- Twikoo 内部组件美化 --- */
-  .tk-comment-box {
-    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
-    padding: 14px 16px !important; margin-bottom: 16px !important;
-    transition: border-color 0.2s !important;
-  }
-  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
-  .tk-comment-box .el-textarea__inner {
-    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
-    font-size: 14px !important; line-height: 1.6 !important;
-  }
-  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
-  .tk-btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-    border: none !important; border-radius: 20px !important;
-    padding: 8px 22px !important; font-weight: 500 !important;
-  }
-  .tk-btn-primary:hover { opacity: 0.9; }
-
-  /* 评论列表卡片化 */
-  .tk-comment-item {
-    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
-    padding: 16px 18px !important; margin-bottom: 12px !important;
-    background: #fafbfc !important; transition: box-shadow 0.2s !important;
-  }
-  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-
-  /* 博主标识 */
-  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
-
-  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
-  .tk-powered-by,
-  .tk-comment-powered,
-  [class*="powered-by"],
-  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
-
-  /* 评论区底部工具条 */
-  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
-
-  /* 点赞/踩按钮 */
-  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
-
-  /* 头像 */
-  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
-
-  /* --- 分享按钮改复制链接 --- */
-  .article-share-link { cursor: pointer; }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
-
-<script>
-(function(){
-  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
-  var path = location.pathname;
-  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
-  // 访客明细页也是一篇文章的形态,但它不需要评论区
-  var isPost = document.querySelectorAll('article.article').length === 1
-    && path.indexOf('/visitors') === -1;
-  var isGuestbook = path.indexOf('/guestbook') !== -1;
-
-  // ============ Toast 工具 ============
-  function showToast(msg, type) {
-    var t = document.createElement('div');
-    t.className = 'lanx-toast' + (type ? ' ' + type : '');
-    t.textContent = msg;
-    document.body.appendChild(t);
-    requestAnimationFrame(function(){ t.classList.add('show'); });
-    setTimeout(function(){
-      t.classList.remove('show');
-      setTimeout(function(){ t.remove(); }, 300);
-    }, 1800);
-  }
-
-  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
-  function copyShareLink() {
-    var links = document.querySelectorAll('.article-share-link');
-    if (!links.length) return;
-    links.forEach(function(link) {
-      link.href = 'javascript:void(0)';
-      // 移除旧监听(防重复绑定)
-      link.replaceWith(link.cloneNode(true));
-    });
-    // 重新获取(因为 cloneNode 替换了)
-    links = document.querySelectorAll('.article-share-link');
-    links.forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault(); e.stopPropagation();
-        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
-        var url;
-        if (link.dataset.url) {
-          try { url = new URL(link.dataset.url, location.origin).href; }
-          catch(err) { url = location.origin + location.pathname; }
-        } else {
-          url = location.origin + location.pathname;
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(url).then(function(){
-            showToast('📋 链接已复制到剪贴板');
-          }).catch(function(){ fallbackCopy(url); });
-        } else {
-          fallbackCopy(url);
-        }
-      }, true);
-    });
-  }
-  function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
-    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
-    ta.remove();
-  }
-
-  // ============ 2. 文章页访问量 + 评论容器 ============
-  if (isGuestbook) document.body.classList.add('page-guestbook');
-
-  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
-  copyShareLink();
-
-  if (isPost) {
-    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
-    setTimeout(function(){
-      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
-      var af = document.querySelector('.article-footer');
-      if (!af) return;
-      // 👁️ 阅读 + 👍 点赞 内联显示
-      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
-        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
-        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
-      '</span>';
-      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
-      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
-    }, 200);
-  }
-
-  if (isPost || isGuestbook) {
-    var commentDiv = document.createElement('div');
-    commentDiv.id = 'twikoo-comments';
-    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
-    var collapsible = !isGuestbook;
-    commentDiv.innerHTML =
-      (collapsible
-        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
-        : ''
-      ) +
-      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
-        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
-      '</div>';
-    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
-    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
-
-    // 折叠按钮点击
-    if (collapsible) {
-      var btn = document.getElementById('twikoo-toggle-btn');
-      var body = document.getElementById('twikoo-comments-body');
-      btn.addEventListener('click', function() {
-        if (body.style.display === 'none') {
-          body.style.display = '';
-          btn.textContent = '🙈 收起评论区';
-          btn.style.background = '#f5f5f5';
-          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
-          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
-        } else {
-          body.style.display = 'none';
-          btn.textContent = '💬 展开评论区';
-          btn.style.background = '#fff';
-        }
-      });
-    }
-  }
-
-  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
-  function initTwikooBody() {
-    var commentBox = document.getElementById('tcomments');
-    if (!commentBox) return;
-    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
-    var pinger = new Promise(function(resolve){
-      var timer = setTimeout(function(){ resolve(false); }, 5000);
-      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
-        .then(function(){ clearTimeout(timer); resolve(true); })
-        .catch(function(){ clearTimeout(timer); resolve(false); });
-    });
-    pinger.then(function(ok){
-      if (!ok) {
-        commentBox.innerHTML =
-          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
-            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
-            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
-          '</div>';
-        return;
-      }
-      function waitTwikoo(){
-        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
-        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
-          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
-      }
-      waitTwikoo();
-    });
-  }
-  // 留言板:立即初始化;文章页:等用户点展开按钮
-  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
-})();
-</script>
-  <script src="/js/visitor.js?v=23e542bf" defer></script>
-<style>
-  /* --- 详情页大号点赞按钮 --- */
-  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
-  .like-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 24px; font-size: 15px;
-    border: 1px solid #e0e0e0; border-radius: 24px;
-    background: #fff; color: #555; cursor: pointer;
-    transition: all 0.25s ease; user-select: none;
-  }
-  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
-  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
-  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
-  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
-  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
-
-  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
-  .article-footer .lanx-action {
-    display: inline-flex; align-items: center; gap: 4px;
-    margin-right: 10px; font-size: 13px;
-    color: #666; text-decoration: none; cursor: pointer;
-    padding: 0 2px; border-radius: 4px;
-    transition: color 0.2s;
-  }
-  .article-footer .lanx-action:hover { color: #ff6b6b; }
-  .article-footer .lanx-action.liked { color: #ff6b6b; }
-  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
-  .article-footer .lanx-action .lanx-count {
-    margin-left: 2px; font-size: 12px; color: #999;
-  }
-  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
-</style>
-
-<script>
-(function(){
-  // 访客明细页不是文章页,不放点赞按钮
-  if (location.pathname.indexOf('/visitors') !== -1) return;
-
-  var articles = document.querySelectorAll('article.article');
-  var isSinglePost = articles.length === 1;
-
-  // 提取文章路径:从 share-link 的 data-url 里拿
-  function getArticlePath(articleEl) {
-    var link = articleEl.querySelector('.article-share-link');
-    if (link && link.dataset.url) {
-      try {
-        var u = new URL(link.dataset.url, location.origin);
-        return u.pathname;
-      } catch(e) {}
-    }
-    // fallback:用标题链接的 href
-    var titleLink = articleEl.querySelector('.article-title');
-    if (titleLink) return titleLink.getAttribute('href');
-    return '';
-  }
-
-  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
-  if (!isSinglePost) {
-    articles.forEach(function(art) {
-      var af = art.querySelector('.article-footer');
-      var share = art.querySelector('.article-share-link');
-      var path = getArticlePath(art);
-      if (!af || !share || !path) return;
-
-      var likedKey = 'liked_' + path;
-      var countKey = 'likeCount_' + path;
-      var liked = !!localStorage.getItem(likedKey);
-      var count = parseInt(localStorage.getItem(countKey) || '0');
-
-      // 点赞按钮(小)
-      var likeHtml =
-        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
-          '<span class="fa fa-thumbs-up"></span>' +
-          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
-        '</a>';
-
-      // 评论按钮(小),跳到详情页评论区
-      var commentHtml =
-        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
-          '<span class="fa fa-comment"></span>' +
-        '</a>';
-
-      // 插入到分享按钮前面
-      var temp = document.createElement('span');
-      temp.innerHTML = likeHtml + commentHtml;
-      share.parentNode.insertBefore(temp.firstChild, share);
-      share.parentNode.insertBefore(temp.firstChild, share);
-
-      // 绑定点赞事件
-      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
-      if (likeBtn) {
-        likeBtn.addEventListener('click', function(e) {
-          e.preventDefault(); e.stopPropagation();
-          if (likeBtn.classList.contains('liked')) return;
-          likeBtn.classList.add('liked');
-          localStorage.setItem(likedKey, '1');
-          count++;
-          localStorage.setItem(countKey, count);
-          var c = likeBtn.querySelector('.lanx-count');
-          c.textContent = count; c.style.display = '';
-        });
-      }
-    });
-    return; // 多文章页到此为止
-  }
-
-  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
-  var path = location.pathname;
-  var likedKey = 'liked_' + path;
-  var countKey = 'likeCount_' + path;
-  var liked = localStorage.getItem(likedKey);
-  var count = parseInt(localStorage.getItem(countKey) || '0');
-
-  var wrap = document.createElement('div');
-  wrap.className = 'like-wrap';
-  wrap.innerHTML =
-    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
-      '<span class="fa fa-thumbs-up"></span>' +
-      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
-      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
-    '</button>';
-  var af = document.querySelector('.article-footer');
-  if (af) af.after(wrap);
-
-  var btn = document.getElementById('likeBtn');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      if (btn.classList.contains('liked')) return;
-      btn.classList.add('liked');
-      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
-      localStorage.setItem(likedKey, '1');
-      count++;
-      localStorage.setItem(countKey, count);
-      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
-      btn.querySelector('#likeCountDisplay').style.display = '';
-      var inline = document.getElementById('lanx_like_inline');
-      if (inline) { inline.textContent = count; inline.style.display = ''; }
-    });
-  }
-
-  window.__LANX_LIKE_COUNT__ = count;
-})();
-</script>
-  <!-- hexo injector body_end end --></body>
+<script src="/js/visitor.js?v=23e542bf" defer></script><!-- hexo injector body_end end --></body>
 </html>
