@@ -1,15 +1,62 @@
 /* ============ 照片墙 / Photo Wall ============
-   只挂在 /about 页面(scripts/photos.js 按 page type 注入)。
-   所有选择器都收在 #lanx-photo-wall 下面,不影响正文其他元素。
+   只挂在 /photos 页(scripts/photos.js 按 layout: photos 注入)。
+   所有组件选择器都收在 #lanx-photo-wall 下面,不影响正文其他元素。
    配色沿用 landscape 主题:文字 #555 / 次要 #999 / 描边 #ddd / 强调 #258fb8 */
 
+/* ---- 这一页的页面外壳 ----
+   样式表只在 /photos 加载,所以下面这些"裸选择器"只会影响这一页:
+   藏掉侧栏和文章页的日期 / 分享 / 上下篇导航,主栏拉成全宽。 */
+#sidebar {
+  display: none;
+}
+
+.outer {
+  max-width: 1260px;
+}
+
+#main {
+  width: 100% !important;
+  float: none !important;
+}
+
+.article {
+  margin: 24px 0 44px;
+}
+
+.article-meta,
+.article-footer,
+#article-nav,
+.like-wrap,
+#twikoo-comments {
+  display: none !important;
+}
+
+.article-inner {
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+}
+
+.article-header {
+  padding: 20px 20px 0;
+}
+
+.article-title {
+  font-size: 22px;
+  letter-spacing: .5px;
+}
+
+.article-entry {
+  padding: 8px 20px 22px;
+}
+
+/* ---- 组件本体 ---- */
 #lanx-photo-wall {
   --lpw-text: #555;
   --lpw-mute: #999;
   --lpw-line: #ddd;
   --lpw-soft: #f7f9fa;
   --lpw-accent: #258fb8;
-  margin: 10px 0 6px;
+  margin: 4px 0 6px;
   font-size: 15px;
 }
 
@@ -17,7 +64,54 @@
   box-sizing: border-box;
 }
 
-/* ---- 顶部:照片名字 ---- */
+/* ---- 工具条:张数 + 换个排法 ---- */
+#lanx-photo-wall .lpw-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f2f4;
+}
+
+#lanx-photo-wall .lpw-bar-text {
+  font-size: 12px;
+  color: var(--lpw-mute);
+  letter-spacing: .5px;
+}
+
+#lanx-photo-wall .lpw-shuffle {
+  flex: none;
+  padding: 5px 13px;
+  border: 1px solid var(--lpw-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--lpw-text);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: color .2s ease, border-color .2s ease, background .2s ease;
+}
+
+#lanx-photo-wall .lpw-shuffle:hover {
+  color: var(--lpw-accent);
+  border-color: rgba(37, 143, 184, .45);
+  background: #f5fbfe;
+}
+
+#lanx-photo-wall .lpw-shuffle:active {
+  background: #eaf5fa;
+}
+
+#lanx-photo-wall .lpw-shuffle:focus-visible {
+  outline: 2px solid var(--lpw-accent);
+  outline-offset: 2px;
+}
+
+/* ---- 当前照片名字 ---- */
 #lanx-photo-wall .lpw-head {
   display: flex;
   align-items: baseline;
@@ -67,7 +161,7 @@
   flex: 1 1 auto;
   min-width: 0;
   aspect-ratio: 16 / 10;
-  max-height: 62vh;
+  max-height: 430px;
   background: var(--lpw-soft);
   overflow: hidden;
 }
@@ -106,7 +200,7 @@
 
 #lanx-photo-wall .lpw-hero-side {
   flex: none;
-  width: 272px;
+  width: 288px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -124,7 +218,7 @@
   color: var(--lpw-text);
   white-space: pre-wrap;
   word-break: break-word;
-  max-height: 44vh;
+  max-height: 40vh;
 }
 
 #lanx-photo-wall .lpw-meta {
@@ -191,23 +285,25 @@
   font-weight: 600;
 }
 
-/* ---- 缩略图网格(随机排版) ---- */
+/* ---- 缩略图墙 ----
+   位置和尺寸全部由 JS 算好写成内联样式(整行对齐),
+   这里只提供"绝对定位的画布 + 单格的视觉"。 */
 #lanx-photo-wall .lpw-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-auto-rows: 6px;
-  grid-auto-flow: row dense;
-  gap: 8px;
-  margin-top: 12px;
+  position: relative;
+  width: 100%;
+  margin-top: 14px;
+  min-height: 80px;
 }
 
 #lanx-photo-wall .lpw-cell {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block;
   padding: 0;
   margin: 0;
   border: 0;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   background: #eef1f3;
   cursor: pointer;
@@ -273,7 +369,7 @@
 }
 
 #lanx-photo-wall .lpw-cell:hover img {
-  transform: scale(1.06);
+  transform: scale(1.05);
 }
 
 #lanx-photo-wall .lpw-cell:focus-visible {
@@ -385,13 +481,21 @@
 
 /* ---- 移动端 ---- */
 @media (max-width: 760px) {
+  .article-header {
+    padding: 16px 14px 0;
+  }
+
+  .article-entry {
+    padding: 6px 14px 18px;
+  }
+
   #lanx-photo-wall .lpw-hero {
     flex-direction: column;
   }
 
   #lanx-photo-wall .lpw-hero-media {
     aspect-ratio: 4 / 3;
-    max-height: 52vh;
+    max-height: 46vh;
   }
 
   #lanx-photo-wall .lpw-hero-side {
@@ -413,9 +517,8 @@
     bottom: 10px;
   }
 
-  #lanx-photo-wall .lpw-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
+  #lanx-photo-wall .lpw-cell {
+    border-radius: 8px;
   }
 
   #lanx-photo-wall .lpw-head-name {

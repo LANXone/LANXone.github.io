@@ -1,9 +1,16 @@
-// ============ 照片墙 ============
+// ============ 照片墙(/photos 独立页面) ============
 // 数据来源:scripts/photos.js 把 source/_photos/*.md 内联成 window.LANX_PHOTOS,
 // 这里只负责渲染:
-//   1) 顶部「照片名字」
-//   2) 大图卡片(左图 + 右描述/日期/季节),进页面随机抽一张
-//   3) 下面的随机排版缩略图网格,点哪张上面就换成哪张
+//   1) 顶部工具条(张数 + 换个排法)
+//   2) 当前照片的名字
+//   3) 大图卡片(左图 + 右描述/日期/季节)
+//   4) 整行对齐的瀑布墙:按每张图片的真实宽高比铺满整行
+//
+// 排版算法(justified rows,Google Photos / Flickr 那种):
+//   一行一行地累加图片,直到"按目标行高摆放会超出容器宽度"为止;
+//   这时把这一行等比缩放到正好铺满宽度(行高 = 可用宽度 / 宽高比之和)。
+//   每行的目标行高带一点随机抖动,所以行高不会整齐得像表格;
+//   图片本身按原始比例,不裁不拉伸。
 //
 // 用 ES5 写法 + 不用模板字符串,老 WebView(百度/微信内核)也能跑。
 
@@ -41,6 +48,22 @@
     void el.offsetWidth;
     el.classList.add(cls);
   }
+
+  // ---------- 顶部工具条 ----------
+  var bar = document.createElement('div');
+  bar.className = 'lpw-bar';
+
+  var barText = document.createElement('span');
+  barText.className = 'lpw-bar-text';
+  barText.textContent = '共 ' + photos.length + ' 张 · 顺序每次打开都不一样';
+
+  var shuffleBtn = document.createElement('button');
+  shuffleBtn.type = 'button';
+  shuffleBtn.className = 'lpw-shuffle';
+  shuffleBtn.textContent = '换个排法';
+
+  bar.appendChild(barText);
+  bar.appendChild(shuffleBtn);
 
   // ---------- 骨架 ----------
   var head = document.createElement('div');
@@ -84,50 +107,155 @@
   var grid = document.createElement('div');
   grid.className = 'lpw-grid';
 
+  mount.appendChild(bar);
   mount.appendChild(head);
   mount.appendChild(hero);
   mount.appendChild(grid);
 
   // ---------- 随机顺序(每次进页面都换一种排法) ----------
-  var order = [];
-  for (var i = 0; i < photos.length; i++) order.push(i);
-  for (var k = order.length - 1; k > 0; k--) {
-    var r = Math.floor(Math.random() * (k + 1));
-    var tmp = order[k];
-    order[k] = order[r];
-    order[r] = tmp;
+  function newOrder(n) {
+    var arr = [];
+    for (var i = 0; i < n; i++) arr.push(i);
+    for (var k = arr.length - 1; k > 0; k--) {
+      var r = Math.floor(Math.random() * (k + 1));
+      var t = arr[k];
+      arr[k] = arr[r];
+      arr[r] = t;
+    }
+    return arr;
   }
 
   // ---------- 缩略图 ----------
   var cells = [];
-  var GAP = 8;
-  var UNIT = 6; // 与 css 的 grid-auto-rows 保持一致
+  var imgLeft = 0;
+  var ready = false;
+  var layoutTimer = null;
 
-  function colsNow() {
-    var w = grid.clientWidth || mount.clientWidth || 0;
-    return w && w < 470 ? 2 : 3;
+  function aspectOf(cell) {
+    return cell._aspect || 1.5;
   }
 
-  function fitCell(cell, img) {
-    var cols = colsNow();
-    var gridW = grid.clientWidth || mount.clientWidth || 0;
-    if (!gridW || !img.naturalWidth) return;
+  function targetRowHeight(w) {
+    if (w >= 1080) return 250;
+    if (w >= 860) return 235;
+    if (w >= 640) return 215;
+    if (w >= 460) return 195;
+    return 170;
+  }
 
-    // 30% 的图横向占两格,做出"大小不一"的随机感(两列布局时不放大)。
-    // 只在第一次决定,重排时沿用,否则每次 resize 都会跳。
-    if (!cell._span) {
-      cell._span = cols === 3 && Math.random() < 0.32 ? 2 : 1;
+  function gapFor(w) {
+    if (w >= 860) return 12;
+    if (w >= 460) return 8;
+    return 6;
+  }
+
+  function schedule() {
+    if (layoutTimer) clearTimeout(layoutTimer);
+    layoutTimer = setTimeout(layout, 120);
+  }
+
+  // ---------- 核心:整行对齐排版 ----------
+  function layout() {
+    var W = grid.clientWidth || mount.clientWidth || 0;
+    if (!W) return;
+
+    var gap = gapFor(W);
+    var base = targetRowHeight(W);
+
+    // 先把还在的图挑出来(加载失败的会标 _dead)
+    var live = [];
+    for (var i = 0; i < cells.length; i++) {
+      if (!cells[i]._dead) live.push(cells[i]);
     }
-    var span = cell._span;
+    if (!live.length) {
+      grid.style.height = '';
+      return;
+    }
 
-    var cellW = (gridW - GAP * (cols - 1)) / cols;
-    var itemW = cellW * span + GAP * (span - 1);
-    var ratio = img.naturalWidth / img.naturalHeight || 1.5;
-    var itemH = itemW / ratio;
-    var rows = Math.max(4, Math.ceil((itemH + GAP) / (UNIT + GAP)));
+    var rows = [];
+    var cur = [];
+    var sum = 0;
+    // 每行的目标行高轻微抖动:行高不完全一样,但都在基准附近,不会乱
+    var tgt = base * (0.9 + Math.random() * 0.2);
 
-    cell.style.gridColumn = 'span ' + Math.min(span, cols);
-    cell.style.gridRowEnd = 'span ' + rows;
+    for (var a = 0; a < live.length; a++) {
+      var cell = live[a];
+      var asp = aspectOf(cell);
+      cur.push(cell);
+      sum += asp;
+
+      var avail = W - gap * (cur.length - 1);
+      if (sum * tgt < avail) continue; // 还铺不满,继续加
+
+      var h = avail / sum;
+
+      // 一张特别宽的长图会把整行压得很矮,看着像根面条。
+      // 遇到这种情况把它挪到下一行开头,当前这行按剩下的图收尾
+      // —— 但得先确认剩下的图单独也能排成一条正常高度的行,
+      // 否则挪走之后它们会被撑成一整屏高的巨行。
+      if (h < base * 0.62 && cur.length > 1) {
+        var restSum = sum - asp;
+        var restH = (W - gap * (cur.length - 2)) / restSum;
+        if (restH <= base * 1.4) {
+          cur.pop();
+          sum = restSum;
+          rows.push({ items: cur, h: restH, fill: true });
+          cur = [cell];
+          sum = asp;
+        } else {
+          rows.push({ items: cur, h: h, fill: true });
+          cur = [];
+          sum = 0;
+        }
+      } else {
+        rows.push({ items: cur, h: h, fill: true });
+        cur = [];
+        sum = 0;
+      }
+      tgt = base * (0.9 + Math.random() * 0.2);
+    }
+
+    // 剩下的末行:差一点点就满的话直接铺满更好看,差太多就按目标高度左对齐
+    if (cur.length) {
+      var availEnd = W - gap * (cur.length - 1);
+      var hFull = availEnd / sum;
+      var canFill = hFull <= base * 1.35;
+      rows.push({ items: cur, h: canFill ? hFull : base, fill: canFill });
+    }
+
+    var y = 0;
+    for (var r = 0; r < rows.length; r++) {
+      var row = rows[r];
+      var h = Math.round(row.h);
+      var x = 0;
+      for (var j = 0; j < row.items.length; j++) {
+        var c2 = row.items[j];
+        var w = Math.round(aspectOf(c2) * h);
+        // 行末那一格吃掉取整误差,否则右边会留 1~2px 的缝
+        if (row.fill && j === row.items.length - 1) w = W - x;
+        c2.style.left = x + 'px';
+        c2.style.top = y + 'px';
+        c2.style.width = w + 'px';
+        c2.style.height = h + 'px';
+        x += w + gap;
+      }
+      y += h + gap;
+    }
+
+    grid.style.height = Math.max(0, y - gap) + 'px';
+  }
+
+  // ---------- 建格子 ----------
+  var order = newOrder(photos.length);
+  imgLeft = order.length;
+
+  function tick() {
+    imgLeft--;
+    if (imgLeft > 0) return;
+    if (ready) return;
+    ready = true;
+    layout();
+    armReveal();
   }
 
   for (var n = 0; n < order.length; n++) {
@@ -139,24 +267,39 @@
       cell.setAttribute('aria-label', p.name || '照片');
       cell._data = p;
       cell._idx = idx;
+      cell._aspect = 1.5; // 图还没量出尺寸前先用 3:2 占位
 
       var img = document.createElement('img');
       img.alt = p.name || '';
-      img.loading = 'lazy';
       img.decoding = 'async';
+
+      // 缓存命中时 onload 和下面的 img.complete 检查会各走一遍,
+      // 用 once 保证每张图只计一次数
+      var counted = false;
+      function once() {
+        if (counted) return;
+        counted = true;
+        tick();
+      }
+
+      // 不用 loading="lazy":排版要拿每张图的真实宽高比,
+      // 懒加载会让屏幕外的图量不出尺寸,整行就排不齐了。
       img.onload = function () {
-        fitCell(cell, img);
+        var a = img.naturalWidth / img.naturalHeight;
+        if (a && isFinite(a) && Math.abs(a - cell._aspect) > 0.01) {
+          cell._aspect = a;
+          schedule();
+        }
         img.classList.add('is-ready');
+        once();
       };
       img.onerror = function () {
-        if (cell.parentNode) cell.parentNode.removeChild(cell);
+        cell._dead = true;
+        cell.style.display = 'none';
+        schedule();
+        once();
       };
       img.src = p.img;
-      // 缓存命中时 onload 可能已经在赋值前跑完了,补一刀
-      if (img.complete && img.naturalWidth) {
-        fitCell(cell, img);
-        img.classList.add('is-ready');
-      }
       cell.appendChild(img);
 
       var cap = document.createElement('span');
@@ -168,23 +311,40 @@
 
       cells.push(cell);
       grid.appendChild(cell);
-      fitCell(cell, img);
+
+      // 缓存命中时 onload 可能已经错过了,补一刀
+      if (img.complete && img.naturalWidth) {
+        cell._aspect = img.naturalWidth / img.naturalHeight;
+        img.classList.add('is-ready');
+        once();
+      }
     })(order[n]);
   }
+
+  // 图片加载太慢也别一直空着:1.5s 后先按占位比例排一版
+  setTimeout(function () {
+    if (ready) return;
+    ready = true;
+    imgLeft = 0;
+    layout();
+    armReveal();
+  }, 1500);
 
   // ---------- 大图切换 ----------
   var currentIdx = -1;
   var pending = 0;
 
   function select(idx, cell) {
-    if (idx === currentIdx) return;
     var p = photos[idx];
     if (!p) return;
+    var same = idx === currentIdx;
     currentIdx = idx;
 
-    nameEl.textContent = p.name || '';
-    nameEl.title = p.name || '';
-    replay(nameEl, 'is-in');
+    if (!same) {
+      nameEl.textContent = p.name || '';
+      nameEl.title = p.name || '';
+      replay(nameEl, 'is-in');
+    }
 
     // 连着点两张时,丢掉前一张迟到的 onload
     pending++;
@@ -210,7 +370,7 @@
     if (p.desc) {
       descEl.textContent = p.desc;
       hero.className = 'lpw-hero';
-      replay(descEl, 'is-in');
+      if (!same) replay(descEl, 'is-in');
     } else {
       descEl.textContent = '';
       hero.className = 'lpw-hero no-desc';
@@ -248,16 +408,74 @@
     }
   }
 
+  // ---------- 换个排法 ----------
+  shuffleBtn.onclick = function () {
+    if (!cells.length) return;
+
+    // 打乱格子本身,同时重排 DOM(tab 顺序才跟视觉一致)
+    for (var k = cells.length - 1; k > 0; k--) {
+      var r = Math.floor(Math.random() * (k + 1));
+      var t = cells[k];
+      cells[k] = cells[r];
+      cells[r] = t;
+    }
+    for (var i = 0; i < cells.length; i++) grid.appendChild(cells[i]);
+
+    layout();
+
+    // 顺手换一张大图,免得大图一直跟排在第一格的那张重复
+    var alive = [];
+    for (var a = 0; a < cells.length; a++) {
+      if (!cells[a]._dead) alive.push(cells[a]);
+    }
+    if (alive.length) {
+      var pick = alive[Math.floor(Math.random() * alive.length)];
+      select(pick._idx, pick);
+    }
+
+    // 整体重播一次入场,切换才有"重排"的感觉
+    if (animOn) {
+      mount.classList.remove('lpw-play');
+      void mount.offsetWidth;
+      mount.classList.add('lpw-play');
+    }
+  };
+
+  // ---------- 入场:滚到看得见才播 ----------
+  function armReveal() {
+    if (!animOn) return;
+    mount.classList.add('lpw-anim');
+
+    for (var q = 0; q < cells.length; q++) {
+      // 越靠后的格子越晚浮上来,但封顶,免得后面的等太久
+      cells[q].style.animationDelay = (0.12 + Math.min(q, 14) * 0.045) + 's';
+    }
+
+    if (window.IntersectionObserver) {
+      var io = new IntersectionObserver(function (entries) {
+        for (var e = 0; e < entries.length; e++) {
+          if (entries[e].isIntersecting) {
+            mount.classList.add('lpw-play');
+            io.disconnect();
+            break;
+          }
+        }
+      }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
+      io.observe(mount);
+    } else {
+      // 老内核没有 IntersectionObserver,直接播
+      mount.classList.add('lpw-play');
+    }
+  }
+
   // ---------- 窗口变化时重排 ----------
   var rt = null;
   window.addEventListener('resize', function () {
     if (rt) clearTimeout(rt);
     rt = setTimeout(function () {
-      for (var i = 0; i < cells.length; i++) {
-        var img = cells[i].getElementsByTagName('img')[0];
-        if (img) fitCell(cells[i], img);
-      }
-    }, 180);
+      if (!ready) return;
+      layout();
+    }, 160);
   });
 
   // ---------- 首次:地址栏带了 #photo-xxx 就显示那张,否则随机抽 ----------
@@ -278,31 +496,6 @@
     var i = fromHash();
     if (i >= 0 && i !== currentIdx) select(i, null);
   });
-
-  // ---------- 入场:滚到看得见才播,别让人错过 ----------
-  if (animOn) {
-    mount.classList.add('lpw-anim');
-    for (var q = 0; q < cells.length; q++) {
-      // 越靠后的格子越晚浮上来,但封顶,免得后面的等太久
-      cells[q].style.animationDelay = (0.18 + Math.min(q, 14) * 0.055) + 's';
-    }
-
-    if (window.IntersectionObserver) {
-      var io = new IntersectionObserver(function (entries) {
-        for (var e = 0; e < entries.length; e++) {
-          if (entries[e].isIntersecting) {
-            mount.classList.add('lpw-play');
-            io.disconnect();
-            break;
-          }
-        }
-      }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
-      io.observe(mount);
-    } else {
-      // 老内核没有 IntersectionObserver,直接播
-      mount.classList.add('lpw-play');
-    }
-  }
 
   var first = fromHash();
   if (first < 0) first = Math.floor(Math.random() * photos.length);
