@@ -1,0 +1,445 @@
+/* ============ 照片墙 / Photo Wall ============
+   只挂在 /about 页面(scripts/photos.js 按 page type 注入)。
+   所有选择器都收在 #lanx-photo-wall 下面,不影响正文其他元素。
+   配色沿用 landscape 主题:文字 #555 / 次要 #999 / 描边 #ddd / 强调 #258fb8 */
+
+#lanx-photo-wall {
+  --lpw-text: #555;
+  --lpw-mute: #999;
+  --lpw-line: #ddd;
+  --lpw-soft: #f7f9fa;
+  --lpw-accent: #258fb8;
+  margin: 10px 0 6px;
+  font-size: 15px;
+}
+
+#lanx-photo-wall * {
+  box-sizing: border-box;
+}
+
+/* ---- 顶部:照片名字 ---- */
+#lanx-photo-wall .lpw-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 0 2px;
+  line-height: 1.5;
+}
+
+#lanx-photo-wall .lpw-head-label {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--lpw-mute);
+  flex: none;
+}
+
+#lanx-photo-wall .lpw-head-label::after {
+  content: ':';
+  margin-left: 1px;
+}
+
+#lanx-photo-wall .lpw-head-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: #333;
+  letter-spacing: .5px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- 主图卡片 ---- */
+#lanx-photo-wall .lpw-hero {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--lpw-line);
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+}
+
+#lanx-photo-wall .lpw-hero-media {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  aspect-ratio: 16 / 10;
+  max-height: 62vh;
+  background: var(--lpw-soft);
+  overflow: hidden;
+}
+
+#lanx-photo-wall .lpw-hero-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  opacity: 1;
+  transition: opacity .35s ease;
+}
+
+#lanx-photo-wall .lpw-hero-media.is-loading img {
+  opacity: .15;
+}
+
+/* 图片挂了(图床抽风 / 链接写错)时不摆一个碎图标出来 */
+#lanx-photo-wall .lpw-hero-media.is-error img {
+  display: none;
+}
+
+#lanx-photo-wall .lpw-hero-media.is-error::after {
+  content: '图片加载失败';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  text-align: center;
+  font-size: 13px;
+  color: var(--lpw-mute);
+  letter-spacing: 1px;
+}
+
+#lanx-photo-wall .lpw-hero-side {
+  flex: none;
+  width: 272px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 20px;
+  border-left: 1px solid #eee;
+  background: #fcfdfd;
+}
+
+#lanx-photo-wall .lpw-desc {
+  margin: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--lpw-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 44vh;
+}
+
+#lanx-photo-wall .lpw-meta {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+/* 没有描述时:侧栏收起,日期/季节做成压在照片右下角的胶囊 */
+#lanx-photo-wall .lpw-hero.no-desc .lpw-hero-side {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  gap: 0;
+}
+
+#lanx-photo-wall .lpw-hero.no-desc .lpw-desc {
+  display: none;
+}
+
+#lanx-photo-wall .lpw-hero.no-desc .lpw-meta {
+  margin: 0;
+  padding: 5px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .82);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .12);
+}
+
+#lanx-photo-wall .lpw-hero.no-desc .lpw-chip {
+  border-color: transparent;
+  background: transparent;
+  padding: 2px 8px;
+}
+
+#lanx-photo-wall .lpw-hero.no-desc .lpw-chip-season {
+  background: rgba(37, 143, 184, .12);
+}
+
+/* 日期 / 季节 小标签 */
+#lanx-photo-wall .lpw-chip {
+  display: inline-block;
+  padding: 4px 11px;
+  border: 1px solid var(--lpw-line);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--lpw-text);
+  letter-spacing: .5px;
+}
+
+#lanx-photo-wall .lpw-chip-season {
+  border-color: rgba(37, 143, 184, .35);
+  background: #eef7fb;
+  color: var(--lpw-accent);
+  font-weight: 600;
+}
+
+/* ---- 缩略图网格(随机排版) ---- */
+#lanx-photo-wall .lpw-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 6px;
+  grid-auto-flow: row dense;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+#lanx-photo-wall .lpw-cell {
+  position: relative;
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #eef1f3;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  outline-offset: 3px;
+  transition: box-shadow .25s ease;
+}
+
+#lanx-photo-wall .lpw-cell img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  transition: transform .5s cubic-bezier(.2, .7, .3, 1), filter .3s ease, opacity .45s ease;
+}
+
+#lanx-photo-wall .lpw-cell::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, .42) 100%);
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+
+#lanx-photo-wall .lpw-cell .lpw-cell-name {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+  z-index: 1;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .3s ease, transform .3s ease;
+  pointer-events: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#lanx-photo-wall .lpw-cell:hover::after,
+#lanx-photo-wall .lpw-cell:focus-visible::after,
+#lanx-photo-wall .lpw-cell.is-active::after {
+  opacity: 1;
+}
+
+#lanx-photo-wall .lpw-cell:hover .lpw-cell-name,
+#lanx-photo-wall .lpw-cell:focus-visible .lpw-cell-name,
+#lanx-photo-wall .lpw-cell.is-active .lpw-cell-name {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#lanx-photo-wall .lpw-cell:hover img {
+  transform: scale(1.06);
+}
+
+#lanx-photo-wall .lpw-cell:focus-visible {
+  outline: 2px solid var(--lpw-accent);
+}
+
+#lanx-photo-wall .lpw-cell.is-active {
+  box-shadow: 0 0 0 2px var(--lpw-accent);
+}
+
+#lanx-photo-wall .lpw-cell.is-active img {
+  filter: saturate(1.05);
+}
+
+/* ---- 空状态 / 提示 ---- */
+#lanx-photo-wall .lpw-empty {
+  margin-top: 12px;
+  padding: 26px 20px;
+  border: 1px dashed var(--lpw-line);
+  border-radius: 10px;
+  text-align: center;
+  color: var(--lpw-mute);
+  font-size: 13px;
+  line-height: 2;
+}
+
+#lanx-photo-wall .lpw-empty code {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #f2f4f6;
+  color: #666;
+  font-size: 12px;
+}
+
+/* 老内核没有 aspect-ratio(百度/微信内置 WebView 还可能遇到),
+   用 padding-top 撑出占位高度,图片绝对定位填满 */
+@supports not (aspect-ratio: 1 / 1) {
+  #lanx-photo-wall .lpw-hero-media {
+    height: 0;
+    padding-top: 62.5%;
+  }
+
+  #lanx-photo-wall .lpw-hero-media img {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+/* ============ 动效 ============
+   全部收在 .lpw-anim / .lpw-play 下面,由 source/js/photowall.js 加类触发:
+   JS 没跑、或者系统开了「减少动态效果」,这两个类不会出现,
+   排版和静态版完全一致,不存在"没动画就看不见"的情况。 */
+
+@keyframes lpw-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lpw-soft-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lpw-img-in {
+  from { opacity: 0; transform: scale(1.03); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* 入场前先藏着,等滚到可视区(.lpw-play)才开始 */
+#lanx-photo-wall.lpw-anim .lpw-head,
+#lanx-photo-wall.lpw-anim .lpw-hero,
+#lanx-photo-wall.lpw-anim .lpw-cell {
+  opacity: 0;
+}
+
+#lanx-photo-wall.lpw-anim.lpw-play .lpw-head {
+  animation: lpw-rise .55s cubic-bezier(.2, .7, .3, 1) both;
+}
+
+#lanx-photo-wall.lpw-anim.lpw-play .lpw-hero {
+  animation: lpw-rise .7s cubic-bezier(.2, .7, .3, 1) .08s both;
+}
+
+#lanx-photo-wall.lpw-anim.lpw-play .lpw-cell {
+  animation: lpw-rise .6s cubic-bezier(.2, .7, .3, 1) both;
+  /* 每格的延迟由 JS 按顺序写成内联 animation-delay,越靠后越晚上浮 */
+}
+
+/* 缩略图里的图片自己再淡一次:格子先浮上来,图随后显影 */
+#lanx-photo-wall.lpw-anim .lpw-cell img {
+  opacity: 0;
+}
+
+#lanx-photo-wall.lpw-anim .lpw-cell img.is-ready {
+  opacity: 1;
+}
+
+/* 大图切换:淡入 + 一点点回缩,像镜头落定 */
+#lanx-photo-wall .lpw-hero-media img.is-in {
+  animation: lpw-img-in .6s cubic-bezier(.2, .7, .3, 1) both;
+}
+
+/* 名字和描述跟着轻轻推上来 */
+#lanx-photo-wall .lpw-head-name.is-in,
+#lanx-photo-wall .lpw-desc.is-in {
+  animation: lpw-soft-in .45s ease both;
+}
+
+/* ---- 移动端 ---- */
+@media (max-width: 760px) {
+  #lanx-photo-wall .lpw-hero {
+    flex-direction: column;
+  }
+
+  #lanx-photo-wall .lpw-hero-media {
+    aspect-ratio: 4 / 3;
+    max-height: 52vh;
+  }
+
+  #lanx-photo-wall .lpw-hero-side {
+    width: auto;
+    padding: 16px;
+    border-left: 0;
+    border-top: 1px solid #eee;
+    gap: 12px;
+  }
+
+  #lanx-photo-wall .lpw-desc {
+    max-height: none;
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+
+  #lanx-photo-wall .lpw-hero.no-desc .lpw-hero-side {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  #lanx-photo-wall .lpw-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  #lanx-photo-wall .lpw-head-name {
+    font-size: 15px;
+  }
+
+  #lanx-photo-wall .lpw-cell .lpw-cell-name {
+    opacity: 1;
+    transform: none;
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #lanx-photo-wall * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* 兜底:万一 .lpw-anim 已经加上了,别让元素停在 opacity:0 */
+  #lanx-photo-wall.lpw-anim .lpw-head,
+  #lanx-photo-wall.lpw-anim .lpw-hero,
+  #lanx-photo-wall.lpw-anim .lpw-cell,
+  #lanx-photo-wall.lpw-anim .lpw-cell img {
+    opacity: 1 !important;
+  }
+}
