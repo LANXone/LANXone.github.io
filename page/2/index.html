@@ -84,6 +84,621 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Godot03-制作瓦片地图" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/26/Godot03-%E5%88%B6%E4%BD%9C%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE/" class="article-date">
+  <time class="dt-published" datetime="2026-10-26T12:15:00.000Z" itemprop="datePublished">2026-10-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/10/26/Godot03-%E5%88%B6%E4%BD%9C%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE/">Godot03:制作瓦片地图（TileMap 与 TileSet）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>前两篇已经让角色能站在场景里跑动，但脚下还是空的。这一篇给 <code>world</code> 节点铺上瓦片地图：先建 <code>TileSet</code> 资源，把素材图注册成图块，再手动划出真正要用的图块。</p>
+<blockquote>
+<p><strong>关于 TileMap 的弃用</strong>：Godot 4.3 起 <code>TileMap</code> 节点被标记为 Deprecated，官方推荐改用 <code>TileMapLayer</code>（一个图层一个节点）。本文按课程仍用 <code>TileMap</code>，因为 <code>TileSet</code>、图块、碰撞这些核心概念完全一致；文末附两种写法的对照表，以后新项目可以直接换。</p>
+</blockquote>
+<h2 id="第一步：给-world-添加-TileMap-节点">第一步：给 world 添加 TileMap 节点</h2>
+<p>和上一篇给角色加 <code>AnimatedSprite2D</code> 的方法一样，先选中场景里的 <code>world</code> 节点，让它成为父节点。</p>
+<ol>
+<li>点击场景面板左上角的 <code>+</code> 添加节点。</li>
+<li>在搜索框输入 <code>tile</code>。</li>
+<li>选中 <code>TileMap</code>，点击 <strong>Create</strong>。</li>
+</ol>
+<p><img src="/images/godot03/step1-add-tilemap.png" alt="在 world 节点下创建 TileMap"></p>
+<p>注意搜索结果的预览里有一条红色提示：<code>TileMap</code> 已经 Deprecated。它仍然可以用，只是不再增加新功能，所以按课程继续往下走没问题。</p>
+<h2 id="第二步：新建-TileSet-资源">第二步：新建 TileSet 资源</h2>
+<p>选中刚创建的 <code>TileMap</code>，在右侧 Inspector 里找到 <code>Tile Set</code> 属性，此时是 <code>&lt;empty&gt;</code>。</p>
+<ol>
+<li>点击 <code>&lt;empty&gt;</code> 右侧的下拉按钮。</li>
+<li>在 <code>New</code> 分组里选择 <strong>TileSet</strong>。</li>
+</ol>
+<p><img src="/images/godot03/step2-new-tileset.png" alt="Inspector 中为 TileMap 新建 TileSet"></p>
+<p>下拉里另外两项是 <code>Quick Load...</code> 和 <code>Load...</code>，用来复用已经存成 <code>.tres</code> 的瓦片集。同一个项目里做多张地图时，直接 Load 同一份 TileSet，图块和碰撞就不用重做一遍。</p>
+<p><code>TileSet</code> 是一个<strong>资源</strong>，不是节点。它保存&quot;有哪些图块、每个图块怎么切、带什么碰撞和地形&quot;；<code>TileMap</code> 节点只负责&quot;用这套 TileSet 在场景里画&quot;。两者分开，才能做到一张图块表被多张地图共用。</p>
+<p>建好后顺手看一眼 Inspector 里 <code>TileSet</code> 的 <code>Tile Size</code>（默认 16×16）。素材的单格不是 16×16 时必须先改成实际尺寸，否则画布上的网格和图案对不上，整张地图都会错位。想让别的场景也复用这张图块表，可以用资源下拉里的 <strong>Save As...</strong> 把它存成 <code>.tres</code>，之后再用 <code>Load...</code> 加载。</p>
+<h2 id="第三步：把瓦片素材拖进-Tile-Sources">第三步：把瓦片素材拖进 Tile Sources</h2>
+<p>新建好 TileSet 后，底部面板多出一个 <strong>TileSet</strong> 页签（和 <code>TileMap</code> 页签并排，别点错）。</p>
+<ol>
+<li>切到底部 <strong>TileSet</strong> 面板。</li>
+<li>左侧选中 <strong>Tile Sources</strong>。</li>
+<li>从 FileSystem（资源管理器）里把需要用的 png 直接拖进来。</li>
+</ol>
+<p><img src="/images/godot03/step3-drag-tiles.png" alt="把 plains、grass、objects 三张素材拖入 Tile Sources"></p>
+<p>每拖入一张 png，就会多一个 <strong>Atlas 图源</strong>，Godot 自动给它分配一个 <code>ID</code>（截图里分别是 0、1、2）。图源左侧的缩略图就是这个 png 的预览。</p>
+<h2 id="第四步：用橡皮擦清掉默认切分">第四步：用橡皮擦清掉默认切分</h2>
+<p>拖进来之后，Godot 会按 <code>Texture Region</code>（截图里是 16×16）把整张图<strong>自动切成格子</strong>，并把所有格子都登记成图块。问题是：</p>
+<ul>
+<li>素材图里通常有一大片空白、装饰线、水印，这些也会被切成图块；</li>
+<li>真正要用的图块可能不是 16×16，比如一棵树是 2×2 格。</li>
+</ul>
+<p>所以先把自动切分全部清掉，改成自己划。</p>
+<ol>
+<li>在 TileSet 面板的工具栏里选中<strong>橡皮擦</strong>（<code>Setup</code>、<code>Select</code>、<code>Paint</code> 右边那个橡皮图标）。</li>
+<li>在右侧网格上按住左键划过去，把默认的图块全部擦掉。</li>
+</ol>
+<p><img src="/images/godot03/step4-erase-default.png" alt="用橡皮擦去掉默认切分的图块"></p>
+<p>擦完之后网格还在，只是格子不再是&quot;图块&quot;。这一步的意义是：<strong>图块不是切开就有的，而是由你主动登记出来的</strong>，登记时才决定它占多大、带什么属性。</p>
+<h2 id="第五步：手动划出需要的图块">第五步：手动划出需要的图块</h2>
+<p>还是 <code>Setup</code> 模式，在右侧的图片网格上按需要创建图块：</p>
+<ul>
+<li><strong>单击</strong>一个格子 → 创建一个 1×1 的小图块；</li>
+<li><strong>按住 Ctrl 连续点击</strong> → 一次登记多个小图块；</li>
+<li><strong>按住 Shift 拖拽框选</strong> → 把框住的若干格合并成<strong>一个大图块</strong>，比如 2×2 的树、3×2 的石头。</li>
+</ul>
+<p><img src="/images/godot03/step5-create-tiles.png" alt="小图块用单击或 Ctrl 连续创建，大图块用 Shift 拖选"></p>
+<p>截图里 <code>ID 2</code> 对应 <code>objects.png</code>：左上角那些 1×1 的杂物是小图块，中间那棵树框住了 2×2 的范围，就是一个大图块。</p>
+<p>大图块虽然占多格，但在 TileMap 里仍然是一个整体：选一次、画一次就摆好一棵树，不用拼四块，碰撞也能按整棵树的形状设置。</p>
+<blockquote>
+<p><strong>Setup 不是作画的地方。</strong> 底部 <code>TileSet</code> 和 <code>TileMap</code> 是两个页签，<code>Setup</code> 只存在于 <code>TileSet</code> 页签里：右侧网格是选图块的地方，左侧 Atlas 参数（<code>ID</code>、<code>Texture Region</code> 等）是选中图块后调属性的地方。要真正把图块画进场景，必须切到 <code>TileMap</code> 页签，在 <code>Setup</code> 里怎么点都不会往地图上放东西。</p>
+</blockquote>
+<p><img src="/images/godot03/step5b-setup-vs-paint.png" alt="Setup 只负责定图块，作画要切到 TileMap 页签"></p>
+<h2 id="第六步：选图块，把地图画出来">第六步：选图块，把地图画出来</h2>
+<p>图块划好了，把底部切到 <strong>TileMap</strong> 页签，开始铺地图。</p>
+<ol>
+<li>切到底部 <strong>TileMap</strong> 面板，左侧选中 <code>objects.png</code> 这个图源。</li>
+<li>点工具栏最左边的<strong>选择工具</strong>，在右侧图块列表里点选要用的图案；按住 <strong>Shift</strong> 可以多选。</li>
+<li>换成<strong>画笔</strong>（铅笔图标），回到画布按住左键拖动，图块就画上去了。</li>
+<li>画错了用<strong>右键</strong>擦除（右键就是临时橡皮擦，不用先切工具），或者 <code>Ctrl+Z</code> 撤销。</li>
+</ol>
+<p><img src="/images/godot03/step6-paint-map.png" alt="选择图块后用画笔在场景里绘制"></p>
+<p>截图里那四棵树是同一个 2×2 大图块画了四次。大图块落笔时以鼠标所在的格子为左上角，画一次就摆好整棵，不用拼四块。</p>
+<p>画布上的橙色网格就是格子边界，右侧那两个网格图标分别控制网格显示和当前图块高亮，对不准位置时可以打开看一眼。</p>
+<p>工具栏其余几个也常用：</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>直线 / 矩形</td>
+<td>拖一条线或一个矩形，一次铺一排、一片图块，铺地面很快</td>
+</tr>
+<tr>
+<td>吸管</td>
+<td>点画布上已有的图块，把它变成当前选中的图块</td>
+</tr>
+<tr>
+<td>旋转 / 镜像</td>
+<td>落笔前调整图块朝向，同一张素材能复用出更多变化</td>
+</tr>
+<tr>
+<td><code>Layer0</code> 下拉</td>
+<td>切换当前画在哪一层（层是在 TileSet 的 <code>Layers</code> 里定义的）</td>
+</tr>
+</tbody>
+</table>
+<p>按住 Shift 多选图块还有个用处：配合随机化（randomization），落笔会在选中的几个图块里随机挑一个。铺草地、碎石这类要自然散开的地面时，选三五种变体一起画，比手动一个个摆快得多。</p>
+<h3 id="图层：重命名、新建，还有-Y-Sort">图层：重命名、新建，还有 Y Sort</h3>
+<p>画完会发现地面和树混在同一个 <code>Layer0</code> 里，想单独藏起树来调地面就做不到。图层在 Inspector 里管理——选中 <code>TileMap</code>，最下面的 <code>Layers</code> 就是图层列表。</p>
+<p><img src="/images/godot03/step7-tilemap-layers.png" alt="重命名图层、新建图层与 Y Sort 设置"></p>
+<ol>
+<li><strong>重命名</strong>：点 <code>Name</code> 那一列，把 <code>Layer0</code> 改成看得懂的名字，比如 <code>ground</code>、<code>objects</code>。底部 <code>TileMap</code> 面板的层下拉会同步更新。</li>
+<li><strong>新建图层</strong>：点最下面的 <strong>+ Add Element</strong> 追加一层。建议地面一层、树和石头一层，方便分别隐藏、分别设碰撞。</li>
+<li><strong>Enabled</strong>：取消勾选可以临时隐藏这一层，对着地形摆装饰时很好用。</li>
+<li><strong>Y Sort Enabled</strong>：打开后这一层里的图块按 Y 坐标排序，站在树后面时树的下半部分会盖住角色的一部分，走到树前面角色又能盖住树。<code>Y Sort Origin</code> 是排序基准点，大图块（比如 2×2 的树）排序位置不对时调它。</li>
+</ol>
+<p><strong>图层顺序就是绘制顺序</strong>：列表越靠下越晚画、越靠上。所以地面放第一层，树、房子这类要挡住角色的放后面；角色能不能被树挡住，还要配合父节点的 Y 排序，这里先留个印象。</p>
+<h3 id="三个概念别搞混">三个概念别搞混</h3>
+<table>
+<thead>
+<tr>
+<th>名词</th>
+<th>是什么</th>
+<th>在哪看</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tile Source（Atlas）</td>
+<td>一张 png 素材在图集里的注册，带自己的 <code>ID</code></td>
+<td>TileSet 面板左侧列表</td>
+</tr>
+<tr>
+<td>Tile（图块）</td>
+<td>从图源里划出的一个矩形区域，可带碰撞、地形、偏移</td>
+<td>Setup 模式在网格上划出来</td>
+</tr>
+<tr>
+<td>TileSet</td>
+<td>以上所有图块的集合，是一个资源文件</td>
+<td>Inspector 的 <code>Tile Set</code> 属性</td>
+</tr>
+</tbody>
+</table>
+<p>画地图时选中的就是某个 Tile Source 下的某个 Tile（按 <code>ID</code> 定位），所以图块一旦划错位置，地图上已经画好的部分也会跟着错位。</p>
+<h2 id="附：以后新项目改用-TileMapLayer">附：以后新项目改用 TileMapLayer</h2>
+<p>Godot 4.3 之后 <code>TileMap</code> 被 <code>TileMapLayer</code> 取代，核心区别只有一个：<strong>一个图层就是一个节点</strong>。以前所有层都在同一个 <code>TileMap</code> 里、只能在 Inspector 的 <code>Layers</code> 里改；现在每层单独一个节点，可见性、<code>modulate</code>、碰撞层、Y 排序都能分开设，用时把节点摆好就行。</p>
+<p>操作对照：</p>
+<table>
+<thead>
+<tr>
+<th>要做的事</th>
+<th><code>TileMap</code>（本文写法）</th>
+<th><code>TileMapLayer</code>（新写法）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>建节点</td>
+<td>一个 <code>TileMap</code>，所有层塞在里面</td>
+<td>每层一个 <code>TileMapLayer</code> 节点</td>
+</tr>
+<tr>
+<td>切换当前层</td>
+<td>底部 <code>TileMap</code> 面板的 <code>Layer0</code> 下拉</td>
+<td>直接在场景面板里选中对应节点</td>
+</tr>
+<tr>
+<td>设置图块表</td>
+<td>Inspector → <code>Tile Set</code></td>
+<td>同样 Inspector → <code>Tile Set</code></td>
+</tr>
+<tr>
+<td>划图块</td>
+<td>底部 <code>TileSet</code> → <code>Setup</code></td>
+<td>完全相同</td>
+</tr>
+<tr>
+<td>画地图</td>
+<td>底部 <code>TileMap</code> → 画笔</td>
+<td>完全相同</td>
+</tr>
+</tbody>
+</table>
+<p>如果手上是旧项目，可以一键转换：选中 <code>TileMap</code> 节点，打开底部 <code>TileMap</code> 面板，点右上角的工具箱图标，选 <strong>Extract TileMap layers as individual TileMapLayer nodes</strong>，原来的每层都会变成单独的 <code>TileMapLayer</code> 节点。</p>
+<hr>
+<p>上一篇：<a href="/2026/10/25/Godot02-%E8%A7%92%E8%89%B2%E7%A7%BB%E5%8A%A8%E8%84%9A%E6%9C%AC/">Godot02：角色移动脚本（GDScript 语法复习）</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lanxone.github.io/2026/10/26/Godot03-%E5%88%B6%E4%BD%9C%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE/" data-id="cmvpaxipm0000cwmaer4ueue6" data-title="Godot03:制作瓦片地图（TileMap 与 TileSet）" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Godot/" rel="tag">Godot</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-二叉树遍历和递归" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86%E5%92%8C%E9%80%92%E5%BD%92/" class="article-date">
+  <time class="dt-published" datetime="2026-10-26T07:14:57.000Z" itemprop="datePublished">2026-10-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/10/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86%E5%92%8C%E9%80%92%E5%BD%92/">二叉树遍历和递归</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>二叉树的前中后三种遍历方式</h1>
+<p>如果只看题目上的二叉树和其三种遍历的结果肯定会一头雾水，特别是对于初学者来说，不知所云。</p>
+<p>但是结合代码来看就十分清楚了。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"> * struct TreeNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     TreeNode *left;</span></span><br><span class="line"><span class="comment"> *     TreeNode *right;</span></span><br><span class="line"><span class="comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span></span><br><span class="line"><span class="comment"> * &#125;;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">tar</span><span class="params">(TreeNode* cur,vector&lt;<span class="type">int</span>&gt;&amp; res)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(cur == <span class="literal">nullptr</span>) <span class="keyword">return</span>;</span><br><span class="line">        <span class="comment">//以下三行决定前中后</span></span><br><span class="line">        res.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">        <span class="built_in">tar</span>(cur-&gt;left,res);</span><br><span class="line">        <span class="built_in">tar</span>(cur-&gt;right,res);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; res;</span><br><span class="line">        <span class="built_in">tar</span>(root,res);</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>从代码就能看出来所谓的前中后遍历代表的只是访问节点的语句和两个遍历语句的相对位置。</p>
+<h2 id="三行代码换个位置，就是三种遍历">三行代码换个位置，就是三种遍历</h2>
+<p>既然「前中后」只取决于那三行的顺序，那么把 <code>push_back</code> 挪一下，同一个函数骨架就能变成另外两种遍历：</p>
+<table>
+<thead>
+<tr>
+<th>遍历</th>
+<th>三行的顺序</th>
+<th>访问中间节点的时机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>前序</td>
+<td>中 → 左 → 右</td>
+<td>一进来就访问</td>
+</tr>
+<tr>
+<td>中序</td>
+<td>左 → 中 → 右</td>
+<td>左边全部处理完才访问</td>
+</tr>
+<tr>
+<td>后序</td>
+<td>左 → 右 → 中</td>
+<td>两个孩子都处理完才访问</td>
+</tr>
+</tbody>
+</table>
+<p>中序只需要把 <code>push_back</code> 挪到两次递归中间：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">tar</span><span class="params">(TreeNode* cur, vector&lt;<span class="type">int</span>&gt;&amp; res)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (cur == <span class="literal">nullptr</span>) <span class="keyword">return</span>;</span><br><span class="line">    <span class="built_in">tar</span>(cur-&gt;left, res);</span><br><span class="line">    res.<span class="built_in">push_back</span>(cur-&gt;val);   <span class="comment">// 中：左边走完才轮到自己</span></span><br><span class="line">    <span class="built_in">tar</span>(cur-&gt;right, res);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>后序挪到最后：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">tar</span><span class="params">(TreeNode* cur, vector&lt;<span class="type">int</span>&gt;&amp; res)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (cur == <span class="literal">nullptr</span>) <span class="keyword">return</span>;</span><br><span class="line">    <span class="built_in">tar</span>(cur-&gt;left, res);</span><br><span class="line">    <span class="built_in">tar</span>(cur-&gt;right, res);</span><br><span class="line">    res.<span class="built_in">push_back</span>(cur-&gt;val);   <span class="comment">// 中：最后才轮到自己</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>三个函数<strong>除了那一行的位置，一个字都没变</strong>。所以不要去背「前序是中左右」这种口诀，要背的是「访问动作插在哪两个递归调用之间」——前者是结论，后者是原因，记住原因就不会记混。</p>
+<blockquote>
+<p>顺带说一个判断方法：如果一道题让你输出序列，先问自己「<strong>我是在进入节点时就知道答案了，还是要等孩子都告诉我答案之后才知道？</strong>」前者前序，后者后序。至于中序，它几乎是二叉搜索树的专属——因为中序遍历出来的就是升序序列。</p>
+</blockquote>
+<h2 id="手工跑一遍，看清递归的过程">手工跑一遍，看清递归的过程</h2>
+<p>递归之所以难，是因为它在纸面上是「静态」的，但实际执行是「动态」的。拿这棵树跑一遍前序：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">    1</span><br><span class="line">   / \</span><br><span class="line">  2   3</span><br><span class="line"> / \</span><br><span class="line">4   5</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>当前调用</th>
+<th>发生了什么</th>
+<th><code>res</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>tar(1)</code></td>
+<td>访问 1，然后往左</td>
+<td><code>[1]</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>tar(1)</code> → <code>tar(2)</code></td>
+<td>访问 2，然后往左</td>
+<td><code>[1,2]</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>tar(1)</code> → <code>tar(2)</code> → <code>tar(4)</code></td>
+<td>访问 4，然后往左</td>
+<td><code>[1,2,4]</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>tar(4)</code> 的左孩子</td>
+<td>是 <code>nullptr</code>，立即 <code>return</code></td>
+<td><code>[1,2,4]</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>tar(4)</code> 的右孩子</td>
+<td>是 <code>nullptr</code>，立即 <code>return</code></td>
+<td><code>[1,2,4]</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>tar(4)</code> 结束，回到 <code>tar(2)</code> 的右孩子</td>
+<td>调用 <code>tar(5)</code>，访问 5</td>
+<td><code>[1,2,4,5]</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>tar(5)</code> 的左右孩子</td>
+<td>两次 <code>return</code>，<code>tar(5)</code> 结束</td>
+<td><code>[1,2,4,5]</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>tar(2)</code> 结束，回到 <code>tar(1)</code> 的右孩子</td>
+<td>调用 <code>tar(3)</code>，访问 3</td>
+<td><code>[1,2,4,5,3]</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>tar(3)</code> 的左右孩子</td>
+<td>两次 <code>return</code>，全部结束</td>
+<td><code>[1,2,4,5,3]</code></td>
+</tr>
+</tbody>
+</table>
+<p>从这张表能读出三件事：</p>
+<ol>
+<li><strong>执行路线是一条「一路向左钻到底，撞到空才回头」的折线</strong>，不是按层走的，也不是按序列顺序走的。这就是「深度优先」四个字的字面意思。</li>
+<li><code>res</code> 里元素的先后顺序，等于<strong>每个节点被访问的那一瞬间</strong>的先后顺序。前序把访问放在函数第一行，所以「第一次到达节点」就记下来；后序放在最后一行，所以是「离开节点」才记下来。</li>
+<li>那些 <code>return</code> 不是可有可无的兜底，它们是递归能停下、能回头的<strong>唯一机制</strong>。去掉 <code>if (cur == nullptr) return;</code> 这行，程序会在 <code>nullptr</code> 上继续取 <code>-&gt;left</code>，直接段错误。</li>
+</ol>
+<h2 id="一个容易忽略的细节：vector-int">一个容易忽略的细节：<code>vector&lt;int&gt;&amp;</code></h2>
+<p>上面代码里 <code>res</code> 前面那个 <code>&amp;</code> 不是可有可无的装饰。如果写成 <code>void tar(TreeNode* cur, vector&lt;int&gt; res)</code>（不带 <code>&amp;</code>）：</p>
+<ul>
+<li>每次递归调用都会<strong>复制一份 <code>vector</code></strong> 传给下一层；</li>
+<li>子层往自己的副本里 <code>push_back</code>，父层完全看不到；</li>
+<li>结果就是只有最外层那一层真的写进了东西，返回的序列几乎是空的；</li>
+<li>而且每层复制一次，总拷贝量是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8141079999999999em;"></span><span class="strut bottom" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathit">n</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathrm">2</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose">)</span></span></span></span>，数据量大时直接超时。</li>
+</ul>
+<p>这是初学递归最容易踩的「玄学 bug」：代码看着对，结果不对，还找不到错在哪。<strong>症状是「结果缺元素或者只有几个」，第一反应就去看参数是不是该传引用。</strong></p>
+<blockquote>
+<p>另一种写法是让递归函数直接返回 <code>vector&lt;int&gt;</code>：</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">tar</span><span class="params">(TreeNode* cur)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (cur == <span class="literal">nullptr</span>) <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; res;</span><br><span class="line">    res.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; l = <span class="built_in">tar</span>(cur-&gt;left);</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; r = <span class="built_in">tar</span>(cur-&gt;right);</span><br><span class="line">    res.<span class="built_in">insert</span>(res.<span class="built_in">end</span>(), l.<span class="built_in">begin</span>(), l.<span class="built_in">end</span>());</span><br><span class="line">    res.<span class="built_in">insert</span>(res.<span class="built_in">end</span>(), r.<span class="built_in">begin</span>(), r.<span class="built_in">end</span>());</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这种写法逻辑更「纯」，但每一层都在新建和拼接 vector，复杂度退化成 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8141079999999999em;"></span><span class="strut bottom" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathit">n</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathrm">2</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose">)</span></span></span></span>（或者需要额外的移动语义优化）。所以遍历类的题一律用「<strong>引用参数收集结果</strong>」的写法，这也是 LeetCode 上一贯的风格。</p>
+</blockquote>
+<hr>
+<h1>关于递归</h1>
+<p>从最简单的二叉树遍历就能看出来二叉树的使用和递归息息相关，因为二叉树不像先前的数组、栈和队列是一维的数据结构，没法简单得顺序遍历。</p>
+<p>这句话值得再往前推一步，因为它才是理解递归的入口。</p>
+<h2 id="为什么顺序遍历在树上失效了">为什么顺序遍历在树上失效了</h2>
+<p>链表只有一个 <code>next</code>：「下一个是谁」永远是确定的，所以一个 <code>while</code> 循环就能走完。二叉树的每个节点却有两个孩子，走到左子树的叶子之后，<strong>要回到父节点才能去右子树</strong>——可你手里只有一个 <code>TreeNode* cur</code>，它没有 <code>parent</code> 指针，回不去。</p>
+<p>于是问题变成：<strong>我要记住来时的路。</strong></p>
+<ul>
+<li>用<strong>系统帮你维护的栈</strong>来记 → 这就是递归；</li>
+<li>用<strong>自己开的 <code>stack</code> 来记</strong> → 这就是迭代；</li>
+<li>用<strong>叶子节点的空指针</strong>硬存「回程票」→ 这就是 Morris 遍历。</li>
+</ul>
+<p>三种做法的本质是同一件事：<strong>在一维的、只能往下走的指针世界里，强行保存一棵二维的树的行走路径。</strong> 递归之所以看起来「自然」，只是因为这个栈由编译器帮你管了，你看不见它。</p>
+<h2 id="树是「用自己定义自己」的结构">树是「用自己定义自己」的结构</h2>
+<p>回想二叉树的定义：</p>
+<blockquote>
+<p>二叉树是空树，或者由一个根节点加上<strong>两棵二叉树</strong>（左子树和右子树）组成。</p>
+</blockquote>
+<p>这段话本身就是一个递归。结构的定义是递归的，那么处理它的代码也是递归的——这不是巧合，而是最省力的选择。</p>
+<p>打个比方：递归解决问题的思路不是「把大问题切成小问题」，而是「<strong>把问题换成同一个问题，只是规模小一号</strong>」。你不需要知道怎么遍历一棵有 100 万个节点的树，你只需要知道：</p>
+<ul>
+<li>怎么访问当前这个节点；</li>
+<li>剩下的，交给「遍历左子树」和「遍历右子树」去做——并假设它们<strong>一定是对的</strong>。</li>
+</ul>
+<p>这种「假设子问题已经解决」的信任，就是数学归纳法。写不出递归的人，通常不是不会写代码，而是不敢信任这一步。</p>
+<h2 id="递归三要素（拿刚才的代码对号入座）">递归三要素（拿刚才的代码对号入座）</h2>
+<p>任何一道树题，写之前先回答三个问题，缺一个就写不出来：</p>
+<table>
+<thead>
+<tr>
+<th>要素</th>
+<th>问题</th>
+<th>对应到遍历代码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>参数与返回值</strong></td>
+<td>我需要什么信息？我要把什么信息带出去？</td>
+<td><code>TreeNode* cur</code> 是「当前处理谁」，<code>vector&lt;int&gt;&amp; res</code> 是「结果往哪放」</td>
+</tr>
+<tr>
+<td><strong>终止条件</strong></td>
+<td>什么时候可以直接返回？</td>
+<td><code>cur == nullptr</code></td>
+</tr>
+<tr>
+<td><strong>单层逻辑</strong></td>
+<td>当前这一层，我具体做什么？</td>
+<td>访问 <code>cur</code>，然后递归左右</td>
+</tr>
+</tbody>
+</table>
+<p>很多人卡在第一步：参数到底要不要带 <code>res</code>？要不要返回值？判断标准很简单——<strong>信息是往下传，还是往上传？</strong></p>
+<ul>
+<li>往下传（比如「当前路径和」「当前深度」）→ 加参数，前序用得多。</li>
+<li>往上传（比如「这棵子树的高度」「这棵子树是否平衡」）→ 用返回值，后序用得多。</li>
+</ul>
+<h2 id="终止条件为什么是「空节点」而不是「叶子节点」">终止条件为什么是「空节点」而不是「叶子节点」</h2>
+<p>新手常写：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (cur-&gt;left == <span class="literal">nullptr</span> &amp;&amp; cur-&gt;right == <span class="literal">nullptr</span>) <span class="keyword">return</span>;   <span class="comment">// 判叶子</span></span><br></pre></td></tr></table></figure>
+<p>这个写法的问题在于：<strong>叶子节点自己被漏掉了</strong>。你在递归之前就得先把叶子访问掉，于是每个分支都要单独处理「孩子是不是叶子」，代码会迅速膨胀成一堆特判。</p>
+<p>而写成 <code>cur == nullptr</code>，等于是把判断推到了「<strong>下一层</strong>」：</p>
+<ul>
+<li>叶子节点正常进入函数、正常被访问；</li>
+<li>它的两个孩子是 <code>nullptr</code>，各自进入函数后立刻返回。</li>
+</ul>
+<p>这样<strong>所有节点走的是同一条代码路径</strong>，没有特判。这是递归写法的一个通用美学：<strong>把终止条件设在「越过边界之后」，而不是「站在边界上」</strong>。数组题里 <code>if (l &gt; r) return;</code> 是同一个道理，递归到区间为空才停，而不是在区间只有一个元素时特判。</p>
+<h2 id="递归的两个时刻：进入与回溯">递归的两个时刻：进入与回溯</h2>
+<p>这是我认为最有价值的一条：<strong>同一个递归函数，在「进入」和「回溯」两个时刻各能做一次事。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">tar(cur) 被调用</span><br><span class="line">    │</span><br><span class="line">    ├── ① 进入时刻  ← 这里做的事，构成「前序」</span><br><span class="line">    │</span><br><span class="line">    ├── tar(cur-&gt;left)</span><br><span class="line">    │</span><br><span class="line">    ├── ② 中间时刻  ← 这里做的事，构成「中序」</span><br><span class="line">    │</span><br><span class="line">    ├── tar(cur-&gt;right)</span><br><span class="line">    │</span><br><span class="line">    └── ③ 离开时刻  ← 这里做的事，构成「后序」</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>时刻</th>
+<th>信息流方向</th>
+<th>适合干的事</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① 进入</td>
+<td>自顶向下（父 → 子）</td>
+<td>传参、打印、记录路径、判断当前深度</td>
+</tr>
+<tr>
+<td>② 中间</td>
+<td>左子树已完成</td>
+<td>利用 BST 有序性、找第 k 小</td>
+</tr>
+<tr>
+<td>③ 离开</td>
+<td>自底向上（子 → 父）</td>
+<td>汇总子树结果、求高度、判断平衡、删除节点</td>
+</tr>
+</tbody>
+</table>
+<p>所以「选哪种遍历」不是一个记忆题，而是一个<strong>信息流方向</strong>的问题：</p>
+<blockquote>
+<p>父节点决定子节点 → 前序；子树结果汇总给父节点 → 后序；靠左右有序性 → 中序。</p>
+</blockquote>
+<h2 id="把递归拆开：用自己开的栈写一遍">把递归拆开：用自己开的栈写一遍</h2>
+<p>理解递归最直接的方法，是<strong>手动把系统栈拆出来</strong>。写一遍迭代版，你就再也不会觉得递归是黑魔法了。</p>
+<h3 id="前序的迭代版">前序的迭代版</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; res;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) <span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">    stack&lt;TreeNode*&gt; st;</span><br><span class="line">    st.<span class="built_in">push</span>(root);</span><br><span class="line">    <span class="keyword">while</span> (!st.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        TreeNode* cur = st.<span class="built_in">top</span>();</span><br><span class="line">        st.<span class="built_in">pop</span>();</span><br><span class="line">        res.<span class="built_in">push_back</span>(cur-&gt;val);          <span class="comment">// 访问</span></span><br><span class="line">        <span class="keyword">if</span> (cur-&gt;right) st.<span class="built_in">push</span>(cur-&gt;right);   <span class="comment">// 注意：先压右</span></span><br><span class="line">        <span class="keyword">if</span> (cur-&gt;left)  st.<span class="built_in">push</span>(cur-&gt;left);    <span class="comment">// 再压左</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意压栈顺序是<strong>先右后左</strong>。因为栈是后进先出，后压进去的左孩子会先出来——这样出栈顺序才是「中左右」。压反了得到的就是「中右左」，正好是镜像。</p>
+<h3 id="中序的迭代版（最不好写的一个）">中序的迭代版（最不好写的一个）</h3>
+<p>前序可以照抄递归，中序不行。原因是中序要在「左子树全部处理完」之后才访问根，所以<strong>必须先沿着左链一路把祖先压栈，走不动了再弹出来访问</strong>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; res;</span><br><span class="line">    stack&lt;TreeNode*&gt; st;</span><br><span class="line">    TreeNode* cur = root;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (cur != <span class="literal">nullptr</span> || !st.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        <span class="keyword">while</span> (cur != <span class="literal">nullptr</span>) &#123;      <span class="comment">// 一路向左，把沿途节点全部压栈</span></span><br><span class="line">            st.<span class="built_in">push</span>(cur);</span><br><span class="line">            cur = cur-&gt;left;</span><br><span class="line">        &#125;</span><br><span class="line">        cur = st.<span class="built_in">top</span>();               <span class="comment">// 左边到底了，弹出最左的祖先</span></span><br><span class="line">        st.<span class="built_in">pop</span>();</span><br><span class="line">        res.<span class="built_in">push_back</span>(cur-&gt;val);      <span class="comment">// 访问（此时左子树已处理完）</span></span><br><span class="line">        cur = cur-&gt;right;             <span class="comment">// 再去处理右子树</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个 <code>while (cur != nullptr || !st.empty())</code> 里的两个条件都不能少：<code>cur</code> 非空代表「还有路可以往下走」，栈非空代表「还有祖先等着被访问」。</p>
+<h3 id="后序的偷懒版">后序的偷懒版</h3>
+<p>后序是「左右中」，而把前序的压栈顺序改成「先左后右」，得到的是「中右左」——<strong>正好是后序的完全逆序</strong>。所以：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; res;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) <span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">    stack&lt;TreeNode*&gt; st;</span><br><span class="line">    st.<span class="built_in">push</span>(root);</span><br><span class="line">    <span class="keyword">while</span> (!st.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        TreeNode* cur = st.<span class="built_in">top</span>(); st.<span class="built_in">pop</span>();</span><br><span class="line">        res.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">        <span class="keyword">if</span> (cur-&gt;left)  st.<span class="built_in">push</span>(cur-&gt;left);    <span class="comment">// 注意：这次先压左</span></span><br><span class="line">        <span class="keyword">if</span> (cur-&gt;right) st.<span class="built_in">push</span>(cur-&gt;right);   <span class="comment">// 再压右 → 出栈顺序是「中右左」</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">reverse</span>(res.<span class="built_in">begin</span>(), res.<span class="built_in">end</span>());           <span class="comment">// 反转即「左右中」</span></span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>面试时如果被要求「不用反转」，就得老老实实记录上一个访问过的节点来区分「第一次回到某个节点」和「右子树已经处理完了」，代码会长一截，但思路还是那一句：<strong>栈里存的是「还没处理完的祖先」</strong>。</p>
+<h3 id="更进一步：Morris-遍历（不用栈、不递归）">更进一步：Morris 遍历（不用栈、不递归）</h3>
+<p>既然递归和迭代都只是在维护「来时的路」，那能不能把这条路直接存在树里？可以——用叶子节点那些<strong>空着的右指针</strong>当「回程票」临时指回祖先，用完再拆掉。这样空间复杂度压到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mn>1</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">O(1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathrm">1</span><span class="mclose">)</span></span></span></span>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; res;</span><br><span class="line">    TreeNode* cur = root;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (cur != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (cur-&gt;left == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            res.<span class="built_in">push_back</span>(cur-&gt;val);       <span class="comment">// 没有左子树，直接访问并向右</span></span><br><span class="line">            cur = cur-&gt;right;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 找到左子树里的最右节点（中序下 cur 的前驱）</span></span><br><span class="line">            TreeNode* pre = cur-&gt;left;</span><br><span class="line">            <span class="keyword">while</span> (pre-&gt;right != <span class="literal">nullptr</span> &amp;&amp; pre-&gt;right != cur) pre = pre-&gt;right;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (pre-&gt;right == <span class="literal">nullptr</span>) &#123;   <span class="comment">// 第一次来：搭桥，然后深入左子树</span></span><br><span class="line">                pre-&gt;right = cur;</span><br><span class="line">                cur = cur-&gt;left;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;                       <span class="comment">// 第二次来：说明左子树走完了，拆桥并访问</span></span><br><span class="line">                pre-&gt;right = <span class="literal">nullptr</span>;</span><br><span class="line">                res.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">                cur = cur-&gt;right;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Morris 会修改树的结构（虽然事后会还原），多线程环境下不安全，实际工程里几乎不用，但它能让你彻底明白：<strong><code>O(h)</code> 的栈空间到底在存什么。</strong> 知道了这一点，递归就从一个「玄学」变成了一个「实现细节」。</p>
+<h2 id="第四种遍历：层序（BFS-队列）">第四种遍历：层序（BFS + 队列）</h2>
+<p>前中后序都是深度优先，走的是一条道走到黑。还有一种完全不同的走法——一层一层来，这叫层序遍历，用的容器是<strong>队列</strong>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">levelOrder</span>(TreeNode* root) &#123;</span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; res;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) <span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">    queue&lt;TreeNode*&gt; q;</span><br><span class="line">    q.<span class="built_in">push</span>(root);</span><br><span class="line">    <span class="keyword">while</span> (!q.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        <span class="type">int</span> size = q.<span class="built_in">size</span>();          <span class="comment">// 关键：先记下这一层的节点数</span></span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; level;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">            TreeNode* cur = q.<span class="built_in">front</span>();</span><br><span class="line">            q.<span class="built_in">pop</span>();</span><br><span class="line">            level.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">            <span class="keyword">if</span> (cur-&gt;left)  q.<span class="built_in">push</span>(cur-&gt;left);</span><br><span class="line">            <span class="keyword">if</span> (cur-&gt;right) q.<span class="built_in">push</span>(cur-&gt;right);</span><br><span class="line">        &#125;</span><br><span class="line">        res.<span class="built_in">push_back</span>(level);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>int size = q.size();</code> 这一行是全场重点。不先记下来，<code>while</code> 里一边出队一边入队，<code>q.size()</code> 会不断变大，<strong>下一层的节点就会混进当前层</strong>，输出直接错位。这个坑几乎每个人都踩过一次。</p>
+<p>层序的价值在于「按层」这个语义本身：</p>
+<ul>
+<li>求最小深度（碰到第一个叶子就停，比 DFS 快）；</li>
+<li>按层打印 / 锯齿形遍历 / 右视图；</li>
+<li>判断完全二叉树（层序里出现的第一个 <code>nullptr</code> 之后不该再有节点）。</li>
+</ul>
+<h2 id="复杂度：为什么树题几乎都是-O-n">复杂度：为什么树题几乎都是 O(n)</h2>
+<ul>
+<li><strong>时间</strong>：每个节点被进入一次、访问一次，所以是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span>。哪怕代码里嵌套了两个递归调用，总的调用次数也只是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>2</mn><mi>n</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2n+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="base textstyle uncramped"><span class="mord mathrm">2</span><span class="mord mathit">n</span><span class="mbin">+</span><span class="mord mathrm">1</span></span></span></span> 级别，不要因为「调用看起来很吓人」就以为是指数级。</li>
+<li><strong>空间</strong>：递归栈的深度等于树高 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>h</mi></mrow><annotation encoding="application/x-tex">h</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.69444em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">h</span></span></span></span>。平衡树 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>h</mi><mo>=</mo><mi>O</mi><mo>(</mo><mi>log</mi><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">h = O(\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">h</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span>，退化成链的树 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>h</mi><mo>=</mo><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">h = O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">h</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span>。</li>
+</ul>
+<p>这里有个实际的坑：<strong>如果一个「树」实际上是 10 万个节点的单链（某些测试用例专门这么构造），递归会栈溢出。</strong> 表现为程序直接崩溃（<code>stack overflow</code> / 段错误），不是答案错误，很难和逻辑错误区分开。所以当你看到「递归写法过不了，但思路是对的」，先怀疑深度，换迭代。</p>
+<p>这也解释了为什么工程代码里遍历一棵很深的树，往往用迭代而不是递归——不是不喜欢递归，是怕栈。</p>
+<h2 id="踩坑清单">踩坑清单</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>坑</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>参数忘了写 <code>&amp;</code>，结果缺元素</td>
+<td>收集结果的容器一律传引用</td>
+</tr>
+<tr>
+<td>2</td>
+<td>终止条件判叶子，叶子自己被漏掉</td>
+<td>判 <code>nullptr</code>，让判断发生在「越过边界后」</td>
+</tr>
+<tr>
+<td>3</td>
+<td>前序迭代压栈顺序写反</td>
+<td>先压右再压左，出栈才是「中左右」</td>
+</tr>
+<tr>
+<td>4</td>
+<td>层序不记录 <code>size</code></td>
+<td>每层开头 <code>int size = q.size()</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>中序迭代照抄前序</td>
+<td>必须先沿左链压栈到底</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>root</code> 可能是空树，忘了判</td>
+<td>函数第一行判 <code>root == nullptr</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>递归里对同一个子树调用两次</td>
+<td>树天然不重复，重复调用一定是逻辑写错了</td>
+</tr>
+<tr>
+<td>8</td>
+<td>树极深导致栈溢出</td>
+<td>深度可能到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn><msup><mn>0</mn><mn>5</mn></msup></mrow><annotation encoding="application/x-tex">10^5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8141079999999999em;"></span><span class="strut bottom" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathrm">1</span><span class="mord"><span class="mord mathrm">0</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathrm">5</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span> 时改用迭代</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h1>从「会遍历」到「会解题」</h1>
+<p>到这里，遍历本身已经没什么难的了。但真实的题目不会问你「输出前序序列」，而是会问「这棵树的深度是多少」「翻转它」「路径和等于目标值的路径有几条」。</p>
+<p>好消息是：<strong>这些题和遍历用的是同一副骨架，差别只在「单层逻辑」那一行填什么。</strong></p>
+<p>遍历是骨架，题目是血肉。骨架永远是「终止条件 + 递归左右」，血肉是中间那几行。</p>
+<h2 id="例-1：最大深度（后序，靠返回值汇总）">例 1：最大深度（后序，靠返回值汇总）</h2>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">maxDepth</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) <span class="keyword">return</span> <span class="number">0</span>;                          <span class="comment">// 终止条件</span></span><br><span class="line">    <span class="type">int</span> left  = <span class="built_in">maxDepth</span>(root-&gt;left);                       <span class="comment">// 左子树多深？</span></span><br><span class="line">    <span class="type">int</span> right = <span class="built_in">maxDepth</span>(root-&gt;right);                      <span class="comment">// 右子树多深？</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">max</span>(left, right) + <span class="number">1</span>;                            <span class="comment">// 单层逻辑：取大的那个 + 自己</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里返回值承担了「子树把答案告诉父节点」的职责，所以是典型的<strong>后序</strong>思路。写成一行就是 <code>return max(maxDepth(root-&gt;left), maxDepth(root-&gt;right)) + 1;</code></p>
+<p>注意 <code>+ 1</code> 的位置：它加的是「自己这一层」，这就是递归里那一层自增的来源。</p>
+<h2 id="例-2：翻转二叉树（前序，交换左右）">例 2：翻转二叉树（前序，交换左右）</h2>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">TreeNode* <span class="title">invertTree</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">    <span class="built_in">swap</span>(root-&gt;left, root-&gt;right);      <span class="comment">// 单层逻辑：交换自己的孩子</span></span><br><span class="line">    <span class="built_in">invertTree</span>(root-&gt;left);             <span class="comment">// 左子树自己也要翻</span></span><br><span class="line">    <span class="built_in">invertTree</span>(root-&gt;right);            <span class="comment">// 右子树自己也要翻</span></span><br><span class="line">    <span class="keyword">return</span> root;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这题前序、后序都能过，<strong>唯独中序不行</strong>——这是个经典陷阱，值得单独说。</p>
+<p>中序的顺序是「左 → 中 → 右」，如果写成：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">invertTree</span>(root-&gt;left);              <span class="comment">// 先把左子树翻转好</span></span><br><span class="line"><span class="built_in">swap</span>(root-&gt;left, root-&gt;right);       <span class="comment">// 然后交换 —— 此时右孩子变成了「已经翻过的左子树」</span></span><br><span class="line"><span class="built_in">invertTree</span>(root-&gt;right);             <span class="comment">// 再去翻右子树 —— 实际翻的是刚才那个左子树</span></span><br></pre></td></tr></table></figure>
+<p>结果就是<strong>原来那棵左子树被翻转了两次（等于没翻），原来的右子树一次都没翻</strong>。要改成中序写法，第二次递归必须也走 <code>left</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">invertTree</span>(root-&gt;left);</span><br><span class="line"><span class="built_in">swap</span>(root-&gt;left, root-&gt;right);</span><br><span class="line"><span class="built_in">invertTree</span>(root-&gt;left);              <span class="comment">// 注意：还是 left</span></span><br></pre></td></tr></table></figure>
+<p>这个例子说明：<strong>「这题用哪种遍历都行」很多时候是错觉</strong>，顺序一换，语义就变了。</p>
+<h2 id="例-3：路径总和（前序，靠参数往下传）">例 3：路径总和（前序，靠参数往下传）</h2>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">hasPathSum</span><span class="params">(TreeNode* root, <span class="type">int</span> targetSum)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="comment">// 是叶子，且剩下的目标值刚好被自己吃掉</span></span><br><span class="line">    <span class="keyword">if</span> (root-&gt;left == <span class="literal">nullptr</span> &amp;&amp; root-&gt;right == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> targetSum == root-&gt;val;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hasPathSum</span>(root-&gt;left,  targetSum - root-&gt;val)</span><br><span class="line">        || <span class="built_in">hasPathSum</span>(root-&gt;right, targetSum - root-&gt;val);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>两个值得抄下来的技巧：</p>
+<ol>
+<li><strong>用减法代替「维护一个路径和变量」</strong>。每往下走一层，就把当前节点的值从目标里扣掉，走到叶子时只需判断「剩下的目标值是不是正好等于叶子」。这样完全不用管「回溯时把值加回来」这件事——因为参数是按值传递的，每层天然有自己的副本。这是「往下传信息」型递归最常用的写法。</li>
+<li><strong><code>||</code> 短路</strong>。左子树找到答案了，右子树就不用再走了，这一行本身就带剪枝。</li>
+</ol>
+<p>如果题目改成「收集所有路径」，就得真的维护路径数组，那时候才需要 <code>push_back</code> + <code>pop_back</code> 手动回溯——<strong>回溯就是「进入时做选择，离开时撤销选择」</strong>，仍然是那两个时刻的用法。</p>
+<h2 id="递归的心法">递归的心法</h2>
+<p>最后几条，是写完上面这些之后我自己总结的：</p>
+<ol>
+<li><strong>不要试图在脑子里展开整棵树。</strong> 人脑能同时记住的层级大概就 5～7 层，而递归的展开是二维的。你越用力去「模拟」，越容易乱。真正该做的是验证「当前这一层」是否正确。</li>
+<li><strong>相信子问题已经解决。</strong> 写 <code>maxDepth(root-&gt;left)</code> 的时候，就当它一定返回了左子树的正确深度。这不是偷懒，这是递归的定义。</li>
+<li><strong>先用最小的例子验证单层逻辑。</strong> 一个节点的树、两个节点的树、只有左孩子的树——这三棵树能把 90% 的边界错误暴露出来。</li>
+<li><strong>递归写不出来时，回到三要素。</strong> 参数够不够？终止条件是什么？<strong>这一层</strong>要做什么？绝大多数「写不出来」都是因为这三条里有一条没想清楚，而不是因为不会递归。</li>
+<li><strong>「一看就会，一写就废」是正常的。</strong> 递归是一种需要手感的技能，看懂的瞬间和写对的瞬间之间隔着几十道题。这也是为什么我在<a href="/2026/10/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/">二叉树基础知识总结</a>那篇里给自己的最后一句提醒是「回到具体题目上手写」。</li>
+</ol>
+<hr>
+<blockquote>
+<p>小结：前中后序只是「同一副骨架里，访问动作插在不同位置」；树和递归之所以绑定，是因为树的定义本身就是递归的，而递归的栈正好替我们保存了「二维结构在一维指针世界里丢失的来路」。想明白这两句话，二叉树的题目就从「背模板」变成了「填骨架」。</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lanxone.github.io/2026/10/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86%E5%92%8C%E9%80%92%E5%BD%92/" data-id="cmvp90fcv001dd8ma89foflwk" data-title="二叉树遍历和递归" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" rel="tag">二叉树</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%92%E5%BD%92/" rel="tag">递归</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-二叉树基础知识总结" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/10/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/" class="article-date">
@@ -773,199 +1388,6 @@
 
 
   
-    <article id="post-Godot01-创建一个能动的角色" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/" class="article-date">
-  <time class="dt-published" datetime="2026-10-24T14:38:23.000Z" itemprop="datePublished">2026-10-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/">Godot01:创建一个能动的角色</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="第一步：创建角色节点">第一步：创建角色节点</h2>
-<ol>
-<li>点击场景面板左上角的 <code>+</code>，添加新节点。</li>
-<li>在弹出窗口左侧选择 <strong>Other Node</strong>。</li>
-<li>搜索 <code>CharacterBody2D</code>，选中后点击 <strong>Create</strong>。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step1-add-node.png" alt="点击场景面板的 + 添加节点"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step1-characterbody2d.png" alt="选择 Other Node 并创建 CharacterBody2D"></p>
-<h2 id="第二步：添加-2D-精灵图">第二步：添加 2D 精灵图</h2>
-<ol>
-<li>点击场景面板左上角的 <code>+</code>，为角色节点添加子节点。</li>
-<li>新增 <code>AnimatedSprite2D</code> 节点。</li>
-<li>在右侧属性面板的 <code>Sprite Frames</code> 中选择 <code>&lt;empty&gt;</code> → <strong>New</strong> → <strong>SpriteFrames</strong>，新建动画资源。</li>
-<li>再添加一个 <code>CollisionShape2D</code> 节点，作为角色的碰撞体；在 <code>Shape</code> 属性里新建并调整碰撞形状。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step2-add-animatedsprite.png" alt="点击 + 添加 AnimatedSprite2D 节点"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step2-new-spriteframes.png" alt="在 Sprite Frames 中新建 SpriteFrames"></p>
-<h2 id="第三步：重命名动画并导入帧">第三步：重命名动画并导入帧</h2>
-<ol>
-<li>在底部 <code>SpriteFrames</code> 面板的 Animations 列表里，把 <code>default</code> 重命名为能让自己看懂的名字。</li>
-<li>点击 Animation Frames 工具栏的网格图标，从 png 精灵图导入动画帧。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step3-rename-import.png" alt="重命名动画并点击网格图标导入 png"></p>
-<h2 id="第四步：按素材切分并选择动画帧">第四步：按素材切分并选择动画帧</h2>
-<ol>
-<li>在 Select Frames 窗口中，按素材实际的排列设置 <code>Horizontal</code>（横向列数）和 <code>Vertical</code>（纵向行数）来切分 png。</li>
-<li>切分后按动画播放顺序依次点选需要的帧。</li>
-<li>选完后点击 <strong>Add N Frame(s)</strong> 确认导入。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step4-slice-grid.png" alt="按实际数量设置横向和纵向切分"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step4-select-frames.png" alt="按动画顺序点选帧并确认"></p>
-<h2 id="第五步：修复像素图模糊">第五步：修复像素图模糊</h2>
-<p>导入后会发现问题：图像模糊无比，和原素材根本不是一个清晰度。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step5-blurry.png" alt="导入后模糊的像素图"></p>
-<p>修复方式：</p>
-<ol>
-<li>菜单栏 <code>Project</code> → <strong>Project Settings...</strong></li>
-<li>左侧选择 <code>Rendering</code> → <code>Textures</code></li>
-<li>把 <code>Default Texture Filter</code> 从 <strong>Linear</strong> 改为 <strong>Nearest</strong></li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step5-project-menu.png" alt="打开 Project Settings"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step5-texture-filter.png" alt="把 Default Texture Filter 改为 Nearest"></p>
-<h3 id="原理：为什么-Linear-会把像素画糊掉">原理：为什么 Linear 会把像素画糊掉</h3>
-<p>纹理贴到屏幕上时，一个屏幕像素很少正好落在某个纹素（texel）的中心，通常落在几个 texel 之间。这时显卡要决定&quot;这个屏幕像素取什么颜色&quot;，纹理过滤就是这个取值规则：</p>
-<ul>
-<li><strong>Linear（双线性过滤）</strong>：取周围 4 个 texel 做加权平均。照片、高清贴图用它过渡自然，但像素画的色块边界是硬切的，平均之后会凭空混出中间色，放大后就成了糊成一团的效果。</li>
-<li><strong>Nearest（最近邻）</strong>：直接取离采样点最近的那个 texel，不做任何混合。每个 texel 放大后仍是纯色方块，边缘保持锐利，这才是像素素材想要的。</li>
-</ul>
-<p>所以像素风游戏要把默认过滤改成 Nearest。这个设置是项目级默认值，单个节点仍可以在 <code>CanvasItem</code> → <code>Texture</code> → <code>Filter</code> 里单独覆盖。</p>
-<h2 id="第六步：把其余动画全部加进去">第六步：把其余动画全部加进去</h2>
-<p>一个动作对应一个动画。在 Animations 面板点击 <strong>Add Animation</strong>（快捷键 <code>Ctrl+N</code>），输入动画名，然后重复第三步、第四步的流程，为它导入对应的帧。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step6-add-animation.png" alt="点击 Add Animation 新建动画"></p>
-<p>把所有动作（idle、run、jump 等）都按同样方式加完，<code>SpriteFrames</code> 里就有了完整的动画列表。</p>
-<h2 id="第七步：为角色挂上脚本">第七步：为角色挂上脚本</h2>
-<p>选中 <code>player</code> 节点，点击场景面板右上角的<strong>添加脚本</strong>按钮（脚本 + 绿色加号），创建并挂载脚本。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot01-step7-attach-script.png" alt="给 player 节点添加脚本"></p>
-<p>写代码时语法不熟，可以直接查官方的 GDScript 手册：<a target="_blank" rel="noopener" href="https://docs.godotengine.org/zh-cn/stable/tutorials/scripting/gdscript/index.html">GDScript 参考文档</a></p>
-<hr>
-<p>完整代码与逐段讲解见：<a href="/2026/10/25/Godot02-%E8%A7%92%E8%89%B2%E7%A7%BB%E5%8A%A8%E8%84%9A%E6%9C%AC/">Godot02：角色移动脚本（GDScript 语法复习）</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://lanxone.github.io/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/" data-id="cmvp90fcp000id8ma4uq005eg" data-title="Godot01:创建一个能动的角色" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Godot/" rel="tag">Godot</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-LeetCode347_前K个高频元素_复盘" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/10/20/LeetCode347_%E5%89%8DK%E4%B8%AA%E9%AB%98%E9%A2%91%E5%85%83%E7%B4%A0_%E5%A4%8D%E7%9B%98/" class="article-date">
-  <time class="dt-published" datetime="2026-10-20T15:33:52.000Z" itemprop="datePublished">2026-10-20</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/20/LeetCode347_%E5%89%8DK%E4%B8%AA%E9%AB%98%E9%A2%91%E5%85%83%E7%B4%A0_%E5%A4%8D%E7%9B%98/">哈希表:前k个高频元素</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1>LeetCode 347 复盘（按我原代码的注释）</h1>
-<p><strong>结论：三条注释里，两条判断是对的，一条（<code>[]</code> 会自动插入）自己写对了却没照做；真正让我 TLE 的不是 bug，是第一条注释背后那个&quot;每次扫一遍&quot;的实现。</strong></p>
-<hr>
-<h2 id="一、-传入res和hash，返回res中频次最小元素的下标">一、<code>// 传入res和hash，返回res中频次最小元素的下标</code></h2>
-<p><strong>注释本身没错</strong>，它准确地描述了这个函数在干什么。问题恰恰在这里：这句话记录的是一个&quot;每次都要从头找一个最小值&quot;的动作。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; a.<span class="built_in">size</span>(); i++)      <span class="comment">// 每次 O(k)</span></span><br><span class="line">    <span class="keyword">if</span>(hash[a[i]] &lt; minFreq) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
-<p>它在循环里被调用了两次：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(p.second &gt; hash[res[<span class="built_in">getS</span>(res,hash)]])   <span class="comment">// 第 1 次</span></span><br><span class="line">    res[<span class="built_in">getS</span>(res,hash)] = i;               <span class="comment">// 第 2 次</span></span><br></pre></td></tr></table></figure>
-<p>所以每处理一个元素就要扫 2×k 次，整体最坏 <code>O(n·k)</code>。<strong>根因不是 <code>getS</code> 写错了，而是我用线性扫描手工模拟了一个&quot;最小堆的 <code>top()</code>&quot;</strong> —— 堆存在的意义就是不必为了拿一个最小值遍历整个集合。</p>
-<p>答案的做法是把 <code>res</code> 换成 <code>priority_queue</code>：<code>top()</code> 就是最小值，O(1) 拿到；插入/弹出 O(log k) 维护。<code>push</code> 之后 <code>if(size &gt; k) pop()</code> 直接替掉了我&quot;先比较再替换&quot;的逻辑 —— 我不需要自己判断该不该换，塞进去、超了就弹最小的，天然正确。<strong>同一个决策，我手写了两遍扫描，它让容器代劳。</strong></p>
-<p>顺带一个易错点：比较器写 <code>lhs.second &gt; rhs.second</code> 才是小顶堆（<code>priority_queue</code> 的比较器返回 true 表示&quot;优先级更低&quot;，所以 top 是&quot;没人比它更低的&quot;）。写成 <code>&lt;</code> 就变成大顶堆，弹掉的会是频次最大的元素，直接错。</p>
-<hr>
-<h2 id="二、-不要使用数组-因为元素可能是负数">二、<code>//不要使用数组,因为元素可能是负数</code></h2>
-<p><strong>这条判断完全正确，无需修改。</strong> 而且理由比我写的还严重一点：负数不是&quot;下标不合理报错&quot;，而是 <code>vector</code> 的 <code>operator[]</code> 越界写，属于 UB——可能不崩、悄悄写坏别处的内存。</p>
-<p>答案里用的也是 <code>unordered_map</code> 统计频次，说明这个选择本来就是对的。这里唯一可以补的认知是：<code>unordered_map</code> 的代价是常数大（哈希 + 缓存不友好），所以它是&quot;必须用&quot;而不是&quot;零成本&quot;，别的地方能数组就别用 map。</p>
-<hr>
-<h2 id="三、-如果你访问一个不存在的-key，-会自动插入，值初始化为-0，不要用-if-hash-i-0">三、<code>//如果你访问一个不存在的 key，[] 会自动插入，值初始化为 0，不要用 if(hash[i]!=0)</code></h2>
-<p><strong>这条结论写得完全正确，但代码没有照做。</strong> 注意你只在统计频次那里避开了 <code>[]</code>，在 <code>getS</code> 里又用回去了：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">getS</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; a, unordered_map&lt;<span class="type">int</span>,<span class="type">int</span>&gt;&amp; hash)</span></span>&#123;   <span class="comment">// 非 const，可写</span></span><br><span class="line">    ... <span class="keyword">if</span>(hash[a[i]] &lt; minFreq)                          <span class="comment">// 用 [] 读</span></span><br></pre></td></tr></table></figure>
-<p><strong>为什么现在没炸：</strong> <code>res</code> 里的元素全部来自 <code>hash</code> 的 key，所以 <code>[]</code> 一定命中已有元素，不会插入。</p>
-<p><strong>为什么仍然是隐患：</strong> 一旦真的插入（比如以后改了 <code>res</code> 的来源），<code>unordered_map</code> 会 rehash，外层 <code>for(auto &amp;p : hash)</code> 手里的迭代器立刻失效 → UB。这段代码的正确性依赖&quot;数据恰好如此&quot;，而不是逻辑保证。</p>
-<p><strong>改法要让编译器管，而不是靠记：</strong> 参数加 <code>const</code>，用 <code>at()</code> 读。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">getS</span><span class="params">(<span class="type">const</span> vector&lt;<span class="type">int</span>&gt;&amp; a, <span class="type">const</span> unordered_map&lt;<span class="type">int</span>,<span class="type">int</span>&gt;&amp; freq)</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> f = freq.<span class="built_in">at</span>(a[i]);   <span class="comment">// const 上 [] 根本编译不过，坑被语言层面堵死</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这也正好说明答案里 <code>map[nums[i]]++</code> 为什么用 <code>[]</code> 是对的：那里<strong>确实想插入</strong>。判断标准就一条——<strong>这个 key 本来就该存在吗？该存在就 <code>at()</code>/<code>find</code>，该创建就用 <code>[]</code>。</strong></p>
-<hr>
-<h2 id="四、答案快在哪">四、答案快在哪</h2>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>取最小值</th>
-<th>每元素</th>
-<th>总复杂度</th>
-<th>实测（n=1e5, k=5e4）</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>我的 <code>getS</code></td>
-<td>扫描 O(k)</td>
-<td>O(k)，扫两次</td>
-<td>最坏 <code>O(n·k)</code></td>
-<td>12722 ms</td>
-</tr>
-<tr>
-<td>答案的小顶堆</td>
-<td><code>top()</code> O(1)</td>
-<td>O(log k)</td>
-<td><code>O(n + d log k)</code></td>
-<td>29 ms</td>
-</tr>
-</tbody>
-</table>
-<p>差距不在算法，而在容器选择：<strong>我这里每一步 O(k) 的&quot;找最小&quot;，答案里是 O(1) 的 <code>top()</code> + O(log k) 的维护。</strong></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://lanxone.github.io/2026/10/20/LeetCode347_%E5%89%8DK%E4%B8%AA%E9%AB%98%E9%A2%91%E5%85%83%E7%B4%A0_%E5%A4%8D%E7%9B%98/" data-id="cmvp90fcp000kd8ma8j9z7lk5" data-title="哈希表:前k个高频元素" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
@@ -984,7 +1406,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 11.67px;">C++学习笔记</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 18.33px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/Godot/" style="font-size: 16.67px;">Godot</a> <a href="/tags/OpenGL/" style="font-size: 11.67px;">OpenGL</a> <a href="/tags/SDL/" style="font-size: 10px;">SDL</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 10px;">二叉树</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 11.67px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 13.33px;">学习规划</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E6%89%A7%E8%A1%8C%E8%A1%A8-6%E5%91%A8%E8%AE%A1%E5%88%92/" style="font-size: 10px;">学习路线,执行表,6周计划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 13.33px;">快速</a> <a href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" style="font-size: 11.67px;">栈和队列</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 15px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%84%9A%E6%9C%AC%E5%BC%80%E5%8F%91/" style="font-size: 10px;">脚本开发</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a> <a href="/tags/%E9%80%92%E5%BD%92/" style="font-size: 10px;">递归</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 10px;">随笔</a>
+      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 11.67px;">C++学习笔记</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 18.33px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/Godot/" style="font-size: 16.67px;">Godot</a> <a href="/tags/OpenGL/" style="font-size: 11.67px;">OpenGL</a> <a href="/tags/SDL/" style="font-size: 10px;">SDL</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 11.67px;">二叉树</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 11.67px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 13.33px;">学习规划</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E6%89%A7%E8%A1%8C%E8%A1%A8-6%E5%91%A8%E8%AE%A1%E5%88%92/" style="font-size: 10px;">学习路线,执行表,6周计划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 13.33px;">快速</a> <a href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" style="font-size: 11.67px;">栈和队列</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 15px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%84%9A%E6%9C%AC%E5%BC%80%E5%8F%91/" style="font-size: 10px;">脚本开发</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a> <a href="/tags/%E9%80%92%E5%BD%92/" style="font-size: 10px;">递归</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 10px;">随笔</a>
     </div>
   </div>
 
@@ -1006,6 +1428,14 @@
       <ul>
         
           <li>
+            <a href="/2026/10/29/%E9%9D%9E%E9%80%92%E5%BD%92%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86/">非递归的二叉树遍历</a>
+          </li>
+        
+          <li>
+            <a href="/2026/10/28/Godot06-%E7%AE%80%E5%8D%95%E6%88%98%E6%96%97%E7%B3%BB%E7%BB%9F/">Godot06:简单的战斗系统（hitbox 与受伤判定）</a>
+          </li>
+        
+          <li>
             <a href="/2026/10/27/%E9%BA%BB%E6%9C%A8%E5%A6%82%E4%BD%95%E6%91%A7%E6%AF%81%E4%BD%A0%E7%9A%84%E6%A2%A6%E6%83%B3/">麻木如何摧毁你的梦想</a>
           </li>
         
@@ -1015,14 +1445,6 @@
         
           <li>
             <a href="/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/">Godot04:瓦片碰撞与 Y 轴排序（TileSet 物理层）</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/26/Godot03-%E5%88%B6%E4%BD%9C%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE/">Godot03:制作瓦片地图（TileMap 与 TileSet）</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86%E5%92%8C%E9%80%92%E5%BD%92/">二叉树遍历和递归</a>
           </li>
         
       </ul>
@@ -1083,6 +1505,152 @@
 
   </div>
 <!-- hexo injector body_end start -->
+<style>
+  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
+  .lanx-sidebar-sticky {
+    display: flex; flex-direction: column; gap: 12px;
+    margin: 0 0 50px 0;
+    width: 100%;
+  }
+
+  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
+  .lanx-card {
+    box-sizing: border-box; width: 100%;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid #e8e8e8; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    font-size: 12px; color: #666; text-align: center;
+    line-height: 1.6; user-select: none;
+    transition: box-shadow 0.2s ease;
+  }
+  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+
+  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
+  .lanx-clock .clock-time {
+    font-size: 36px; font-weight: 700; color: #1a365d;
+    font-variant-numeric: tabular-nums; letter-spacing: 1px;
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
+      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
+      "Courier New", monospace;
+  }
+  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
+  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
+
+  /* 语录 */
+  .lanx-quote .quote-body {
+    font-size: 13px; color: #444; line-height: 1.75;
+    text-align: left; padding: 2px 0;
+  }
+  .lanx-quote .quote-meta {
+    font-size: 11px; color: #999; margin-top: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
+  .lanx-quote .quote-author { color: #888; }
+  .lanx-quote .quote-type {
+    font-size: 10px; padding: 1px 8px; border-radius: 10px;
+    background: #f0f0f0; color: #888;
+  }
+  .lanx-quote .quote-refresh {
+    cursor: pointer; padding: 2px 6px; border-radius: 4px;
+    color: #aaa; transition: all 0.2s;
+  }
+  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
+  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
+
+  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
+  @media (max-width: 767px) {
+    .lanx-sidebar-sticky { display: none; }
+    .lanx-sidebar-sticky.lanx-mobile-only {
+      display: flex; margin: 50px 0; width: 100%;
+    }
+  }
+</style>
+
+<script>
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    var sidebar = document.querySelector('#sidebar');
+    if (!sidebar) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'lanx-sidebar-sticky';
+
+    var weekdays = ['日','一','二','三','四','五','六'];
+
+    // 检测是否手机端(与 CSS 媒体查询断点一致)
+    var isMobile = window.innerWidth < 768;
+
+    // 时钟(上)
+    var clock = document.createElement('div');
+    clock.className = 'lanx-card lanx-clock';
+    clock.innerHTML =
+      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
+      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
+      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
+    wrap.appendChild(clock);
+
+    // 语录(下)
+    var quote = document.createElement('div');
+    quote.className = 'lanx-card lanx-quote';
+    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
+    wrap.appendChild(quote);
+
+    if (isMobile) {
+      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
+      wrap.classList.add('lanx-mobile-only');
+      sidebar.appendChild(wrap);
+    } else {
+      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
+      sidebar.insertBefore(wrap, sidebar.firstChild);
+      var firstInner = document.querySelector('article .article-inner');
+      if (firstInner) {
+        wrap.style.marginTop =
+          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
+      }
+    }
+
+    // 时钟
+    function tick(){
+      var d = new Date();
+      var p = function(n){ return n<10?'0'+n:n; };
+      document.getElementById('lanx_clock_time').textContent =
+        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+      document.getElementById('lanx_clock_date').textContent =
+        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
+      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
+    function loadQuotes(){
+      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
+        show(window.LANX_EXCERPTS);
+        return;
+      }
+      fetch('/excerpts.json')
+        .then(function(r){ return r.json(); })
+        .then(function(d){ show(d||[]); })
+        .catch(function(){ show([]); });
+    }
+    loadQuotes();
+    function show(data){
+      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
+      var it = data[Math.floor(Math.random()*data.length)];
+      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
+      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
+      quote.innerHTML =
+        '<div class="quote-body">'+it.content+'</div>' +
+        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
+        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
+      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
+    }
+  }, 500);
+});
+</script>
+  
 <style>
   #lanx-chess-root {
     --lanx-light: #f0d9b5;
@@ -3001,151 +3569,390 @@ function undo(){
 </script>
   
 <style>
-  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
-  .lanx-sidebar-sticky {
-    display: flex; flex-direction: column; gap: 12px;
-    margin: 0 0 50px 0;
-    width: 100%;
+  /* --- 详情页大号点赞按钮 --- */
+  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
+  .like-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 24px; font-size: 15px;
+    border: 1px solid #e0e0e0; border-radius: 24px;
+    background: #fff; color: #555; cursor: pointer;
+    transition: all 0.25s ease; user-select: none;
   }
+  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
+  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
+  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
+  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
 
-  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
-  .lanx-card {
-    box-sizing: border-box; width: 100%;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.94);
-    border: 1px solid #e8e8e8; border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    font-size: 12px; color: #666; text-align: center;
-    line-height: 1.6; user-select: none;
-    transition: box-shadow 0.2s ease;
+  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
+  .article-footer .lanx-action {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-right: 10px; font-size: 13px;
+    color: #666; text-decoration: none; cursor: pointer;
+    padding: 0 2px; border-radius: 4px;
+    transition: color 0.2s;
   }
-  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
-
-  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
-  .lanx-clock .clock-time {
-    font-size: 36px; font-weight: 700; color: #1a365d;
-    font-variant-numeric: tabular-nums; letter-spacing: 1px;
-    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
-      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
-      "Courier New", monospace;
+  .article-footer .lanx-action:hover { color: #ff6b6b; }
+  .article-footer .lanx-action.liked { color: #ff6b6b; }
+  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
+  .article-footer .lanx-action .lanx-count {
+    margin-left: 2px; font-size: 12px; color: #999;
   }
-  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
-  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
-
-  /* 语录 */
-  .lanx-quote .quote-body {
-    font-size: 13px; color: #444; line-height: 1.75;
-    text-align: left; padding: 2px 0;
-  }
-  .lanx-quote .quote-meta {
-    font-size: 11px; color: #999; margin-top: 8px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
-  .lanx-quote .quote-author { color: #888; }
-  .lanx-quote .quote-type {
-    font-size: 10px; padding: 1px 8px; border-radius: 10px;
-    background: #f0f0f0; color: #888;
-  }
-  .lanx-quote .quote-refresh {
-    cursor: pointer; padding: 2px 6px; border-radius: 4px;
-    color: #aaa; transition: all 0.2s;
-  }
-  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
-  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
-
-  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
-  @media (max-width: 767px) {
-    .lanx-sidebar-sticky { display: none; }
-    .lanx-sidebar-sticky.lanx-mobile-only {
-      display: flex; margin: 50px 0; width: 100%;
-    }
-  }
+  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
 </style>
 
 <script>
-window.addEventListener('load', function(){
-  setTimeout(function(){
-    var sidebar = document.querySelector('#sidebar');
-    if (!sidebar) return;
+(function(){
+  // 访客明细页不是文章页,不放点赞按钮
+  if (location.pathname.indexOf('/visitors') !== -1) return;
 
-    var wrap = document.createElement('div');
-    wrap.className = 'lanx-sidebar-sticky';
+  var articles = document.querySelectorAll('article.article');
+  var isSinglePost = articles.length === 1;
 
-    var weekdays = ['日','一','二','三','四','五','六'];
+  // 提取文章路径:从 share-link 的 data-url 里拿
+  function getArticlePath(articleEl) {
+    var link = articleEl.querySelector('.article-share-link');
+    if (link && link.dataset.url) {
+      try {
+        var u = new URL(link.dataset.url, location.origin);
+        return u.pathname;
+      } catch(e) {}
+    }
+    // fallback:用标题链接的 href
+    var titleLink = articleEl.querySelector('.article-title');
+    if (titleLink) return titleLink.getAttribute('href');
+    return '';
+  }
 
-    // 检测是否手机端(与 CSS 媒体查询断点一致)
-    var isMobile = window.innerWidth < 768;
+  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
+  if (!isSinglePost) {
+    articles.forEach(function(art) {
+      var af = art.querySelector('.article-footer');
+      var share = art.querySelector('.article-share-link');
+      var path = getArticlePath(art);
+      if (!af || !share || !path) return;
 
-    // 时钟(上)
-    var clock = document.createElement('div');
-    clock.className = 'lanx-card lanx-clock';
-    clock.innerHTML =
-      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
-      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
-      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
-    wrap.appendChild(clock);
+      var likedKey = 'liked_' + path;
+      var countKey = 'likeCount_' + path;
+      var liked = !!localStorage.getItem(likedKey);
+      var count = parseInt(localStorage.getItem(countKey) || '0');
 
-    // 语录(下)
-    var quote = document.createElement('div');
-    quote.className = 'lanx-card lanx-quote';
-    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
-    wrap.appendChild(quote);
+      // 点赞按钮(小)
+      var likeHtml =
+        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
+          '<span class="fa fa-thumbs-up"></span>' +
+          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
+        '</a>';
 
-    if (isMobile) {
-      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
-      wrap.classList.add('lanx-mobile-only');
-      sidebar.appendChild(wrap);
-    } else {
-      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
-      sidebar.insertBefore(wrap, sidebar.firstChild);
-      var firstInner = document.querySelector('article .article-inner');
-      if (firstInner) {
-        wrap.style.marginTop =
-          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
+      // 评论按钮(小),跳到详情页评论区
+      var commentHtml =
+        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
+          '<span class="fa fa-comment"></span>' +
+        '</a>';
+
+      // 插入到分享按钮前面
+      var temp = document.createElement('span');
+      temp.innerHTML = likeHtml + commentHtml;
+      share.parentNode.insertBefore(temp.firstChild, share);
+      share.parentNode.insertBefore(temp.firstChild, share);
+
+      // 绑定点赞事件
+      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
+      if (likeBtn) {
+        likeBtn.addEventListener('click', function(e) {
+          e.preventDefault(); e.stopPropagation();
+          if (likeBtn.classList.contains('liked')) return;
+          likeBtn.classList.add('liked');
+          localStorage.setItem(likedKey, '1');
+          count++;
+          localStorage.setItem(countKey, count);
+          var c = likeBtn.querySelector('.lanx-count');
+          c.textContent = count; c.style.display = '';
+        });
       }
-    }
+    });
+    return; // 多文章页到此为止
+  }
 
-    // 时钟
-    function tick(){
-      var d = new Date();
-      var p = function(n){ return n<10?'0'+n:n; };
-      document.getElementById('lanx_clock_time').textContent =
-        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
-      document.getElementById('lanx_clock_date').textContent =
-        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
-      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
-    }
-    tick();
-    setInterval(tick, 1000);
+  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
+  var path = location.pathname;
+  var likedKey = 'liked_' + path;
+  var countKey = 'likeCount_' + path;
+  var liked = localStorage.getItem(likedKey);
+  var count = parseInt(localStorage.getItem(countKey) || '0');
 
-    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
-    function loadQuotes(){
-      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
-        show(window.LANX_EXCERPTS);
-        return;
-      }
-      fetch('/excerpts.json')
-        .then(function(r){ return r.json(); })
-        .then(function(d){ show(d||[]); })
-        .catch(function(){ show([]); });
-    }
-    loadQuotes();
-    function show(data){
-      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
-      var it = data[Math.floor(Math.random()*data.length)];
-      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
-      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
-      quote.innerHTML =
-        '<div class="quote-body">'+it.content+'</div>' +
-        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
-        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
-      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
-    }
-  }, 500);
-});
+  var wrap = document.createElement('div');
+  wrap.className = 'like-wrap';
+  wrap.innerHTML =
+    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
+      '<span class="fa fa-thumbs-up"></span>' +
+      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
+      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
+    '</button>';
+  var af = document.querySelector('.article-footer');
+  if (af) af.after(wrap);
+
+  var btn = document.getElementById('likeBtn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('liked')) return;
+      btn.classList.add('liked');
+      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
+      localStorage.setItem(likedKey, '1');
+      count++;
+      localStorage.setItem(countKey, count);
+      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
+      btn.querySelector('#likeCountDisplay').style.display = '';
+      var inline = document.getElementById('lanx_like_inline');
+      if (inline) { inline.textContent = count; inline.style.display = ''; }
+    });
+  }
+
+  window.__LANX_LIKE_COUNT__ = count;
+})();
 </script>
   <script src="/js/pin.js?v=b15fc202" defer></script>
+<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
+<style>
+  /* --- Toast 提示 --- */
+  .lanx-toast {
+    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
+    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lanx-toast.success { background: #38a169; }
+  .lanx-toast.error { background: #e53e3e; }
+
+  /* --- Twikoo 评论区整体容器 --- */
+  #twikoo-comments {
+    margin-top: 48px; padding: 28px 28px 20px;
+    background: #fff; border-radius: 14px;
+    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
+  }
+  #twikoo-comments > h3 {
+    margin: 0 0 20px 0; padding-bottom: 14px;
+    font-size: 16px; font-weight: 600; color: #333;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  /* 留言板:不同的标题和背景 */
+  body.page-guestbook #twikoo-comments {
+    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
+    border: 1px solid #dbeafe;
+  }
+  body.page-guestbook #twikoo-comments > h3 {
+    border-bottom-color: #dbeafe;
+    color: #2563eb;
+  }
+
+  /* --- Twikoo 内部组件美化 --- */
+  .tk-comment-box {
+    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
+    padding: 14px 16px !important; margin-bottom: 16px !important;
+    transition: border-color 0.2s !important;
+  }
+  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
+  .tk-comment-box .el-textarea__inner {
+    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
+    font-size: 14px !important; line-height: 1.6 !important;
+  }
+  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
+  .tk-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    border: none !important; border-radius: 20px !important;
+    padding: 8px 22px !important; font-weight: 500 !important;
+  }
+  .tk-btn-primary:hover { opacity: 0.9; }
+
+  /* 评论列表卡片化 */
+  .tk-comment-item {
+    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
+    padding: 16px 18px !important; margin-bottom: 12px !important;
+    background: #fafbfc !important; transition: box-shadow 0.2s !important;
+  }
+  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+  /* 博主标识 */
+  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
+
+  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
+  .tk-powered-by,
+  .tk-comment-powered,
+  [class*="powered-by"],
+  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
+
+  /* 评论区底部工具条 */
+  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
+
+  /* 点赞/踩按钮 */
+  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
+
+  /* 头像 */
+  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
+
+  /* --- 分享按钮改复制链接 --- */
+  .article-share-link { cursor: pointer; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
+
+<script>
+(function(){
+  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
+  var path = location.pathname;
+  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
+  // 访客明细页也是一篇文章的形态,但它不需要评论区
+  var isPost = document.querySelectorAll('article.article').length === 1
+    && path.indexOf('/visitors') === -1
+    && path.indexOf('/photos') === -1;
+  var isGuestbook = path.indexOf('/guestbook') !== -1;
+
+  // ============ Toast 工具 ============
+  function showToast(msg, type) {
+    var t = document.createElement('div');
+    t.className = 'lanx-toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 1800);
+  }
+
+  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
+  function copyShareLink() {
+    var links = document.querySelectorAll('.article-share-link');
+    if (!links.length) return;
+    links.forEach(function(link) {
+      link.href = 'javascript:void(0)';
+      // 移除旧监听(防重复绑定)
+      link.replaceWith(link.cloneNode(true));
+    });
+    // 重新获取(因为 cloneNode 替换了)
+    links = document.querySelectorAll('.article-share-link');
+    links.forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
+        var url;
+        if (link.dataset.url) {
+          try { url = new URL(link.dataset.url, location.origin).href; }
+          catch(err) { url = location.origin + location.pathname; }
+        } else {
+          url = location.origin + location.pathname;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function(){
+            showToast('📋 链接已复制到剪贴板');
+          }).catch(function(){ fallbackCopy(url); });
+        } else {
+          fallbackCopy(url);
+        }
+      }, true);
+    });
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
+    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
+    ta.remove();
+  }
+
+  // ============ 2. 文章页访问量 + 评论容器 ============
+  if (isGuestbook) document.body.classList.add('page-guestbook');
+
+  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
+  copyShareLink();
+
+  if (isPost) {
+    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
+    setTimeout(function(){
+      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
+      var af = document.querySelector('.article-footer');
+      if (!af) return;
+      // 👁️ 阅读 + 👍 点赞 内联显示
+      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
+        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
+        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
+      '</span>';
+      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
+      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
+    }, 200);
+  }
+
+  if (isPost || isGuestbook) {
+    var commentDiv = document.createElement('div');
+    commentDiv.id = 'twikoo-comments';
+    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
+    var collapsible = !isGuestbook;
+    commentDiv.innerHTML =
+      (collapsible
+        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
+        : ''
+      ) +
+      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
+        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
+      '</div>';
+    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
+    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
+
+    // 折叠按钮点击
+    if (collapsible) {
+      var btn = document.getElementById('twikoo-toggle-btn');
+      var body = document.getElementById('twikoo-comments-body');
+      btn.addEventListener('click', function() {
+        if (body.style.display === 'none') {
+          body.style.display = '';
+          btn.textContent = '🙈 收起评论区';
+          btn.style.background = '#f5f5f5';
+          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
+          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
+        } else {
+          body.style.display = 'none';
+          btn.textContent = '💬 展开评论区';
+          btn.style.background = '#fff';
+        }
+      });
+    }
+  }
+
+  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
+  function initTwikooBody() {
+    var commentBox = document.getElementById('tcomments');
+    if (!commentBox) return;
+    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
+    var pinger = new Promise(function(resolve){
+      var timer = setTimeout(function(){ resolve(false); }, 5000);
+      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
+        .then(function(){ clearTimeout(timer); resolve(true); })
+        .catch(function(){ clearTimeout(timer); resolve(false); });
+    });
+    pinger.then(function(ok){
+      if (!ok) {
+        commentBox.innerHTML =
+          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
+            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
+            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
+          '</div>';
+        return;
+      }
+      function waitTwikoo(){
+        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
+        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
+          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
+      }
+      waitTwikoo();
+    });
+  }
+  // 留言板:立即初始化;文章页:等用户点展开按钮
+  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
+})();
+</script>
+  
 <style>
 /* ======== 独立页面模式: 隐藏 landscape 主题元素 ======== */
 body.lanx-todo-active header#header,
@@ -3595,390 +4402,5 @@ body.lanx-todo-active .article-inner > *:not(.article-entry) { display: none !im
 }
 </style>
 <script src="/js/todolist-app.js"></script>
-
-<style>
-  /* --- 详情页大号点赞按钮 --- */
-  .like-wrap { text-align: center; margin: 40px 0 20px; padding: 24px 0; }
-  .like-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 24px; font-size: 15px;
-    border: 1px solid #e0e0e0; border-radius: 24px;
-    background: #fff; color: #555; cursor: pointer;
-    transition: all 0.25s ease; user-select: none;
-  }
-  .like-btn:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: 0 2px 10px rgba(255,107,107,0.15); }
-  .like-btn.liked { background: linear-gradient(135deg,#ff6b6b,#ff8e8e); border-color: #ff6b6b; color: #fff; }
-  .like-btn.liked .fa-thumbs-up { animation: heartBeat 0.5s ease; }
-  @keyframes heartBeat { 0%{transform:scale(1)} 25%{transform:scale(1.3)} 50%{transform:scale(1)} 75%{transform:scale(1.15)} 100%{transform:scale(1)} }
-  .like-count-inline { margin-left:4px;color:#ff6b6b;font-weight:600; }
-
-  /* --- 首页列表:分享按钮左边的小按钮(点赞/评论) --- */
-  .article-footer .lanx-action {
-    display: inline-flex; align-items: center; gap: 4px;
-    margin-right: 10px; font-size: 13px;
-    color: #666; text-decoration: none; cursor: pointer;
-    padding: 0 2px; border-radius: 4px;
-    transition: color 0.2s;
-  }
-  .article-footer .lanx-action:hover { color: #ff6b6b; }
-  .article-footer .lanx-action.liked { color: #ff6b6b; }
-  .article-footer .lanx-action.lanx-comment:hover { color: #6366f1; }
-  .article-footer .lanx-action .lanx-count {
-    margin-left: 2px; font-size: 12px; color: #999;
-  }
-  .article-footer .lanx-action.liked .lanx-count { color: #ff6b6b; }
-</style>
-
-<script>
-(function(){
-  // 访客明细页不是文章页,不放点赞按钮
-  if (location.pathname.indexOf('/visitors') !== -1) return;
-
-  var articles = document.querySelectorAll('article.article');
-  var isSinglePost = articles.length === 1;
-
-  // 提取文章路径:从 share-link 的 data-url 里拿
-  function getArticlePath(articleEl) {
-    var link = articleEl.querySelector('.article-share-link');
-    if (link && link.dataset.url) {
-      try {
-        var u = new URL(link.dataset.url, location.origin);
-        return u.pathname;
-      } catch(e) {}
-    }
-    // fallback:用标题链接的 href
-    var titleLink = articleEl.querySelector('.article-title');
-    if (titleLink) return titleLink.getAttribute('href');
-    return '';
-  }
-
-  // ============ 首页/归档/标签页:每篇文章 footer 加小按钮 ============
-  if (!isSinglePost) {
-    articles.forEach(function(art) {
-      var af = art.querySelector('.article-footer');
-      var share = art.querySelector('.article-share-link');
-      var path = getArticlePath(art);
-      if (!af || !share || !path) return;
-
-      var likedKey = 'liked_' + path;
-      var countKey = 'likeCount_' + path;
-      var liked = !!localStorage.getItem(likedKey);
-      var count = parseInt(localStorage.getItem(countKey) || '0');
-
-      // 点赞按钮(小)
-      var likeHtml =
-        '<a class="lanx-action lanx-like' + (liked ? ' liked' : '') + '" data-path="' + path + '">' +
-          '<span class="fa fa-thumbs-up"></span>' +
-          '<span class="lanx-count"' + (count > 0 ? '' : ' style="display:none"') + '>' + count + '</span>' +
-        '</a>';
-
-      // 评论按钮(小),跳到详情页评论区
-      var commentHtml =
-        '<a class="lanx-action lanx-comment" href="' + path + '#twikoo-comments">' +
-          '<span class="fa fa-comment"></span>' +
-        '</a>';
-
-      // 插入到分享按钮前面
-      var temp = document.createElement('span');
-      temp.innerHTML = likeHtml + commentHtml;
-      share.parentNode.insertBefore(temp.firstChild, share);
-      share.parentNode.insertBefore(temp.firstChild, share);
-
-      // 绑定点赞事件
-      var likeBtn = share.parentNode.querySelector('.lanx-like[data-path="' + path + '"]');
-      if (likeBtn) {
-        likeBtn.addEventListener('click', function(e) {
-          e.preventDefault(); e.stopPropagation();
-          if (likeBtn.classList.contains('liked')) return;
-          likeBtn.classList.add('liked');
-          localStorage.setItem(likedKey, '1');
-          count++;
-          localStorage.setItem(countKey, count);
-          var c = likeBtn.querySelector('.lanx-count');
-          c.textContent = count; c.style.display = '';
-        });
-      }
-    });
-    return; // 多文章页到此为止
-  }
-
-  // ============ 单文章详情页:大号点赞按钮 + 统计 ============
-  var path = location.pathname;
-  var likedKey = 'liked_' + path;
-  var countKey = 'likeCount_' + path;
-  var liked = localStorage.getItem(likedKey);
-  var count = parseInt(localStorage.getItem(countKey) || '0');
-
-  var wrap = document.createElement('div');
-  wrap.className = 'like-wrap';
-  wrap.innerHTML =
-    '<button class="like-btn' + (liked ? ' liked' : '') + '" id="likeBtn">' +
-      '<span class="fa fa-thumbs-up"></span>' +
-      '<span>' + (liked ? '已点赞,谢谢!' : '点个赞再走吧 ~') + '</span>' +
-      '<span class="like-count-inline" id="likeCountDisplay"' + (count > 0 ? '' : ' style="display:none"') + '>(' + count + ')</span>' +
-    '</button>';
-  var af = document.querySelector('.article-footer');
-  if (af) af.after(wrap);
-
-  var btn = document.getElementById('likeBtn');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      if (btn.classList.contains('liked')) return;
-      btn.classList.add('liked');
-      btn.querySelector('span:nth-child(2)').textContent = '已点赞,谢谢!';
-      localStorage.setItem(likedKey, '1');
-      count++;
-      localStorage.setItem(countKey, count);
-      btn.querySelector('#likeCountDisplay').textContent = '(' + count + ')';
-      btn.querySelector('#likeCountDisplay').style.display = '';
-      var inline = document.getElementById('lanx_like_inline');
-      if (inline) { inline.textContent = count; inline.style.display = ''; }
-    });
-  }
-
-  window.__LANX_LIKE_COUNT__ = count;
-})();
-</script>
-  
-<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
-<style>
-  /* --- Toast 提示 --- */
-  .lanx-toast {
-    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
-    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
-    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  }
-  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .lanx-toast.success { background: #38a169; }
-  .lanx-toast.error { background: #e53e3e; }
-
-  /* --- Twikoo 评论区整体容器 --- */
-  #twikoo-comments {
-    margin-top: 48px; padding: 28px 28px 20px;
-    background: #fff; border-radius: 14px;
-    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
-  }
-  #twikoo-comments > h3 {
-    margin: 0 0 20px 0; padding-bottom: 14px;
-    font-size: 16px; font-weight: 600; color: #333;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  /* 留言板:不同的标题和背景 */
-  body.page-guestbook #twikoo-comments {
-    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
-    border: 1px solid #dbeafe;
-  }
-  body.page-guestbook #twikoo-comments > h3 {
-    border-bottom-color: #dbeafe;
-    color: #2563eb;
-  }
-
-  /* --- Twikoo 内部组件美化 --- */
-  .tk-comment-box {
-    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
-    padding: 14px 16px !important; margin-bottom: 16px !important;
-    transition: border-color 0.2s !important;
-  }
-  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
-  .tk-comment-box .el-textarea__inner {
-    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
-    font-size: 14px !important; line-height: 1.6 !important;
-  }
-  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
-  .tk-btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-    border: none !important; border-radius: 20px !important;
-    padding: 8px 22px !important; font-weight: 500 !important;
-  }
-  .tk-btn-primary:hover { opacity: 0.9; }
-
-  /* 评论列表卡片化 */
-  .tk-comment-item {
-    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
-    padding: 16px 18px !important; margin-bottom: 12px !important;
-    background: #fafbfc !important; transition: box-shadow 0.2s !important;
-  }
-  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-
-  /* 博主标识 */
-  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
-
-  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
-  .tk-powered-by,
-  .tk-comment-powered,
-  [class*="powered-by"],
-  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
-
-  /* 评论区底部工具条 */
-  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
-
-  /* 点赞/踩按钮 */
-  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
-
-  /* 头像 */
-  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
-
-  /* --- 分享按钮改复制链接 --- */
-  .article-share-link { cursor: pointer; }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
-
-<script>
-(function(){
-  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
-  var path = location.pathname;
-  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
-  // 访客明细页也是一篇文章的形态,但它不需要评论区
-  var isPost = document.querySelectorAll('article.article').length === 1
-    && path.indexOf('/visitors') === -1
-    && path.indexOf('/photos') === -1;
-  var isGuestbook = path.indexOf('/guestbook') !== -1;
-
-  // ============ Toast 工具 ============
-  function showToast(msg, type) {
-    var t = document.createElement('div');
-    t.className = 'lanx-toast' + (type ? ' ' + type : '');
-    t.textContent = msg;
-    document.body.appendChild(t);
-    requestAnimationFrame(function(){ t.classList.add('show'); });
-    setTimeout(function(){
-      t.classList.remove('show');
-      setTimeout(function(){ t.remove(); }, 300);
-    }, 1800);
-  }
-
-  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
-  function copyShareLink() {
-    var links = document.querySelectorAll('.article-share-link');
-    if (!links.length) return;
-    links.forEach(function(link) {
-      link.href = 'javascript:void(0)';
-      // 移除旧监听(防重复绑定)
-      link.replaceWith(link.cloneNode(true));
-    });
-    // 重新获取(因为 cloneNode 替换了)
-    links = document.querySelectorAll('.article-share-link');
-    links.forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault(); e.stopPropagation();
-        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
-        var url;
-        if (link.dataset.url) {
-          try { url = new URL(link.dataset.url, location.origin).href; }
-          catch(err) { url = location.origin + location.pathname; }
-        } else {
-          url = location.origin + location.pathname;
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(url).then(function(){
-            showToast('📋 链接已复制到剪贴板');
-          }).catch(function(){ fallbackCopy(url); });
-        } else {
-          fallbackCopy(url);
-        }
-      }, true);
-    });
-  }
-  function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
-    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
-    ta.remove();
-  }
-
-  // ============ 2. 文章页访问量 + 评论容器 ============
-  if (isGuestbook) document.body.classList.add('page-guestbook');
-
-  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
-  copyShareLink();
-
-  if (isPost) {
-    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
-    setTimeout(function(){
-      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
-      var af = document.querySelector('.article-footer');
-      if (!af) return;
-      // 👁️ 阅读 + 👍 点赞 内联显示
-      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
-        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
-        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
-      '</span>';
-      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
-      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
-    }, 200);
-  }
-
-  if (isPost || isGuestbook) {
-    var commentDiv = document.createElement('div');
-    commentDiv.id = 'twikoo-comments';
-    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
-    var collapsible = !isGuestbook;
-    commentDiv.innerHTML =
-      (collapsible
-        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
-        : ''
-      ) +
-      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
-        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
-      '</div>';
-    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
-    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
-
-    // 折叠按钮点击
-    if (collapsible) {
-      var btn = document.getElementById('twikoo-toggle-btn');
-      var body = document.getElementById('twikoo-comments-body');
-      btn.addEventListener('click', function() {
-        if (body.style.display === 'none') {
-          body.style.display = '';
-          btn.textContent = '🙈 收起评论区';
-          btn.style.background = '#f5f5f5';
-          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
-          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
-        } else {
-          body.style.display = 'none';
-          btn.textContent = '💬 展开评论区';
-          btn.style.background = '#fff';
-        }
-      });
-    }
-  }
-
-  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
-  function initTwikooBody() {
-    var commentBox = document.getElementById('tcomments');
-    if (!commentBox) return;
-    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
-    var pinger = new Promise(function(resolve){
-      var timer = setTimeout(function(){ resolve(false); }, 5000);
-      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
-        .then(function(){ clearTimeout(timer); resolve(true); })
-        .catch(function(){ clearTimeout(timer); resolve(false); });
-    });
-    pinger.then(function(ok){
-      if (!ok) {
-        commentBox.innerHTML =
-          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
-            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
-            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
-          '</div>';
-        return;
-      }
-      function waitTwikoo(){
-        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
-        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
-          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
-      }
-      waitTwikoo();
-    });
-  }
-  // 留言板:立即初始化;文章页:等用户点展开按钮
-  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
-})();
-</script>
-  <script src="/js/visitor.js?v=23e542bf" defer></script><!-- hexo injector body_end end --></body>
+<script src="/js/visitor.js?v=23e542bf" defer></script><!-- hexo injector body_end end --></body>
 </html>
