@@ -84,6 +84,428 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Godot05-创建史莱姆" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/27/Godot05-%E5%88%9B%E5%BB%BA%E5%8F%B2%E8%8E%B1%E5%A7%86/" class="article-date">
+  <time class="dt-published" datetime="2026-10-27T12:30:00.000Z" itemprop="datePublished">2026-10-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/10/27/Godot05-%E5%88%9B%E5%BB%BA%E5%8F%B2%E8%8E%B1%E5%A7%86/">Godot05:创建史莱姆（敌人动画与 Area2D）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>地图和碰撞都有了，接下来进入战斗部分。第一个敌人是史莱姆：这一篇先照 <code>Godot01</code> 的流程把它立起来，再挂一个 <code>Area2D</code>，作为之后受击判定的区域。</p>
+<h2 id="第一步：创建史莱姆和它的动画">第一步：创建史莱姆和它的动画</h2>
+<p>史莱姆和 <code>player</code> 是同一套搭法，流程不重复截图，直接对照 <a href="/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/">Godot01：创建一个能动的角色</a>：</p>
+<ol>
+<li>新建根节点 <code>CharacterBody2D</code>，重命名为 <code>slime</code>。</li>
+<li>添加 <code>AnimatedSprite2D</code>，在 <code>Sprite Frames</code> 里新建 <code>SpriteFrames</code>，导入史莱姆素材并切帧。</li>
+<li>按动作分别建动画，命名建议直接对应状态：<code>idle</code>、<code>move</code>、<code>hurt</code>、<code>death</code>。每个动画单独导入帧。</li>
+<li>添加 <code>CollisionShape2D</code>，在 <code>Shape</code> 里新建形状（<code>RectangleShape2D</code> 或 <code>CapsuleShape2D</code>），缩到史莱姆身体大小。</li>
+</ol>
+<p>像素素材的模糊问题在 <code>Godot01</code> 里已经通过项目级 <code>Default Texture Filter → Nearest</code> 解决，这是全局设置，新节点直接沿用，不用再改一遍。</p>
+<p>场景面板里节点旁边出现<strong>黄色三角</strong>，是在提醒还有东西没配：<code>AnimatedSprite2D</code> 没有 <code>SpriteFrames</code> 或动画为空，<code>CollisionShape2D</code> 的 <code>Shape</code> 还是 <code>&lt;empty&gt;</code>。全部配好后警告会消失，这个小图标本身就可以当检查清单。</p>
+<h2 id="第二步：给史莱姆添加-Area2D">第二步：给史莱姆添加 Area2D</h2>
+<p>选中 <code>slime</code>，点场景面板左上角的 <code>+</code>，在搜索框输入 <code>area</code>，选中 <strong><code>Area2D</code></strong>，点 <strong>Create</strong>。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step2-add-area2d.png" alt="在 Create New Node 里给 slime 添加 Area2D"></p>
+<p><code>Area2D</code> 和 <code>CharacterBody2D</code> 的分工要说清楚：</p>
+<ul>
+<li><code>CharacterBody2D</code> 负责<strong>物理阻挡和移动</strong>，会被墙、树挡住；</li>
+<li><code>Area2D</code> <strong>不参与物理阻挡</strong>，只负责&quot;有没有东西和我重叠&quot;。</li>
+</ul>
+<p>所以史莱姆的身体用 <code>CharacterBody2D</code> 走碰撞，受击、攻击这类判定另外用 <code>Area2D</code> 框一块区域，两者互不干扰。</p>
+<p>添加后顺手把节点改个名，按用途起：做受击区叫 <code>hurtbox</code>，做侦测范围叫 <code>detection</code>，场景里节点一多才不会认错。</p>
+<h2 id="第三步：给-Area2D-加一个-CollisionShape2D-子节点">第三步：给 Area2D 加一个 CollisionShape2D 子节点</h2>
+<p><code>Area2D</code> 自己是没有形状的，空着它检测不到任何东西——必须再给它挂一个 <code>CollisionShape2D</code> 子节点并设置 <code>Shape</code>，这个形状就是它的<strong>检测范围</strong>：</p>
+<ol>
+<li>选中 <code>Area2D</code>，再点 <code>+</code> 添加 <code>CollisionShape2D</code>。</li>
+<li>在 <code>Shape</code> 里新建形状（多为 <code>RectangleShape2D</code> 或 <code>CircleShape2D</code>）。</li>
+<li>用鼠标拖动控制点缩放到需要的大小。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step3-area2d-collisionshape.png" alt="给 Area2D 加上 CollisionShape2D，用圆把周围的检测范围圈出来"></p>
+<p>截图里用的是 <code>CircleShape2D</code>，半径拉到盖住史莱姆周围一圈；选中 <code>CollisionShape2D</code> 后，<code>Shape</code> 那一栏随时能改。</p>
+<p>范围大小取决于用途：</p>
+<ul>
+<li><strong>当受击区</strong>：贴着史莱姆身体，略大一圈就行，给判定留一点容错，打起来不会太苛刻；</li>
+<li><strong>当侦测范围</strong>：比身体大一两圈，玩家走进这个圈才会被史莱姆发现，圈子太大就会出现&quot;隔着半张地图就追过来&quot;。</li>
+</ul>
+<p><code>Area2D</code> 的碰撞形状只在编辑器里画出来，运行时默认不可见；调试时打开 <strong>调试 → 可见碰撞形状</strong> 就能看到它的实际范围。它和史莱姆本体那个 <code>CollisionShape2D</code> 互不影响：一个管阻挡，一个管检测。</p>
+<h2 id="第四步：设置碰撞图层">第四步：设置碰撞图层</h2>
+<p>到这一步为止，玩家的 <code>Mask</code> 里只有世界障碍那一层，所以史莱姆的 <code>Area2D</code> 根本“看不见”玩家；而只改史莱姆又会出现另一个问题：树也在它的探测范围里。解决办法是先把图层分工定下来：</p>
+<table>
+<thead>
+<tr>
+<th>图层</th>
+<th>放什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>世界障碍：树、石头（TileMap 物理层），以后加的墙</td>
+</tr>
+<tr>
+<td>2</td>
+<td>玩家</td>
+</tr>
+</tbody>
+</table>
+<h3 id="史莱姆：只探测玩家">史莱姆：只探测玩家</h3>
+<p>选中 <code>slime</code> 下的 <code>Area2D</code>，展开 <code>CollisionObject2D → Collision</code>：</p>
+<ul>
+<li><code>Layer</code> 勾 <strong>2</strong>：这个区域自身属于第 2 层；</li>
+<li><code>Mask</code> 只勾 <strong>2</strong>：它只关心第 2 层上的东西，也就是玩家。</li>
+</ul>
+<p><code>Mask</code> 里不要勾 1，否则树也满足条件，史莱姆会去追一棵树。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step4-slime-area-layers.png" alt="史莱姆 Area2D 的 Layer/Mask 设置"></p>
+<h3 id="玩家：既被树挡，也被史莱姆发现">玩家：既被树挡，也被史莱姆发现</h3>
+<p>选中 <code>player</code> 的 <code>CharacterBody2D</code>：</p>
+<ul>
+<li><code>Layer</code> 勾 <strong>2</strong>：玩家属于第 2 层，史莱姆的 <code>Mask</code> 才探得到；</li>
+<li><code>Mask</code> 勾 <strong>1</strong>：被 TileMap 物理层上的树、石头挡住；</li>
+<li><code>Mask</code> 再勾 <strong>2</strong>（可选）：和同属第 2 层的实体发生碰撞，而不是互相穿过去。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step5-player-layers.png" alt="玩家的 Layer/Mask 设置"></p>
+<p><code>Layer</code> 和 <code>Mask</code> 一句话区分：<code>Layer</code> 是“我属于哪一层”，<code>Mask</code> 是“我关心哪一层”。两个物体的 <code>Layer</code> 和 <code>Mask</code> 交叉上了，才会产生碰撞或检测。</p>
+<p>还要确认 TileMap 的物理层在第 1 层——<code>Godot04</code> 里的 <code>Physics Layer 0</code> 默认就是 Layer 1，项目中途改过图层的话这里得对一遍，否则玩家 <code>Mask</code> 勾了 1 也挡不住树。</p>
+<h2 id="第五步：给史莱姆挂脚本，并连接-body-entered-body-exited">第五步：给史莱姆挂脚本，并连接 body_entered / body_exited</h2>
+<p><code>Area2D</code> 自己不会写逻辑，它靠信号通知脚本。这一步先把脚本挂上，再把两个信号连出来。</p>
+<h3 id="挂脚本">挂脚本</h3>
+<p>选中 <code>slime</code>，点场景面板上方的 <strong>Attach Script</strong>（带加号的脚本图标），语言保持 <code>GDScript</code>，路径用默认的 <code>res://slime.gd</code> 即可，模板留默认。创建后 <code>slime</code> 那一行右侧会出现脚本图标，说明脚本已经挂上。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step6-attach-script.png" alt="选中 slime，点击 Attach Script"></p>
+<h3 id="连接信号">连接信号</h3>
+<ol>
+<li>选中 <code>slime</code> 下的 <code>Area2D</code>，切到右上角的 <strong>Signals</strong> 页签。</li>
+<li>找到 <code>body_entered(body: Node2D)</code>，双击（或点右侧的连接按钮）打开 <strong>Connect Signal</strong> 对话框。</li>
+<li>接收节点保持 <code>slime</code>，方法名默认生成 <code>_on_area_2d_body_entered</code>，点 <code>Connect</code> 确认。</li>
+<li>用同样的方式连接 <code>body_exited(body: Node2D)</code>，方法名 <code>_on_area_2d_body_exited</code>。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step7-connect-signals.png" alt="在 Area2D 的 Signals 面板连接 body_entered 和 body_exited"></p>
+<p>连好后 <code>slime.gd</code> 里会自动多出两个空函数，信号列表里对应的条目也会显示为已连接。</p>
+<h3 id="为什么必须在编辑器里连">为什么必须在编辑器里连</h3>
+<p>这一点容易踩坑：<strong>只在脚本里手写一个同名函数是无效的</strong>。Godot 不会因为函数恰好叫 <code>_on_area_2d_body_entered</code> 就自动把它当回调——编辑器连接的记录是写进场景文件（<code>.tscn</code>）的，手写函数只是“定义了”，并没有“接上”。</p>
+<p>如果想让纯代码也生效，必须显式调用 <code>connect()</code>：</p>
+<figure class="highlight gdscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">func </span><span class="function">_ready</span>() -&gt; <span class="keyword">void</span>:</span><br><span class="line">    <span class="variable">$Area2D</span>.body_entered.<span class="function">connect</span>(_on_area_2d_body_entered)</span><br><span class="line">    <span class="variable">$Area2D</span>.body_exited.<span class="function">connect</span>(_on_area_2d_body_exited)</span><br></pre></td></tr></table></figure>
+<p>两种方式二选一即可。跟着编辑器连，就不需要这段 <code>_ready()</code>。</p>
+<h3 id="两个信号分别什么时候发">两个信号分别什么时候发</h3>
+<table>
+<thead>
+<tr>
+<th>信号</th>
+<th>什么时候发出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>body_entered(body)</code></td>
+<td>物理体（<code>CharacterBody2D</code>、<code>StaticBody2D</code> 等）进入区域</td>
+</tr>
+<tr>
+<td><code>body_exited(body)</code></td>
+<td>物理体离开区域</td>
+</tr>
+</tbody>
+</table>
+<p><code>body</code> 参数就是进入或离开的那个节点。因为史莱姆 <code>Area2D</code> 的 <code>Mask</code> 只勾了第 2 层（玩家），能触发它的一般只有玩家，所以下一步的代码直接把它当玩家用，不再做分组判断。</p>
+<h2 id="第六步：让史莱姆动起来">第六步：让史莱姆动起来</h2>
+<p>脚本内容如下，直接覆盖 <code>slime.gd</code>：</p>
+<figure class="highlight gdscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extends</span> <span class="class">CharacterBody2D</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> speed = <span class="number">25</span>        <span class="comment"># 移动速度（实际上是除数，见下文）</span></span><br><span class="line"><span class="keyword">var</span> chasing = <span class="literal">false</span>   <span class="comment"># 是否在追逐玩家</span></span><br><span class="line"><span class="keyword">var</span> player = <span class="literal">null</span>     <span class="comment"># 目标</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">_physics_process</span>(delta):</span><br><span class="line">    <span class="keyword">if</span> chasing:</span><br><span class="line">        position += (player.position - position) / speed  <span class="comment"># 追逐</span></span><br><span class="line">        <span class="variable">$AnimatedSprite2D</span>.<span class="function">play</span>(<span class="string">&quot;walk&quot;</span>)                    <span class="comment"># 播放行走动画</span></span><br><span class="line">        <span class="keyword">if</span> player.position.x &gt; position.x:</span><br><span class="line">            <span class="variable">$AnimatedSprite2D</span>.flip_h = <span class="literal">false</span>              <span class="comment"># 根据玩家位置翻转精灵</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="variable">$AnimatedSprite2D</span>.flip_h = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="variable">$AnimatedSprite2D</span>.<span class="function">play</span>(<span class="string">&quot;idle&quot;</span>)                    <span class="comment"># 播放待机动画</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## Area2D 节点提供的两个信号函数，分别在有物体进入和离开检测区域时触发。</span></span><br><span class="line"><span class="keyword">func </span><span class="function">_on_area_2d_body_entered</span>(body):</span><br><span class="line">    player = body   <span class="comment"># 有 body 进入检测区域时，把它记为目标，开始追逐</span></span><br><span class="line">    chasing = <span class="literal">true</span>  <span class="comment"># 设置追逐状态为 true</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">_on_area_2d_body_exited</span>(body):</span><br><span class="line">    player = <span class="literal">null</span>   <span class="comment"># 目标离开检测区域，清空目标，停止追逐</span></span><br><span class="line">    chasing = <span class="literal">false</span> <span class="comment"># 设置追逐状态为 false</span></span><br></pre></td></tr></table></figure>
+<p>分成四块看：</p>
+<ol>
+<li><code>extends CharacterBody2D</code>：脚本类型必须和根节点一致，否则挂不上。</li>
+<li>三个变量各管一件事：<code>speed</code> 是逼近速度、<code>chasing</code> 是状态开关、<code>player</code> 存目标（<code>null</code> 表示没人）。</li>
+<li><code>_physics_process(delta)</code> 每个物理帧跑一次。追逐时 <code>position += (player.position - position) / speed</code>，也就是每次只走“剩余距离的 1/25”，越靠近步子越小，最后会贴到玩家身上；<code>flip_h</code> 按玩家在左还是在右翻转精灵，素材默认朝右时 <code>flip_h = false</code> 就是朝右。</li>
+<li>两个信号回调就是第五步在编辑器里连出来的函数：进入时记目标、开追逐，离开时清目标、关追逐。函数名必须和连接时登记的一致。</li>
+</ol>
+<h3 id="几个值得注意的点">几个值得注意的点</h3>
+<ul>
+<li><strong><code>speed</code> 实际是分担距离的除数</strong>：值越大，每帧走掉的比例越小，史莱姆越慢；想让它快，是把 25 改小。名字叫 speed 只是习惯。</li>
+<li><strong>没有乘 <code>delta</code></strong>：位移和帧率挂钩，高刷屏上会更快。想稳定速度，标准写法是算 <code>velocity</code> 再 <code>move_and_slide()</code>。</li>
+<li><strong><code>position</code> 是相对父节点的</strong>：史莱姆和玩家都挂在 <code>world</code> 下，直接相减没问题；以后如果把玩家塞进别的容器，这里要换成 <code>global_position</code>。</li>
+<li><strong>玩家被 <code>queue_free()</code> 之后</strong>，<code>player</code> 还指着已释放的节点，再访问 <code>.position</code> 会报 <code>Invalid access to property 'position' on a null instance</code>。等做伤害和死亡时，要在玩家消失前把 <code>chasing</code> 关掉。</li>
+</ul>
+<h2 id="检查清单">检查清单</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>节点旁有黄色三角</td>
+<td><code>SpriteFrames</code> 没建，或 <code>CollisionShape2D</code> 的 <code>Shape</code> 为空</td>
+</tr>
+<tr>
+<td><code>Area2D</code> 什么也检测不到</td>
+<td>没给 <code>Area2D</code> 加 <code>CollisionShape2D</code> 子节点</td>
+</tr>
+<tr>
+<td>史莱姆把玩家挡住了</td>
+<td><code>Area2D</code> 本身不阻挡，检查是不是身体的碰撞形状被删掉或缩放错了</td>
+</tr>
+<tr>
+<td>动画播不出来</td>
+<td>脚本里 <code>play()</code> 的动画名和 <code>SpriteFrames</code> 里不一致</td>
+</tr>
+<tr>
+<td>史莱姆追着树跑</td>
+<td><code>Area2D</code> 的 <code>Mask</code> 勾了 1，把世界障碍也算进检测对象</td>
+</tr>
+<tr>
+<td>史莱姆看不见玩家</td>
+<td>玩家 <code>Layer</code> 没勾 2，或 <code>Area2D</code> 的 <code>Mask</code> 没勾 2</td>
+</tr>
+<tr>
+<td>玩家穿过树</td>
+<td>玩家 <code>Mask</code> 没勾 1，或 TileMap 的物理层不在第 1 层</td>
+</tr>
+<tr>
+<td>玩家和史莱姆互相穿过去</td>
+<td>两边 <code>Layer</code> / <code>Mask</code> 没有交叉上</td>
+</tr>
+<tr>
+<td>连了信号但函数不执行</td>
+<td>函数名被改过，和连接时登记的名字不一致</td>
+</tr>
+<tr>
+<td>只在脚本里写了函数，走进范围没反应</td>
+<td>没在编辑器连接，也没调用 <code>connect()</code></td>
+</tr>
+<tr>
+<td>同一个信号触发了两次</td>
+<td>编辑器连了一次，<code>_ready()</code> 里又 <code>connect()</code> 了一次</td>
+</tr>
+<tr>
+<td>史莱姆站着不动</td>
+<td><code>chasing</code> 一直是 <code>false</code>：信号没连上，或玩家 <code>Layer</code> 和 <code>Area2D</code> 的 <code>Mask</code> 对不上</td>
+</tr>
+<tr>
+<td>史莱姆贴着玩家来回抽搐</td>
+<td>两者重叠后每帧翻转 <code>flip_h</code>，可以在距离很近时停止翻转或停下</td>
+</tr>
+<tr>
+<td>报 <code>Invalid access to property 'position' on a null instance</code></td>
+<td>目标已被释放，<code>chasing</code> 还是 <code>true</code>，访问 <code>player.position</code> 时炸掉</td>
+</tr>
+<tr>
+<td>史莱姆追得越来越慢</td>
+<td>除数式逼近，越近步长越小，属于正常现象；要匀速请改用 <code>velocity</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>上一篇：<a href="/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/">Godot04：瓦片碰撞与 Y 轴排序</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lanxone.github.io/2026/10/27/Godot05-%E5%88%9B%E5%BB%BA%E5%8F%B2%E8%8E%B1%E5%A7%86/" data-id="cmvqnu84b00004omab6og9gkb" data-title="Godot05:创建史莱姆（敌人动画与 Area2D）" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Godot/" rel="tag">Godot</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-Godot04-给瓦片加碰撞" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/" class="article-date">
+  <time class="dt-published" datetime="2026-10-27T10:55:00.000Z" itemprop="datePublished">2026-10-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/">Godot04:瓦片碰撞与 Y 轴排序（TileSet 物理层）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>上一篇把地图画出来了，但角色现在能直接穿过树、石头和一切装饰物。这一篇先给瓦片加碰撞（给 <code>TileSet</code> 添加物理层、切到 <code>Paint</code> 选好属性编辑器、逐个塑造图块的碰撞箱），再用 Y 轴排序让树能挡住角色。</p>
+<h2 id="第一步：为-TileMap-添加物理层">第一步：为 TileMap 添加物理层</h2>
+<p>物理层建在 <strong><code>TileSet</code> 资源</strong>里，不是建在 <code>TileMap</code> 节点的 <code>Layers</code> 里，这是最容易走错的一步。</p>
+<ol>
+<li>选中 <code>TileMap</code> 节点，在 Inspector 里点开 <code>Tile Set</code> 属性，展开这个资源。</li>
+<li>找到 <strong><code>Physics Layers</code></strong> 分组，点 <strong>Add Element</strong>。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step1-add-physics-layer.png" alt="在 TileSet 的 Inspector 里给 Physics Layers 添加一项"></p>
+<p>添加后不会立刻看到任何变化，但它是后面所有操作的前提：没有这一项，图块属性里根本不会出现画碰撞的地方，很多人卡在&quot;找不到碰撞选项&quot;就是漏了这一步。</p>
+<p>同时这一项也决定了碰撞体落在哪个 <strong>2D 物理层</strong>：展开它可以看到 <code>Collision Layer</code>，默认 <code>Layer 1</code>。角色的 <code>CharacterBody2D</code> 碰撞掩码默认也是 <code>Layer 1</code>，所以保持默认就能互相检测到。以后要给敌人、子弹单独分组，再回来改这里和节点的掩码。</p>
+<h2 id="第二步：切到-TileSet-页签，选图块集、画笔、属性">第二步：切到 TileSet 页签，选图块集、画笔、属性</h2>
+<p>物理层加好后，底部切到 <strong>TileSet</strong> 页签，按顺序做三件事：</p>
+<ol>
+<li><strong>先选图块集</strong>：左侧 <code>Tile Sources</code> 里选中要改的素材，比如 <code>objects.png</code>。</li>
+<li><strong>再选画笔</strong>：工具栏切到 <strong><code>Paint</code></strong>（不是 <code>Setup</code>，也不是 <code>Select</code>）。</li>
+<li><strong>最后加属性</strong>：左侧 <code>Paint Properties</code> 里点 <strong><code>Select a property editor</code></strong> 下拉，依次选 <strong><code>Physics</code></strong> → <strong><code>Physics Layer 0</code></strong>。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step2-pick-source-paint.png" alt="在 TileSet 面板选图块集、切到 Paint、添加物理层属性"></p>
+<p>下拉里同级的还有 <code>Rendering</code>、<code>Terrain</code>、<code>Navigation</code>、<code>Custom Data</code>，物理层只是其中一项。<code>Physics Layer 0</code> 对应第一步里 Add Element 加出来的第一项。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step3-choose-property.png" alt="在 Paint Properties 下拉里选中刚添加的 Physics Layer 0"></p>
+<p>选完之后，左侧就变成碰撞形状的编辑区：上面是放大的图块预览，下面是物理属性（<code>linear_velocity</code>、<code>angular_velocity</code>、<code>polygon 0</code> 等）。前两项是给会动的图块（比如移动平台）用的，静态地图不用管。</p>
+<h2 id="第三步：选中瓦片，塑造碰撞箱">第三步：选中瓦片，塑造碰撞箱</h2>
+<p>在右侧 <code>Base Tiles</code> 网格里点一下要挡人的图块（截图里是那棵树），左侧编辑区会切到它。编辑区里有一个带四个白色控制点的矩形，用鼠标拖动这四个点，把矩形缩到真正该挡人的范围：树干和底部那一段，树冠留给角色叠上来。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step4-draw-collision.png" alt="拖动控制点把碰撞矩形缩到树干范围"></p>
+<p>改完一块再看下一块。<strong>只给实心的图块加碰撞</strong>：树、石头、墙、围栏。草地、路面、装饰这些小图块不要加，否则角色会被地面卡住。</p>
+<blockquote>
+<p><strong>只框住该挡的部分</strong>：碰撞箱画得越大，角色离树越远就被挡住，在俯视角游戏里会显得很硬。一般贴着树干和树根画，树冠完全放开，角色能走进树冠下面，视觉上也更自然。</p>
+</blockquote>
+<p>大图块（比如 2×2 的树）的碰撞是在<strong>图块自己的坐标系</strong>里画的，图块占多大，坐标范围就有多大，不用管它在地图上的位置。</p>
+<h2 id="第四步：Y-轴排序，让树能挡住角色">第四步：Y 轴排序，让树能挡住角色</h2>
+<p>碰撞管的是&quot;能不能过去&quot;，Y 轴排序管的是&quot;谁盖住谁&quot;。不打开它，角色永远画在树的上面，从树根前走过也不会被树挡住。</p>
+<p>先开节点级的开关：</p>
+<ol>
+<li>选中参与排序的节点，Inspector 顶部 <strong><code>CanvasItem</code> → <code>Ordering</code></strong>，勾上 <strong><code>Y Sort Enabled</code></strong>（截图里默认是 Off）。</li>
+<li>这一层管的是&quot;节点与节点之间&quot;的排序：树和角色要挂在同一个也开了 <code>Y Sort Enabled</code> 的父节点下（比如 <code>world</code>），否则图块只在自己内部排序，根本不会和角色比大小。</li>
+<li><code>TileMap</code> 的每个图层在 <code>Layers</code> 里还有独立的 <code>Y Sort Enabled</code>（上一篇提过），要挡住角色的那一层保持开启。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step5-y-sort-enabled.png" alt="在 CanvasItem → Ordering 里打开 Y Sort Enabled"></p>
+<p>再给单个图块定&quot;排序中心&quot;：</p>
+<ol>
+<li>底部切到 <strong>TileSet</strong> 页签，工具选 <code>Paint</code>。</li>
+<li><code>Paint Properties</code> 下拉里选 <strong><code>Rendering</code></strong>。</li>
+<li>展开 <strong><code>Y Sort Origin</code></strong>，把中心点拖到树根、图块底部那一行。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step6-y-sort-origin.png" alt="在 Paint Properties → Rendering 里设置 Y Sort Origin"></p>
+<p><code>Y Sort Origin</code> 是<strong>像素偏移</strong>，决定这块图块拿纵坐标上的哪一点去和角色比大小。截图里那棵树把中心放在树干底部：</p>
+<ul>
+<li>玩家站在中心<strong>上方</strong>（Y 更小）时，图块画在玩家前面，树把人挡住；</li>
+<li>玩家走到中心<strong>下方</strong>时，玩家画在上层，盖住树的下半截。</li>
+</ul>
+<blockquote>
+<p>排序中心别随手丢在图块正中。像素角色的原点在脚底，中心太靠上会让人离树老远就被挡住，太靠下则几乎永远不会被树盖住。贴着树干和树根那一行最稳。</p>
+</blockquote>
+<h2 id="验证：让角色去撞一下，再绕到树后">验证：让角色去撞一下，再绕到树后</h2>
+<ol>
+<li>顶部菜单 <strong>调试 → 可见碰撞形状</strong>，运行后地图上会显示碰撞多边形，画没画上、位置对不对一眼就能看出来。</li>
+<li>按 <code>F5</code> 运行，走向树和石头，角色应该被挡住；贴着墙走能滑过去，这是 <code>move_and_slide()</code> 自带的滑动处理。</li>
+<li>再从树的上方和下方各走一遍，看角色和树的先后顺序有没有跟着换。</li>
+</ol>
+<p>角色能挡住的前提是它自己也有碰撞形状。<code>Godot01</code> 里加的 <code>CollisionShape2D</code> 在这里要顺手确认一下：<code>Shape</code> 不是 <code>&lt;empty&gt;</code>，并且位置对齐<strong>脚底</strong>而不是整张立绘，否则会感觉&quot;人还离着树老远就被挡住&quot;。</p>
+<h2 id="碰撞或遮挡不对，按这个顺序排查">碰撞或遮挡不对，按这个顺序排查</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>最可能的原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>图块属性里完全没有 <code>Physics</code> 项</td>
+<td><code>TileSet</code> 的 <code>Physics Layers</code> 没加元素</td>
+</tr>
+<tr>
+<td>有碰撞矩形，但角色照穿</td>
+<td><code>TileMap</code> 的 <code>Layers</code> 里这一层没勾 <code>Collision Enabled</code></td>
+</tr>
+<tr>
+<td>只有部分图块挡人</td>
+<td>只给选中的图块画了碰撞，同类的其他图块没画</td>
+</tr>
+<tr>
+<td>角色被地面卡住、走不动</td>
+<td>地面、草地这些图块也加了碰撞</td>
+</tr>
+<tr>
+<td>角色离障碍物老远就被挡住</td>
+<td>碰撞矩形画得比图块大，或者角色的 <code>CollisionShape2D</code> 偏移了</td>
+</tr>
+<tr>
+<td>撞上去抖动、被弹开</td>
+<td>相邻图块的碰撞矩形互相重叠</td>
+</tr>
+<tr>
+<td>角色永远盖在树上面</td>
+<td>节点没开 <code>Y Sort Enabled</code>，或角色和 tilemap 不在同一个开了排序的父节点下</td>
+</tr>
+<tr>
+<td>角色永远被树盖住</td>
+<td>图块的 <code>Y Sort Origin</code> 设得太靠上，排序点高过了角色脚底</td>
+</tr>
+<tr>
+<td>只在图块之间排序，角色不参与</td>
+<td><code>TileMap</code> 图层的 <code>Y Sort Enabled</code> 和父节点的开关只开了一个</td>
+</tr>
+</tbody>
+</table>
+<h2 id="三个-层-别搞混">三个&quot;层&quot;别搞混</h2>
+<table>
+<thead>
+<tr>
+<th>名字</th>
+<th>在哪</th>
+<th>管什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Physics Layers</code>（TileSet）</td>
+<td><code>TileSet</code> 资源 Inspector</td>
+<td>允许图块有碰撞，决定碰撞体归哪个 2D 物理层</td>
+</tr>
+<tr>
+<td><code>Collision Enabled</code>（图层的）</td>
+<td><code>TileMap</code> 的 <code>Layers</code> / <code>TileMapLayer</code> 节点</td>
+<td>这一层画的图块要不要真的生成碰撞体</td>
+</tr>
+<tr>
+<td><code>Collision Layer</code> / <code>Mask</code>（节点的）</td>
+<td>各节点自己的 <code>Collision</code> 分组</td>
+<td>谁和谁互相检测</td>
+</tr>
+</tbody>
+</table>
+<p>前两个管&quot;图块有没有碰撞&quot;，第三个管&quot;碰撞和谁发生关系&quot;。改完没反应，九成是前两个之一漏了。</p>
+<h2 id="如果用的是-TileMapLayer">如果用的是 TileMapLayer</h2>
+<p><code>TileMapLayer</code> 流程完全一样：物理层还是建在 <code>TileSet</code> 资源里，碰撞箱还是用 <code>Paint</code> 加 <code>Physics Layer 0</code> 来画，<code>Y Sort Origin</code> 也还是在 <code>Paint Properties → Rendering</code> 里拖。区别只在开关位置——原来 <code>TileMap</code> 里 <code>Layers</code> 数组的 <code>Collision Enabled</code> 和 <code>Y Sort Enabled</code>，现在变成 <code>TileMapLayer</code> 节点自己 Inspector 上的同名属性。</p>
+<hr>
+<p>上一篇：<a href="/2026/10/26/Godot03-%E5%88%B6%E4%BD%9C%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE/">Godot03：制作瓦片地图（TileMap 与 TileSet）</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lanxone.github.io/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/" data-id="cmvqkjazy0000bomabe2dgi5f" data-title="Godot04:瓦片碰撞与 Y 轴排序（TileSet 物理层）" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Godot/" rel="tag">Godot</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-Godot03-制作瓦片地图" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/10/26/Godot03-%E5%88%B6%E4%BD%9C%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE/" class="article-date">
@@ -1054,345 +1476,11 @@
 
 
   
-    <article id="post-Godot02-角色移动脚本" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/10/25/Godot02-%E8%A7%92%E8%89%B2%E7%A7%BB%E5%8A%A8%E8%84%9A%E6%9C%AC/" class="article-date">
-  <time class="dt-published" datetime="2026-10-25T11:24:04.000Z" itemprop="datePublished">2026-10-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/25/Godot02-%E8%A7%92%E8%89%B2%E7%A7%BB%E5%8A%A8%E8%84%9A%E6%9C%AC/">Godot02:角色移动脚本（GDScript 语法复习）</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>上一篇 <a href="/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/">Godot01：创建一个能动的角色</a> 搭好了节点和动画，这一篇把 <code>player.gd</code> 按注释逐段拆开，方便以后快速复习 GDScript 的写法和这段移动逻辑。</p>
-<h2 id="完整代码">完整代码</h2>
-<figure class="highlight gdscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##这是一个Godot脚本文件,有大量的注释帮助我快速回忆GDScript的语法和用法</span></span><br><span class="line"><span class="comment">##这里包含extends、const、var、func、if、else、elif、while、for等语法</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">extends</span> <span class="class">CharacterBody2D</span></span><br><span class="line"><span class="comment">##这是类似于Unity中的Rigidbody2D的东西，继承了这个类就可以使用move_and_slide()方法来移动角色</span></span><br><span class="line"><span class="comment">##extends就类似C++里的#include &quot;CharacterBody2D.h&quot;</span></span><br><span class="line"><span class="comment">##这个语言很像Python，继承类的语法是extends，</span></span><br><span class="line"><span class="comment">##函数定义是func，变量定义是var，类型标注是:类型名</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="constant">SPEED</span> = <span class="number">100.0</span></span><br><span class="line"><span class="comment">###定义一个常量SPEED，表示角色的移动速度</span></span><br><span class="line"><span class="keyword">var</span> current_direction = <span class="string">&quot;none&quot;</span></span><br><span class="line"><span class="comment">###定义一个变量current_direction，表示角色当前的移动方向，初始值为&quot;none&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">_ready</span>():</span><br><span class="line">	<span class="comment">##_ready()是Godot中节点准备就绪时调用的函数，类似于Unity中的Start()函数</span></span><br><span class="line">	<span class="variable">$AnimatedSprite2D</span>.<span class="function">play</span>(<span class="string">&quot;front_idle&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">_physics_process</span>(delta):</span><br><span class="line">	<span class="comment">##_physics_process是Godot中每帧调用的函数，delta是上一帧到这一帧的时间间隔</span></span><br><span class="line">	<span class="comment">##_下划线开头的函数是Godot的内置函数，类似于Unity中的Update()函数</span></span><br><span class="line">	<span class="comment">##pass这个是一个占位符，表示这个函数暂时没有实现任何功能</span></span><br><span class="line">	<span class="function">player_movement</span>(delta)</span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">player_movement</span>(delta):</span><br><span class="line">	<span class="keyword">if</span> <span class="class">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">&quot;ui_right&quot;</span>):</span><br><span class="line">		<span class="comment">##Input是Godot中处理输入的类，is_action_pressed是判断某个输入动作是否被按下</span></span><br><span class="line">		<span class="comment">##&quot;ui_right&quot;是Godot中默认的向右移动的输入动作，可以在项目设置中修改</span></span><br><span class="line">		<span class="function">play_animation</span>(<span class="number">1</span>)<span class="comment">##调用play_animation()函数来播放角色的动画</span></span><br><span class="line">		velocity.x = <span class="constant">SPEED</span></span><br><span class="line">		current_direction = <span class="string">&quot;right&quot;</span></span><br><span class="line">		<span class="comment">##velocity是CharacterBody2D类的一个属性，表示角色的速度</span></span><br><span class="line">		velocity.y = <span class="number">0</span></span><br><span class="line">	<span class="keyword">elif</span> <span class="class">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">&quot;ui_left&quot;</span>):</span><br><span class="line">		<span class="function">play_animation</span>(<span class="number">1</span>)<span class="comment">##调用play_animation()函数来播放角色的动画</span></span><br><span class="line">		velocity.x = -<span class="constant">SPEED</span></span><br><span class="line">		current_direction = <span class="string">&quot;left&quot;</span></span><br><span class="line">		velocity.y = <span class="number">0</span></span><br><span class="line">	<span class="keyword">elif</span> <span class="class">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">&quot;ui_down&quot;</span>):</span><br><span class="line">		<span class="function">play_animation</span>(<span class="number">1</span>)<span class="comment">##调用play_animation()函数来播放角色的动画</span></span><br><span class="line">		velocity.y = <span class="constant">SPEED</span></span><br><span class="line">		current_direction = <span class="string">&quot;down&quot;</span></span><br><span class="line">		velocity.x = <span class="number">0</span></span><br><span class="line">	<span class="keyword">elif</span> <span class="class">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">&quot;ui_up&quot;</span>):</span><br><span class="line">		<span class="function">play_animation</span>(<span class="number">1</span>)<span class="comment">##调用play_animation()函数来播放角色的动画</span></span><br><span class="line">		velocity.y = -<span class="constant">SPEED</span></span><br><span class="line">		current_direction = <span class="string">&quot;up&quot;</span></span><br><span class="line">		velocity.x = <span class="number">0</span></span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		<span class="function">play_animation</span>(<span class="number">0</span>)<span class="comment">##调用play_animation()函数来播放角色的动画</span></span><br><span class="line">		velocity.x = <span class="number">0</span></span><br><span class="line">		velocity.y = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">	<span class="function">move_and_slide</span>()<span class="comment">##这个方法是CharacterBody2D类的一个方法，用于移动角色并处理碰撞</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">play_animation</span>(movement):</span><br><span class="line">	<span class="comment">##这个函数是用来播放角色的动画的</span></span><br><span class="line">	<span class="keyword">var</span> anim = <span class="variable">$AnimatedSprite2D</span><span class="comment">##$AnimatedSprite2D是Godot中获取节点的语法，表示获取当前节点下的AnimatedSprite2D节点</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> current_direction == <span class="string">&quot;right&quot;</span>:</span><br><span class="line">		anim.flip_h = <span class="literal">false</span></span><br><span class="line">		<span class="comment">##anim.flip_h是AnimatedSprite2D类的一个属性，</span></span><br><span class="line">		<span class="comment">##表示是否水平翻转动画,</span></span><br><span class="line">		<span class="comment">##因为我们只有一个左右通用的动画</span></span><br><span class="line">		<span class="keyword">if</span> movement == <span class="number">1</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;side_walk&quot;</span>)</span><br><span class="line">			<span class="comment">##anim.play()是AnimatedSprite2D类的一个方法，用于播放动画，参数是动画的名称</span></span><br><span class="line">		<span class="keyword">elif</span> movement == <span class="number">0</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;side_idle&quot;</span>)</span><br><span class="line">	<span class="keyword">elif</span> current_direction == <span class="string">&quot;left&quot;</span>:</span><br><span class="line">		anim.flip_h = <span class="literal">true</span></span><br><span class="line">		<span class="keyword">if</span> movement == <span class="number">1</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;side_walk&quot;</span>)</span><br><span class="line">		<span class="keyword">elif</span> movement == <span class="number">0</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;side_idle&quot;</span>)</span><br><span class="line">	<span class="keyword">elif</span> current_direction == <span class="string">&quot;down&quot;</span>:</span><br><span class="line">		<span class="keyword">if</span> movement == <span class="number">1</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;front_walk&quot;</span>)</span><br><span class="line">		<span class="keyword">elif</span> movement == <span class="number">0</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;front_idle&quot;</span>)</span><br><span class="line">	<span class="keyword">elif</span> current_direction == <span class="string">&quot;up&quot;</span>:</span><br><span class="line">		<span class="keyword">if</span> movement == <span class="number">1</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;back_walk&quot;</span>)</span><br><span class="line">		<span class="keyword">elif</span> movement == <span class="number">0</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;back_idle&quot;</span>)</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		<span class="keyword">if</span> current_direction == <span class="string">&quot;none&quot;</span> || current_direction == <span class="string">&quot;up&quot;</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;back_idle&quot;</span>)</span><br><span class="line">		<span class="keyword">elif</span> current_direction == <span class="string">&quot;down&quot;</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;front_idle&quot;</span>)</span><br><span class="line">		<span class="keyword">elif</span> current_direction == <span class="string">&quot;left&quot;</span> || current_direction == <span class="string">&quot;right&quot;</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;side_idle&quot;</span>)</span><br></pre></td></tr></table></figure>
-<h2 id="语法速记">语法速记</h2>
-<ul>
-<li><code>extends CharacterBody2D</code>：继承节点类型，作用类似 Unity 里的 <code>Rigidbody2D</code>，继承后才有 <code>move_and_slide()</code>；可以类比 C++ 的 <code>#include &quot;CharacterBody2D.h&quot;</code>。</li>
-<li>GDScript 像 Python：继承用 <code>extends</code>，函数用 <code>func</code>，变量用 <code>var</code>，常量用 <code>const</code>，类型标注写成 <code>变量名:类型名</code>。</li>
-<li><code>$AnimatedSprite2D</code>：获取当前节点下的子节点，等价于 <code>get_node(&quot;AnimatedSprite2D&quot;)</code>。</li>
-<li><code>_</code> 开头的函数是 Godot 的内置回调：<code>_ready()</code> 对应 Unity 的 <code>Start()</code>，<code>_physics_process(delta)</code> 对应 <code>Update()</code>，<code>delta</code> 是上一帧到这一帧的时间间隔。</li>
-<li><code>pass</code> 是占位符，表示函数暂时不实现任何功能。</li>
-</ul>
-<h2 id="逻辑说明">逻辑说明</h2>
-<h3 id="常量与状态">常量与状态</h3>
-<figure class="highlight gdscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="constant">SPEED</span> = <span class="number">100.0</span></span><br><span class="line"><span class="keyword">var</span> current_direction = <span class="string">&quot;none&quot;</span></span><br></pre></td></tr></table></figure>
-<p><code>SPEED</code> 是移动速度常量；<code>current_direction</code> 记录当前朝向，初始为 <code>&quot;none&quot;</code>，供动画播放时判断用哪个方向的动画。</p>
-<h3 id="ready-：初始动画"><code>_ready()</code>：初始动画</h3>
-<figure class="highlight gdscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">func </span><span class="function">_ready</span>():</span><br><span class="line">	<span class="variable">$AnimatedSprite2D</span>.<span class="function">play</span>(<span class="string">&quot;front_idle&quot;</span>)</span><br></pre></td></tr></table></figure>
-<p>节点准备就绪时先播放正面待机动画。</p>
-<h3 id="player-movement-delta-：读取输入并设置速度"><code>player_movement(delta)</code>：读取输入并设置速度</h3>
-<p>用 <code>Input.is_action_pressed(&quot;ui_right&quot;)</code> 这类方法判断输入动作是否按下，<code>ui_right</code> 等是 Godot 默认的输入动作，可以在项目设置里改。</p>
-<ul>
-<li>方向判断用 <code>if / elif</code> 链，所以同时按多个键时只有一个方向生效，优先级是：右 → 左 → 下 → 上。</li>
-<li>有输入时把 <code>velocity</code> 对应轴设为 <code>±SPEED</code>，另一轴清零；没有输入时两轴都清零，并播放待机动画（<code>play_animation(0)</code>）。</li>
-<li><code>velocity</code> 是 <code>CharacterBody2D</code> 的属性，表示角色速度。</li>
-<li>最后统一调用 <code>move_and_slide()</code>，让角色按速度移动并处理碰撞。</li>
-</ul>
-<h3 id="play-animation-movement-：按朝向和状态选动画"><code>play_animation(movement)</code>：按朝向和状态选动画</h3>
-<p>参数 <code>movement</code> 表示状态：<code>1</code> 是移动，<code>0</code> 是静止。<code>anim.flip_h</code> 控制水平翻转，因为左右共用同一套动画。</p>
-<table>
-<thead>
-<tr>
-<th>朝向</th>
-<th>移动</th>
-<th>静止</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>right</code></td>
-<td><code>side_walk</code>（<code>flip_h = false</code>）</td>
-<td><code>side_idle</code></td>
-</tr>
-<tr>
-<td><code>left</code></td>
-<td><code>side_walk</code>（<code>flip_h = true</code>）</td>
-<td><code>side_idle</code></td>
-</tr>
-<tr>
-<td><code>down</code></td>
-<td><code>front_walk</code></td>
-<td><code>front_idle</code></td>
-</tr>
-<tr>
-<td><code>up</code></td>
-<td><code>back_walk</code></td>
-<td><code>back_idle</code></td>
-</tr>
-<tr>
-<td><code>none</code></td>
-<td>—</td>
-<td><code>back_idle</code></td>
-</tr>
-</tbody>
-</table>
-<p><code>anim.play()</code> 的参数就是动画名称，要和 <code>SpriteFrames</code> 里的命名一致。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://lanxone.github.io/2026/10/25/Godot02-%E8%A7%92%E8%89%B2%E7%A7%BB%E5%8A%A8%E8%84%9A%E6%9C%AC/" data-id="cmvp90fcs000rd8ma74nvbwhv" data-title="Godot02:角色移动脚本（GDScript 语法复习）" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Godot/" rel="tag">Godot</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-栈与队列-章节总结" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/10/25/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97-%E7%AB%A0%E8%8A%82%E6%80%BB%E7%BB%93/" class="article-date">
-  <time class="dt-published" datetime="2026-10-25T02:00:00.000Z" itemprop="datePublished">2026-10-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/25/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97-%E7%AB%A0%E8%8A%82%E6%80%BB%E7%BB%93/">栈与队列-章节总结</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="一、理论基础：先搞清-它们到底是什么">一、理论基础：先搞清&quot;它们到底是什么&quot;</h2>
-<p>C++ 里 <code>stack</code> 和 <code>queue</code> 都不是容器，而是<strong>容器适配器</strong>（container adaptor）：它们不自己管理内存，只是给底层容器套了一层受限的接口。</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>stack</th>
-<th>queue</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>规则</td>
-<td>后进先出 LIFO</td>
-<td>先进先出 FIFO</td>
-</tr>
-<tr>
-<td>默认底层</td>
-<td><code>deque</code></td>
-<td><code>deque</code></td>
-</tr>
-<tr>
-<td>常用操作</td>
-<td><code>push / pop / top / empty / size</code></td>
-<td><code>push / pop / front / back / empty / size</code></td>
-</tr>
-<tr>
-<td>迭代器</td>
-<td><strong>没有</strong></td>
-<td><strong>没有</strong></td>
-</tr>
-</tbody>
-</table>
-<p>由此引出两个高频面试陷阱：</p>
-<ol>
-<li><strong>栈里的元素在内存中连续吗？</strong>——不一定。栈是适配器，换成 <code>vector</code> 就连续，换成 <code>deque</code> 就不连续。默认恰好是 <code>deque</code>，而 <code>deque</code> 是分段连续的。</li>
-<li><strong>能用 <code>for</code> 遍历 <code>stack</code> / <code>queue</code> 吗？</strong>——不能。它们不提供迭代器，想遍历只能一边 <code>pop</code> 一边取，或者换用底层容器。</li>
-</ol>
-<blockquote>
-<p>判断用哪个：<strong>&quot;就近匹配、嵌套、回退&quot;用栈</strong>；<strong>&quot;按序排队、窗口滑动、先进先出&quot;用队列</strong>。</p>
-</blockquote>
-<hr>
-<h2 id="二、栈的四类经典模型">二、栈的四类经典模型</h2>
-<h3 id="1-括号匹配（20）">1. 括号匹配（20）</h3>
-<p><strong>先枚举失败，再写代码</strong>。只有三种不匹配：</p>
-<ul>
-<li>左括号多余：遍历完栈里还有东西</li>
-<li>类型不匹配：栈顶和当前右括号不是一对</li>
-<li>右括号多余：栈空时来了右括号</li>
-</ul>
-<p>所以模板永远是三连：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 遇左括号入栈；遇右括号：</span></span><br><span class="line"><span class="keyword">if</span> (st.<span class="built_in">empty</span>() || st.<span class="built_in">top</span>() != 期望的左括号) <span class="keyword">return</span> <span class="literal">false</span>; <span class="comment">// 判空 + 比对</span></span><br><span class="line">st.<span class="built_in">pop</span>();                                                 <span class="comment">// 匹配成功必须弹</span></span><br><span class="line"><span class="comment">// 循环结束：</span></span><br><span class="line"><span class="keyword">return</span> st.<span class="built_in">empty</span>();                                        <span class="comment">// 别忘了查残留</span></span><br></pre></td></tr></table></figure>
-<p><strong>优化技巧</strong>：遇到左括号时，把<strong>对应的右括号</strong>压栈。这样后面无论遇到什么字符，只要 <code>st.empty() || st.top() != c</code> 就失败，否则 <code>pop</code>。少写一整套 <code>if/else if</code>。</p>
-<h3 id="2-相邻消除-表达式求值（1047、150）">2. 相邻消除 / 表达式求值（1047、150）</h3>
-<ul>
-<li><strong>1047 删除相邻重复项</strong>：字符依次入栈，栈顶和当前字符相同就弹出，否则压入。</li>
-<li><strong>150 逆波兰表达式</strong>：数字入栈；遇运算符弹出两个数，算完再压回。</li>
-</ul>
-<p>两者本质相同：<strong>栈里存的是&quot;还没被结算的东西&quot;，栈顶是唯一的对手</strong>。能当场消掉的就当场消掉，不要留到后面。</p>
-<blockquote>
-<p>逆波兰的坑：先弹出的是<strong>右操作数</strong>。<code>a - b</code> 要写成 <code>int b = st.top(); st.pop(); int a = st.top(); st.pop();</code>。</p>
-</blockquote>
-<h3 id="3-栈在系统里的影子">3. 栈在系统里的影子</h3>
-<p>编译器词法分析处理括号、<code>cd a/b/c/../../</code> 的路径回退（LeetCode 71 简化路径）、<strong>递归调用栈</strong>，底层都是栈。数据结构往往藏在看不见的地方。</p>
-<h3 id="4-用栈实现队列（232）">4. 用栈实现队列（232）</h3>
-<p>两个栈：<code>in</code> 负责进，<code>out</code> 负责出。</p>
-<ul>
-<li><code>push</code>：只往 <code>in</code> 压</li>
-<li><code>pop / peek</code>：<strong><code>out</code> 为空时，才把 <code>in</code> 全部倒进 <code>out</code></strong>；<code>out</code> 不空就直接取</li>
-</ul>
-<p>&quot;一次全倒&quot;是关键。倒一半、或 <code>out</code> 非空还继续倒，顺序都会乱。均摊复杂度 O(1)。</p>
-<hr>
-<h2 id="三、队列的两种-加强版">三、队列的两种&quot;加强版&quot;</h2>
-<h3 id="1-单调队列（239-滑动窗口最大值）">1. 单调队列（239 滑动窗口最大值）</h3>
-<p>普通队列每个窗口重扫一遍是 O(n·k)，必然超时。单调队列只做一件事：<strong>丢弃永远不可能成为答案的元素</strong>。</p>
-<p>两条不变量：</p>
-<ol>
-<li><strong>单调</strong>：队头到队尾递减，<code>front()</code> 就是窗口最大值</li>
-<li><strong>时效</strong>：队内元素都还在当前窗口内</li>
-</ol>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">push</span><span class="params">(<span class="type">int</span> v)</span> </span>&#123; <span class="keyword">while</span> (!q.<span class="built_in">empty</span>() &amp;&amp; v &gt; q.<span class="built_in">back</span>()) q.<span class="built_in">pop_back</span>(); q.<span class="built_in">push_back</span>(v); &#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pop</span><span class="params">(<span class="type">int</span> v)</span>  </span>&#123; <span class="keyword">if</span> (!q.<span class="built_in">empty</span>() &amp;&amp; v == q.<span class="built_in">front</span>()) q.<span class="built_in">pop_front</span>(); &#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>push</code>：新元素比队尾大，队尾就永远没机会了（更小、还更早离开），直接弹掉</li>
-<li><code>pop</code>：<strong>不是无脑 <code>pop_front()</code></strong>，而是核对&quot;要离开的值是否恰好是队头&quot;。因为有些元素早在 <code>push</code> 时就被淘汰了，无脑弹会误伤当前最大值</li>
-</ul>
-<p>每个元素最多进一次、出一次，所以整体 <strong>O(n)</strong>。</p>
-<blockquote>
-<p>注意：它不是排序；它的 <code>push/pop</code> 规则只适用于本题。也可以存下标，用 <code>front() &lt;= i - k</code> 判断过期。</p>
-</blockquote>
-<h3 id="2-优先级队列（347-前-K-个高频元素）">2. 优先级队列（347 前 K 个高频元素）</h3>
-<p><strong>优先级队列就是披着队列外衣的堆</strong>，默认是大顶堆（底层 <code>vector</code> 实现的完全二叉树）。</p>
-<ul>
-<li>求<strong>前 K 大</strong>：用<strong>小顶堆</strong>，堆里只留 k 个候选，超了就弹堆顶（当前最小的）</li>
-<li>求<strong>前 K 小</strong>：用<strong>大顶堆</strong></li>
-<li>只对 k 个候选排序，复杂度 <strong>O(n log k)</strong>，而不是全排序 O(n log n)</li>
-</ul>
-<p>比较器方向是高频坑：<code>priority_queue</code> 的比较器返回 <code>true</code> 表示&quot;优先级更低&quot;，所以 <code>lhs.second &gt; rhs.second</code> 才是小顶堆。</p>
-<hr>
-<h2 id="四、常见陷阱清单">四、常见陷阱清单</h2>
-<table>
-<thead>
-<tr>
-<th>#</th>
-<th>陷阱</th>
-<th>后果</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>空栈调用 <code>top()</code> / <code>pop()</code></td>
-<td>未定义行为，可能直接崩</td>
-</tr>
-<tr>
-<td>2</td>
-<td>右括号匹配成功却忘了 <code>pop()</code></td>
-<td>栈内残留，后续比对全错</td>
-</tr>
-<tr>
-<td>3</td>
-<td>循环结束不检查 <code>empty()</code></td>
-<td>多余的左括号被放过</td>
-</tr>
-<tr>
-<td>4</td>
-<td>逆波兰先弹的数当左操作数</td>
-<td>减法和除法结果反了</td>
-</tr>
-<tr>
-<td>5</td>
-<td>用栈实现队列时只倒一半 / <code>out</code> 非空还倒</td>
-<td>顺序错乱</td>
-</tr>
-<tr>
-<td>6</td>
-<td>单调队列 <code>pop</code> 直接 <code>pop_front()</code></td>
-<td>误删最大值</td>
-</tr>
-<tr>
-<td>7</td>
-<td>单调队列先 <code>push</code> 后 <code>pop</code>，或下标写成 <code>i-k±1</code></td>
-<td>窗口长度错、旧元素提前参与比较</td>
-</tr>
-<tr>
-<td>8</td>
-<td><code>priority_queue</code> 比较器方向写反</td>
-<td>该留的被弹掉</td>
-</tr>
-<tr>
-<td>9</td>
-<td>每个窗口重新扫描求最值</td>
-<td>O(n·k) TLE</td>
-</tr>
-<tr>
-<td>10</td>
-<td>用 <code>map[key]</code> 读一个&quot;本该存在&quot;的 key</td>
-<td>不存在时会插入并可能 rehash，迭代器失效</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="五、我踩过的坑与改法">五、我踩过的坑与改法</h2>
-<h3 id="坑-1：把-括号匹配-做成了-回文判断">坑 1：把&quot;括号匹配&quot;做成了&quot;回文判断&quot;</h3>
-<p>第一次写有效括号，我一次性把所有字符压栈，再从头和栈顶逐字比对。</p>
-<p><strong>根因</strong>：没先分析题目要校验的是什么。括号匹配校验的是<strong>结构嵌套</strong>，不是<strong>序列对称</strong>。<code>&quot;()&quot;</code> 在第一轮就会被我判错。</p>
-<p><strong>改法</strong>：写代码前先列出三种失败情形；栈里只放&quot;<strong>还没被匹配的左括号</strong>&quot;，只有遇到右括号才触发比对。</p>
-<h3 id="坑-2：方向对了，但三个细节全漏">坑 2：方向对了，但三个细节全漏</h3>
-<p>第二次已经会用栈了，却同时犯了三个错：匹配后不 <code>pop</code>、<code>top()</code> 前不判空、结尾不检查栈空。</p>
-<p><strong>根因</strong>：把栈当成了&quot;看一眼就行&quot;的结构，没有固定操作顺序。</p>
-<p><strong>改法</strong>：固化成一个模板，不再即兴发挥——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">右括号 → 先判空 → 再比栈顶 → 匹配就 pop</span><br><span class="line">遍历结束 → return st.empty()</span><br></pre></td></tr></table></figure>
-<p>这三个检查不是&quot;额外的防御&quot;，而是算法本身的一部分。</p>
-<h3 id="坑-3：滑动窗口最大值，第一版-O-n·k-超时">坑 3：滑动窗口最大值，第一版 O(n·k) 超时</h3>
-<p>我的第一版用普通队列维护窗口，每个窗口都拷贝一份队列、从头扫一遍求最大值，初始值还写死成 <code>-99999</code>。</p>
-<p><strong>根因</strong>：把&quot;每滑一步就重新算&quot;当成了唯一做法，忽略了相邻窗口有 k-1 个元素重叠——最大值信息本来可以复用。</p>
-<p><strong>改法</strong>：换成单调队列，只保留&quot;还有可能成为最大值&quot;的候选，<code>front()</code> 直接 O(1) 取值，整体 O(n)。初始值改用 <code>INT_MIN</code> 或首元素。</p>
-<p><strong>教训</strong>：先问&quot;上一步算出的信息，这一步还能不能用&quot;。</p>
-<h3 id="坑-4：前-K-高频，手写扫描模拟堆，12722-ms">坑 4：前 K 高频，手写扫描模拟堆，12722 ms</h3>
-<p>我在循环里用 <code>getS()</code> 线性扫描 <code>res</code> 找频次最小的元素，而且一次循环调用两遍，最坏 O(n·k)。</p>
-<p><strong>根因</strong>：不是逻辑写错，而是<strong>用线性扫描手工实现了一个堆的 <code>top()</code></strong>。需要&quot;反复取最值&quot;时，我没有先想&quot;哪个容器能直接给我&quot;。</p>
-<p><strong>改法</strong>：改用 <code>priority_queue</code> 小顶堆，<code>push</code> 后 <code>if (size &gt; k) pop()</code>，由容器负责维护，实测 29 ms。</p>
-<p>附带改掉一个隐患：<code>getS</code> 里用 <code>hash[a[i]]</code> 读一个本该存在的 key，这次没炸只是因为数据恰好命中。改成参数 <code>const</code> + <code>at()</code>，让<strong>编译器</strong>帮我堵住这个坑，而不是靠记性。</p>
-<p><strong>教训</strong>：该用容器的地方不要手写；能交给类型系统检查的，不要交给记忆。</p>
-<h3 id="三条共性">三条共性</h3>
-<ol>
-<li><strong>先写不变量，再写代码</strong>——栈里只放什么、队列里只放什么、什么必须始终成立。</li>
-<li><strong>先估复杂度，再动手</strong>——O(n·k) 的直觉写法，在 1e5 数据下基本等于 TLE。</li>
-<li><strong>让语言帮我防错</strong>——<code>empty()</code> 模板、<code>const</code>、<code>at()</code>，比&quot;下次注意&quot;可靠。</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://lanxone.github.io/2026/10/25/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97-%E7%AB%A0%E8%8A%82%E6%80%BB%E7%BB%93/" data-id="cmvp90fd20032d8mahzk75dze" data-title="栈与队列-章节总结" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" rel="tag">栈和队列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
     
-    <a class="extend prev" rel="prev" href="/">&laquo; 上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">下一页 &raquo;</a>
+    <a class="extend prev" rel="prev" href="/">&laquo; 上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/3/">下一页 &raquo;</a>
   </nav>
 
 </section>
@@ -1406,7 +1494,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 11.67px;">C++学习笔记</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 18.33px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/Godot/" style="font-size: 16.67px;">Godot</a> <a href="/tags/OpenGL/" style="font-size: 11.67px;">OpenGL</a> <a href="/tags/SDL/" style="font-size: 10px;">SDL</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 11.67px;">二叉树</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 11.67px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 13.33px;">学习规划</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E6%89%A7%E8%A1%8C%E8%A1%A8-6%E5%91%A8%E8%AE%A1%E5%88%92/" style="font-size: 10px;">学习路线,执行表,6周计划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 13.33px;">快速</a> <a href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" style="font-size: 11.67px;">栈和队列</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 15px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%84%9A%E6%9C%AC%E5%BC%80%E5%8F%91/" style="font-size: 10px;">脚本开发</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a> <a href="/tags/%E9%80%92%E5%BD%92/" style="font-size: 10px;">递归</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 10px;">随笔</a>
+      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 11.67px;">C++学习笔记</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 18.33px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/GitHub/" style="font-size: 10px;">GitHub</a> <a href="/tags/Godot/" style="font-size: 16.67px;">Godot</a> <a href="/tags/OpenGL/" style="font-size: 11.67px;">OpenGL</a> <a href="/tags/SDL/" style="font-size: 10px;">SDL</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 13.33px;">二叉树</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 11.67px;">功能测试</a> <a href="/tags/%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91/" style="font-size: 10px;">协作开发</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 13.33px;">学习规划</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E6%89%A7%E8%A1%8C%E8%A1%A8-6%E5%91%A8%E8%AE%A1%E5%88%92/" style="font-size: 10px;">学习路线,执行表,6周计划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 13.33px;">快速</a> <a href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" style="font-size: 11.67px;">栈和队列</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 15px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%84%9A%E6%9C%AC%E5%BC%80%E5%8F%91/" style="font-size: 10px;">脚本开发</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a> <a href="/tags/%E9%80%92%E5%BD%92/" style="font-size: 10px;">递归</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 10px;">随笔</a>
     </div>
   </div>
 
@@ -1415,7 +1503,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/10/">十月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/09/">九月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/08/">八月 2026</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/11/">十一月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/10/">十月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/09/">九月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/08/">八月 2026</a></li></ul>
     </div>
   </div>
 
@@ -1428,6 +1516,14 @@
       <ul>
         
           <li>
+            <a href="/2026/11/03/GitHub%E5%A4%9A%E4%BA%BA%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/">GitHub 多人协作开发流程：分支、同步、变基与 PR</a>
+          </li>
+        
+          <li>
+            <a href="/2026/11/02/%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86-%E9%98%9F%E5%88%97%E9%87%8C%E7%9A%84%E5%B1%82%E6%95%B0/">层序遍历：队列里的层数</a>
+          </li>
+        
+          <li>
             <a href="/2026/10/29/%E9%9D%9E%E9%80%92%E5%BD%92%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86/">非递归的二叉树遍历</a>
           </li>
         
@@ -1437,14 +1533,6 @@
         
           <li>
             <a href="/2026/10/27/%E9%BA%BB%E6%9C%A8%E5%A6%82%E4%BD%95%E6%91%A7%E6%AF%81%E4%BD%A0%E7%9A%84%E6%A2%A6%E6%83%B3/">麻木如何摧毁你的梦想</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/27/Godot05-%E5%88%9B%E5%BB%BA%E5%8F%B2%E8%8E%B1%E5%A7%86/">Godot05:创建史莱姆（敌人动画与 Area2D）</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/">Godot04:瓦片碰撞与 Y 轴排序（TileSet 物理层）</a>
           </li>
         
       </ul>
@@ -1505,152 +1593,6 @@
 
   </div>
 <!-- hexo injector body_end start -->
-<style>
-  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
-  .lanx-sidebar-sticky {
-    display: flex; flex-direction: column; gap: 12px;
-    margin: 0 0 50px 0;
-    width: 100%;
-  }
-
-  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
-  .lanx-card {
-    box-sizing: border-box; width: 100%;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.94);
-    border: 1px solid #e8e8e8; border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    font-size: 12px; color: #666; text-align: center;
-    line-height: 1.6; user-select: none;
-    transition: box-shadow 0.2s ease;
-  }
-  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
-
-  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
-  .lanx-clock .clock-time {
-    font-size: 36px; font-weight: 700; color: #1a365d;
-    font-variant-numeric: tabular-nums; letter-spacing: 1px;
-    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
-      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
-      "Courier New", monospace;
-  }
-  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
-  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
-
-  /* 语录 */
-  .lanx-quote .quote-body {
-    font-size: 13px; color: #444; line-height: 1.75;
-    text-align: left; padding: 2px 0;
-  }
-  .lanx-quote .quote-meta {
-    font-size: 11px; color: #999; margin-top: 8px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
-  .lanx-quote .quote-author { color: #888; }
-  .lanx-quote .quote-type {
-    font-size: 10px; padding: 1px 8px; border-radius: 10px;
-    background: #f0f0f0; color: #888;
-  }
-  .lanx-quote .quote-refresh {
-    cursor: pointer; padding: 2px 6px; border-radius: 4px;
-    color: #aaa; transition: all 0.2s;
-  }
-  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
-  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
-
-  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
-  @media (max-width: 767px) {
-    .lanx-sidebar-sticky { display: none; }
-    .lanx-sidebar-sticky.lanx-mobile-only {
-      display: flex; margin: 50px 0; width: 100%;
-    }
-  }
-</style>
-
-<script>
-window.addEventListener('load', function(){
-  setTimeout(function(){
-    var sidebar = document.querySelector('#sidebar');
-    if (!sidebar) return;
-
-    var wrap = document.createElement('div');
-    wrap.className = 'lanx-sidebar-sticky';
-
-    var weekdays = ['日','一','二','三','四','五','六'];
-
-    // 检测是否手机端(与 CSS 媒体查询断点一致)
-    var isMobile = window.innerWidth < 768;
-
-    // 时钟(上)
-    var clock = document.createElement('div');
-    clock.className = 'lanx-card lanx-clock';
-    clock.innerHTML =
-      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
-      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
-      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
-    wrap.appendChild(clock);
-
-    // 语录(下)
-    var quote = document.createElement('div');
-    quote.className = 'lanx-card lanx-quote';
-    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
-    wrap.appendChild(quote);
-
-    if (isMobile) {
-      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
-      wrap.classList.add('lanx-mobile-only');
-      sidebar.appendChild(wrap);
-    } else {
-      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
-      sidebar.insertBefore(wrap, sidebar.firstChild);
-      var firstInner = document.querySelector('article .article-inner');
-      if (firstInner) {
-        wrap.style.marginTop =
-          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
-      }
-    }
-
-    // 时钟
-    function tick(){
-      var d = new Date();
-      var p = function(n){ return n<10?'0'+n:n; };
-      document.getElementById('lanx_clock_time').textContent =
-        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
-      document.getElementById('lanx_clock_date').textContent =
-        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
-      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
-    }
-    tick();
-    setInterval(tick, 1000);
-
-    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
-    function loadQuotes(){
-      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
-        show(window.LANX_EXCERPTS);
-        return;
-      }
-      fetch('/excerpts.json')
-        .then(function(r){ return r.json(); })
-        .then(function(d){ show(d||[]); })
-        .catch(function(){ show([]); });
-    }
-    loadQuotes();
-    function show(data){
-      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
-      var it = data[Math.floor(Math.random()*data.length)];
-      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
-      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
-      quote.innerHTML =
-        '<div class="quote-body">'+it.content+'</div>' +
-        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
-        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
-      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
-    }
-  }, 500);
-});
-</script>
-  
 <style>
   #lanx-chess-root {
     --lanx-light: #f0d9b5;
@@ -3711,246 +3653,151 @@ function undo(){
   window.__LANX_LIKE_COUNT__ = count;
 })();
 </script>
-  <script src="/js/pin.js?v=b15fc202" defer></script>
-<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
+  
 <style>
-  /* --- Toast 提示 --- */
-  .lanx-toast {
-    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
-    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
-    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  }
-  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .lanx-toast.success { background: #38a169; }
-  .lanx-toast.error { background: #e53e3e; }
-
-  /* --- Twikoo 评论区整体容器 --- */
-  #twikoo-comments {
-    margin-top: 48px; padding: 28px 28px 20px;
-    background: #fff; border-radius: 14px;
-    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
-  }
-  #twikoo-comments > h3 {
-    margin: 0 0 20px 0; padding-bottom: 14px;
-    font-size: 16px; font-weight: 600; color: #333;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  /* 留言板:不同的标题和背景 */
-  body.page-guestbook #twikoo-comments {
-    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
-    border: 1px solid #dbeafe;
-  }
-  body.page-guestbook #twikoo-comments > h3 {
-    border-bottom-color: #dbeafe;
-    color: #2563eb;
+  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
+  .lanx-sidebar-sticky {
+    display: flex; flex-direction: column; gap: 12px;
+    margin: 0 0 50px 0;
+    width: 100%;
   }
 
-  /* --- Twikoo 内部组件美化 --- */
-  .tk-comment-box {
-    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
-    padding: 14px 16px !important; margin-bottom: 16px !important;
-    transition: border-color 0.2s !important;
+  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
+  .lanx-card {
+    box-sizing: border-box; width: 100%;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid #e8e8e8; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    font-size: 12px; color: #666; text-align: center;
+    line-height: 1.6; user-select: none;
+    transition: box-shadow 0.2s ease;
   }
-  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
-  .tk-comment-box .el-textarea__inner {
-    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
-    font-size: 14px !important; line-height: 1.6 !important;
+  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+
+  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
+  .lanx-clock .clock-time {
+    font-size: 36px; font-weight: 700; color: #1a365d;
+    font-variant-numeric: tabular-nums; letter-spacing: 1px;
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
+      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
+      "Courier New", monospace;
   }
-  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
-  .tk-btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-    border: none !important; border-radius: 20px !important;
-    padding: 8px 22px !important; font-weight: 500 !important;
+  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
+  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
+
+  /* 语录 */
+  .lanx-quote .quote-body {
+    font-size: 13px; color: #444; line-height: 1.75;
+    text-align: left; padding: 2px 0;
   }
-  .tk-btn-primary:hover { opacity: 0.9; }
-
-  /* 评论列表卡片化 */
-  .tk-comment-item {
-    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
-    padding: 16px 18px !important; margin-bottom: 12px !important;
-    background: #fafbfc !important; transition: box-shadow 0.2s !important;
+  .lanx-quote .quote-meta {
+    font-size: 11px; color: #999; margin-top: 8px;
+    display: flex; align-items: center; justify-content: space-between;
   }
-  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-
-  /* 博主标识 */
-  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
-
-  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
-  .tk-powered-by,
-  .tk-comment-powered,
-  [class*="powered-by"],
-  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
-
-  /* 评论区底部工具条 */
-  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
-
-  /* 点赞/踩按钮 */
-  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
-
-  /* 头像 */
-  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
-
-  /* --- 分享按钮改复制链接 --- */
-  .article-share-link { cursor: pointer; }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
-
-<script>
-(function(){
-  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
-  var path = location.pathname;
-  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
-  // 访客明细页也是一篇文章的形态,但它不需要评论区
-  var isPost = document.querySelectorAll('article.article').length === 1
-    && path.indexOf('/visitors') === -1
-    && path.indexOf('/photos') === -1;
-  var isGuestbook = path.indexOf('/guestbook') !== -1;
-
-  // ============ Toast 工具 ============
-  function showToast(msg, type) {
-    var t = document.createElement('div');
-    t.className = 'lanx-toast' + (type ? ' ' + type : '');
-    t.textContent = msg;
-    document.body.appendChild(t);
-    requestAnimationFrame(function(){ t.classList.add('show'); });
-    setTimeout(function(){
-      t.classList.remove('show');
-      setTimeout(function(){ t.remove(); }, 300);
-    }, 1800);
+  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
+  .lanx-quote .quote-author { color: #888; }
+  .lanx-quote .quote-type {
+    font-size: 10px; padding: 1px 8px; border-radius: 10px;
+    background: #f0f0f0; color: #888;
   }
-
-  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
-  function copyShareLink() {
-    var links = document.querySelectorAll('.article-share-link');
-    if (!links.length) return;
-    links.forEach(function(link) {
-      link.href = 'javascript:void(0)';
-      // 移除旧监听(防重复绑定)
-      link.replaceWith(link.cloneNode(true));
-    });
-    // 重新获取(因为 cloneNode 替换了)
-    links = document.querySelectorAll('.article-share-link');
-    links.forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault(); e.stopPropagation();
-        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
-        var url;
-        if (link.dataset.url) {
-          try { url = new URL(link.dataset.url, location.origin).href; }
-          catch(err) { url = location.origin + location.pathname; }
-        } else {
-          url = location.origin + location.pathname;
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(url).then(function(){
-            showToast('📋 链接已复制到剪贴板');
-          }).catch(function(){ fallbackCopy(url); });
-        } else {
-          fallbackCopy(url);
-        }
-      }, true);
-    });
+  .lanx-quote .quote-refresh {
+    cursor: pointer; padding: 2px 6px; border-radius: 4px;
+    color: #aaa; transition: all 0.2s;
   }
-  function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
-    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
-    ta.remove();
-  }
+  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
+  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
 
-  // ============ 2. 文章页访问量 + 评论容器 ============
-  if (isGuestbook) document.body.classList.add('page-guestbook');
-
-  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
-  copyShareLink();
-
-  if (isPost) {
-    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
-    setTimeout(function(){
-      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
-      var af = document.querySelector('.article-footer');
-      if (!af) return;
-      // 👁️ 阅读 + 👍 点赞 内联显示
-      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
-        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
-        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
-      '</span>';
-      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
-      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
-    }, 200);
-  }
-
-  if (isPost || isGuestbook) {
-    var commentDiv = document.createElement('div');
-    commentDiv.id = 'twikoo-comments';
-    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
-    var collapsible = !isGuestbook;
-    commentDiv.innerHTML =
-      (collapsible
-        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
-        : ''
-      ) +
-      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
-        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
-      '</div>';
-    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
-    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
-
-    // 折叠按钮点击
-    if (collapsible) {
-      var btn = document.getElementById('twikoo-toggle-btn');
-      var body = document.getElementById('twikoo-comments-body');
-      btn.addEventListener('click', function() {
-        if (body.style.display === 'none') {
-          body.style.display = '';
-          btn.textContent = '🙈 收起评论区';
-          btn.style.background = '#f5f5f5';
-          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
-          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
-        } else {
-          body.style.display = 'none';
-          btn.textContent = '💬 展开评论区';
-          btn.style.background = '#fff';
-        }
-      });
+  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
+  @media (max-width: 767px) {
+    .lanx-sidebar-sticky { display: none; }
+    .lanx-sidebar-sticky.lanx-mobile-only {
+      display: flex; margin: 50px 0; width: 100%;
     }
   }
+</style>
 
-  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
-  function initTwikooBody() {
-    var commentBox = document.getElementById('tcomments');
-    if (!commentBox) return;
-    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
-    var pinger = new Promise(function(resolve){
-      var timer = setTimeout(function(){ resolve(false); }, 5000);
-      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
-        .then(function(){ clearTimeout(timer); resolve(true); })
-        .catch(function(){ clearTimeout(timer); resolve(false); });
-    });
-    pinger.then(function(ok){
-      if (!ok) {
-        commentBox.innerHTML =
-          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
-            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
-            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
-          '</div>';
+<script>
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    var sidebar = document.querySelector('#sidebar');
+    if (!sidebar) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'lanx-sidebar-sticky';
+
+    var weekdays = ['日','一','二','三','四','五','六'];
+
+    // 检测是否手机端(与 CSS 媒体查询断点一致)
+    var isMobile = window.innerWidth < 768;
+
+    // 时钟(上)
+    var clock = document.createElement('div');
+    clock.className = 'lanx-card lanx-clock';
+    clock.innerHTML =
+      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
+      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
+      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
+    wrap.appendChild(clock);
+
+    // 语录(下)
+    var quote = document.createElement('div');
+    quote.className = 'lanx-card lanx-quote';
+    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
+    wrap.appendChild(quote);
+
+    if (isMobile) {
+      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
+      wrap.classList.add('lanx-mobile-only');
+      sidebar.appendChild(wrap);
+    } else {
+      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
+      sidebar.insertBefore(wrap, sidebar.firstChild);
+      var firstInner = document.querySelector('article .article-inner');
+      if (firstInner) {
+        wrap.style.marginTop =
+          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
+      }
+    }
+
+    // 时钟
+    function tick(){
+      var d = new Date();
+      var p = function(n){ return n<10?'0'+n:n; };
+      document.getElementById('lanx_clock_time').textContent =
+        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+      document.getElementById('lanx_clock_date').textContent =
+        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
+      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
+    function loadQuotes(){
+      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
+        show(window.LANX_EXCERPTS);
         return;
       }
-      function waitTwikoo(){
-        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
-        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
-          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
-      }
-      waitTwikoo();
-    });
-  }
-  // 留言板:立即初始化;文章页:等用户点展开按钮
-  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
-})();
+      fetch('/excerpts.json')
+        .then(function(r){ return r.json(); })
+        .then(function(d){ show(d||[]); })
+        .catch(function(){ show([]); });
+    }
+    loadQuotes();
+    function show(data){
+      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
+      var it = data[Math.floor(Math.random()*data.length)];
+      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
+      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
+      quote.innerHTML =
+        '<div class="quote-body">'+it.content+'</div>' +
+        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
+        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
+      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
+    }
+  }, 500);
+});
 </script>
   
 <style>
@@ -4402,5 +4249,246 @@ body.lanx-todo-active .article-inner > *:not(.article-entry) { display: none !im
 }
 </style>
 <script src="/js/todolist-app.js"></script>
-<script src="/js/visitor.js?v=23e542bf" defer></script><!-- hexo injector body_end end --></body>
+<script src="/js/pin.js?v=b15fc202" defer></script>
+<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
+<style>
+  /* --- Toast 提示 --- */
+  .lanx-toast {
+    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
+    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lanx-toast.success { background: #38a169; }
+  .lanx-toast.error { background: #e53e3e; }
+
+  /* --- Twikoo 评论区整体容器 --- */
+  #twikoo-comments {
+    margin-top: 48px; padding: 28px 28px 20px;
+    background: #fff; border-radius: 14px;
+    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
+  }
+  #twikoo-comments > h3 {
+    margin: 0 0 20px 0; padding-bottom: 14px;
+    font-size: 16px; font-weight: 600; color: #333;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  /* 留言板:不同的标题和背景 */
+  body.page-guestbook #twikoo-comments {
+    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
+    border: 1px solid #dbeafe;
+  }
+  body.page-guestbook #twikoo-comments > h3 {
+    border-bottom-color: #dbeafe;
+    color: #2563eb;
+  }
+
+  /* --- Twikoo 内部组件美化 --- */
+  .tk-comment-box {
+    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
+    padding: 14px 16px !important; margin-bottom: 16px !important;
+    transition: border-color 0.2s !important;
+  }
+  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
+  .tk-comment-box .el-textarea__inner {
+    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
+    font-size: 14px !important; line-height: 1.6 !important;
+  }
+  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
+  .tk-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    border: none !important; border-radius: 20px !important;
+    padding: 8px 22px !important; font-weight: 500 !important;
+  }
+  .tk-btn-primary:hover { opacity: 0.9; }
+
+  /* 评论列表卡片化 */
+  .tk-comment-item {
+    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
+    padding: 16px 18px !important; margin-bottom: 12px !important;
+    background: #fafbfc !important; transition: box-shadow 0.2s !important;
+  }
+  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+  /* 博主标识 */
+  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
+
+  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
+  .tk-powered-by,
+  .tk-comment-powered,
+  [class*="powered-by"],
+  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
+
+  /* 评论区底部工具条 */
+  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
+
+  /* 点赞/踩按钮 */
+  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
+
+  /* 头像 */
+  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
+
+  /* --- 分享按钮改复制链接 --- */
+  .article-share-link { cursor: pointer; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
+
+<script>
+(function(){
+  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
+  var path = location.pathname;
+  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
+  // 访客明细页也是一篇文章的形态,但它不需要评论区
+  var isPost = document.querySelectorAll('article.article').length === 1
+    && path.indexOf('/visitors') === -1
+    && path.indexOf('/photos') === -1;
+  var isGuestbook = path.indexOf('/guestbook') !== -1;
+
+  // ============ Toast 工具 ============
+  function showToast(msg, type) {
+    var t = document.createElement('div');
+    t.className = 'lanx-toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 1800);
+  }
+
+  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
+  function copyShareLink() {
+    var links = document.querySelectorAll('.article-share-link');
+    if (!links.length) return;
+    links.forEach(function(link) {
+      link.href = 'javascript:void(0)';
+      // 移除旧监听(防重复绑定)
+      link.replaceWith(link.cloneNode(true));
+    });
+    // 重新获取(因为 cloneNode 替换了)
+    links = document.querySelectorAll('.article-share-link');
+    links.forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
+        var url;
+        if (link.dataset.url) {
+          try { url = new URL(link.dataset.url, location.origin).href; }
+          catch(err) { url = location.origin + location.pathname; }
+        } else {
+          url = location.origin + location.pathname;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function(){
+            showToast('📋 链接已复制到剪贴板');
+          }).catch(function(){ fallbackCopy(url); });
+        } else {
+          fallbackCopy(url);
+        }
+      }, true);
+    });
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
+    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
+    ta.remove();
+  }
+
+  // ============ 2. 文章页访问量 + 评论容器 ============
+  if (isGuestbook) document.body.classList.add('page-guestbook');
+
+  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
+  copyShareLink();
+
+  if (isPost) {
+    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
+    setTimeout(function(){
+      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
+      var af = document.querySelector('.article-footer');
+      if (!af) return;
+      // 👁️ 阅读 + 👍 点赞 内联显示
+      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
+        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
+        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
+      '</span>';
+      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
+      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
+    }, 200);
+  }
+
+  if (isPost || isGuestbook) {
+    var commentDiv = document.createElement('div');
+    commentDiv.id = 'twikoo-comments';
+    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
+    var collapsible = !isGuestbook;
+    commentDiv.innerHTML =
+      (collapsible
+        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
+        : ''
+      ) +
+      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
+        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
+      '</div>';
+    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
+    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
+
+    // 折叠按钮点击
+    if (collapsible) {
+      var btn = document.getElementById('twikoo-toggle-btn');
+      var body = document.getElementById('twikoo-comments-body');
+      btn.addEventListener('click', function() {
+        if (body.style.display === 'none') {
+          body.style.display = '';
+          btn.textContent = '🙈 收起评论区';
+          btn.style.background = '#f5f5f5';
+          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
+          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
+        } else {
+          body.style.display = 'none';
+          btn.textContent = '💬 展开评论区';
+          btn.style.background = '#fff';
+        }
+      });
+    }
+  }
+
+  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
+  function initTwikooBody() {
+    var commentBox = document.getElementById('tcomments');
+    if (!commentBox) return;
+    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
+    var pinger = new Promise(function(resolve){
+      var timer = setTimeout(function(){ resolve(false); }, 5000);
+      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
+        .then(function(){ clearTimeout(timer); resolve(true); })
+        .catch(function(){ clearTimeout(timer); resolve(false); });
+    });
+    pinger.then(function(ok){
+      if (!ok) {
+        commentBox.innerHTML =
+          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
+            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
+            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
+          '</div>';
+        return;
+      }
+      function waitTwikoo(){
+        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
+        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
+          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
+      }
+      waitTwikoo();
+    });
+  }
+  // 留言板:立即初始化;文章页:等用户点展开按钮
+  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
+})();
+</script>
+  <script src="/js/visitor.js?v=23e542bf" defer></script><!-- hexo injector body_end end --></body>
 </html>

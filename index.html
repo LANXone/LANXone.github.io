@@ -84,6 +84,555 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-GitHub多人协作开发流程" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/11/03/GitHub%E5%A4%9A%E4%BA%BA%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/" class="article-date">
+  <time class="dt-published" datetime="2026-11-03T15:20:00.000Z" itemprop="datePublished">2026-11-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/11/03/GitHub%E5%A4%9A%E4%BA%BA%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/">GitHub 多人协作开发流程：分支、同步、变基与 PR</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>一个人写代码，<code>git add</code>、<code>git commit</code>、<code>git push</code> 三步走就够了。多人协作时，问题全出在“同时”两个字上：你改的文件别人也在改；你还没推，别人的 PR 已经合进了 <code>main</code>。这篇把一轮完整的协作流程走一遍，重点讲清楚两件事——<strong>推之前先同步</strong>，以及<strong>rebase 之后该怎么推</strong>。</p>
+<h2 id="一、整条流程先看一眼">一、整条流程先看一眼</h2>
+<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/github-collab-flow.png" alt="GitHub 多人协作开发流程图"></p>
+<p>图上是一条完整链路：clone → 切分支 → 改代码 → 提交 → fetch → 判断远端有没有新提交 → 变基或直接推 → 提 PR → 合并 → 本地收尾。中间的菱形是唯一的分叉点，也是整个流程里最容易出事的地方。</p>
+<h2 id="二、准备：clone、身份和分支">二、准备：clone、身份和分支</h2>
+<p>先把仓库拉到本地，并确认提交身份：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git@github.com:org/repo.git</span><br><span class="line"><span class="built_in">cd</span> repo</span><br><span class="line">git config user.name <span class="string">&quot;你的名字&quot;</span></span><br><span class="line">git config user.email <span class="string">&quot;you@example.com&quot;</span></span><br></pre></td></tr></table></figure>
+<p>多人仓库里作者信息必须准确，否则 review 时不知道找谁。建议只在当前仓库配置，不要随手 <code>--global</code>，免得把公司、学校、个人项目的身份混在一起。</p>
+<p>然后从最新的 <code>main</code> 切出功能分支：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git checkout main</span><br><span class="line">git pull</span><br><span class="line">git checkout -b my-fe</span><br></pre></td></tr></table></figure>
+<p>分支名按用途起，比如 <code>feature/login-check</code>、<code>fix/header-overflow</code>。一个分支只做一件事，PR 才好 review，出问题也好回滚。不要在 <code>main</code> 上直接改：<code>main</code> 是所有人的公共基线，正常项目也会给它加保护规则，直接 push 会被拒绝。</p>
+<h2 id="三、开发与提交">三、开发与提交</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git status              <span class="comment"># 先看改了什么</span></span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;feat: 完成登录校验&quot;</span></span><br></pre></td></tr></table></figure>
+<p>小步提交，一个 commit 只做一件事，message 写清“做了什么、为什么”。后面 review 提意见要改，也只是追加 commit，不需要重写历史。</p>
+<h2 id="四、推之前先-fetch">四、推之前先 fetch</h2>
+<p>这一步最容易被省掉，但也最不能省：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git fetch origin</span><br><span class="line">git <span class="built_in">log</span> --oneline HEAD..origin/main</span><br></pre></td></tr></table></figure>
+<p><code>git fetch</code> 只更新本地的 <code>origin/main</code> 引用，不动工作区，也不产生合并。如果上面这条 <code>git log</code> <strong>没有输出</strong>，说明远端没有新提交，可以直接推：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push -u origin my-fe</span><br></pre></td></tr></table></figure>
+<p>第一次推加 <code>-u</code>，把本地分支和远端分支关联起来，之后直接 <code>git push</code> 就行。</p>
+<h2 id="五、远端有新提交：用-rebase，不要硬推">五、远端有新提交：用 rebase，不要硬推</h2>
+<p>如果 <code>git log HEAD..origin/main</code> 有输出，说明队友的 PR 已经合进 <code>main</code> 了。这时不能把旧分支直接推上去——就算推成功了，PR 里也会混进一堆与你无关的差异。</p>
+<p>正确做法是把你的提交“搬到”最新 <code>main</code> 之上：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase origin/main</span><br></pre></td></tr></table></figure>
+<p>它的过程是：找到 <code>my-fe</code> 和 <code>origin/main</code> 的分叉点，把分叉点之后属于你的提交，按顺序重新应用到 <code>origin/main</code> 的最新提交上。历史会从分叉变成一条直线：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">origin/main:        A - B - C        （队友的提交）</span><br><span class="line">my-fe（旧）:        A - B - D - E</span><br><span class="line">my-fe（rebase 后）: A - B - C - D&#x27; - E&#x27;</span><br></pre></td></tr></table></figure>
+<p>注意 <code>D</code>、<code>E</code> 变成了 <code>D'</code>、<code>E'</code>——哈希已经变了。这就是后面必须强制推送的原因。</p>
+<p>为什么不用 <code>git merge origin/main</code>？merge 也能解决冲突，但会多出一个 merge commit，历史变成网状；团队用 Squash 合并时，这个 merge commit 还会被一起压进 <code>main</code>，让 PR 的差异更乱。自己的分支 rebase、公共分支只快进，是更常见的约定。</p>
+<h2 id="六、处理冲突">六、处理冲突</h2>
+<p>rebase 过程中遇到冲突，Git 会停下来，让你一个个解决：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git status                    <span class="comment"># 看哪些文件冲突</span></span><br><span class="line"><span class="comment"># 手动编辑冲突文件，删掉 &lt;&lt;&lt;&lt;&lt;&lt;&lt;、=======、&gt;&gt;&gt;&gt;&gt;&gt;&gt; 这些标记</span></span><br><span class="line">git add &lt;冲突文件&gt;</span><br><span class="line">git rebase --<span class="built_in">continue</span></span><br></pre></td></tr></table></figure>
+<p>两个容易踩的点：</p>
+<ul>
+<li>rebase 过程中<strong>不要</strong> <code>git commit</code>。<code>git add</code> 之后直接 <code>--continue</code>，Git 会替你把这一步走完；</li>
+<li>只想跳过当前这个提交，用 <code>git rebase --skip</code>；想整个放弃、回到 rebase 之前的状态，用 <code>git rebase --abort</code>。</li>
+</ul>
+<p>解决冲突时不要图省事只留一边。不确定的话，先看 <code>git log --oneline</code> 和 <code>git diff origin/main...HEAD</code>，弄明白两边各自改了什么再动手。</p>
+<h2 id="七、推送：用-force-with-lease">七、推送：用 --force-with-lease</h2>
+<p>rebase 改写了提交哈希，普通 <code>git push</code> 会被拒绝（non-fast-forward）。必须强制推送，但别用 <code>-f</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push --force-with-lease origin my-fe</span><br></pre></td></tr></table></figure>
+<p>两者的区别：<code>-f</code> 是无条件覆盖远端；<code>--force-with-lease</code> 会先检查远端分支是不是还是你上次见到的样子，如果别人也往这个分支推过东西，就直接拒绝，避免把别人的提交冲掉。</p>
+<p>两条铁律：</p>
+<ol>
+<li>force push <strong>只对自己的功能分支</strong>用，永远不要对 <code>main</code> 用；</li>
+<li>如果这个功能分支是两个人共用的，先约好再 rebase——rebase 会改写别人也在用的历史。</li>
+</ol>
+<h2 id="八、提-PR-与合并">八、提 PR 与合并</h2>
+<p>在 GitHub 上点 <strong>Compare &amp; pull request</strong>，标题写清这次做了什么，描述里补上背景、改动点和验证方式。CI 通过、review 通过后再合并。</p>
+<p>GitHub 提供三种合并方式，选哪种取决于团队约定：</p>
+<table>
+<thead>
+<tr>
+<th>合并方式</th>
+<th>结果</th>
+<th>适合的场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Squash and merge</td>
+<td>分支上所有提交压成一条新提交</td>
+<td>功能分支，提交过程比较碎，推荐</td>
+</tr>
+<tr>
+<td>Merge commit</td>
+<td>保留所有提交，额外多一条 merge commit</td>
+<td>需要完整保留开发过程</td>
+</tr>
+<tr>
+<td>Rebase and merge</td>
+<td>逐条重放提交，不产生 merge commit</td>
+<td>提交本身干净、粒度高</td>
+</tr>
+</tbody>
+</table>
+<p>用 Squash and merge 之后要记住：<code>main</code> 上只有一条压缩后的提交，你本地 <code>my-fe</code> 里的原始提交和 <code>main</code> 已经“分家”了。这个分支不要再 merge 回 <code>main</code>，直接删掉，下次从最新 <code>main</code> 重新切。</p>
+<h2 id="九、合并后本地收尾">九、合并后本地收尾</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git checkout main</span><br><span class="line">git pull</span><br><span class="line">git branch -d my-fe</span><br><span class="line">git fetch -p</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>git branch -d</code> 是安全删除，Git 会检查分支是否已合并；</li>
+<li>Squash 合并后，本地分支和 <code>main</code> 的历史必然不一致，<code>-d</code> 可能提示“未合并”。确认远端 PR 确实合并了，再用 <code>git branch -D my-fe</code> 强删；</li>
+<li><code>git fetch -p</code> 清掉远端已删除分支留下的引用。</li>
+</ul>
+<h2 id="十、命令速查">十、命令速查</h2>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>切功能分支</td>
+<td><code>git checkout -b my-fe</code></td>
+</tr>
+<tr>
+<td>提交</td>
+<td><code>git add . &amp;&amp; git commit -m &quot;feat: ...&quot;</code></td>
+</tr>
+<tr>
+<td>同步远端信息</td>
+<td><code>git fetch origin</code></td>
+</tr>
+<tr>
+<td>看远端有没有新提交</td>
+<td><code>git log --oneline HEAD..origin/main</code></td>
+</tr>
+<tr>
+<td>变基到最新 main</td>
+<td><code>git rebase origin/main</code></td>
+</tr>
+<tr>
+<td>冲突后继续</td>
+<td><code>git add &lt;文件&gt; &amp;&amp; git rebase --continue</code></td>
+</tr>
+<tr>
+<td>放弃变基</td>
+<td><code>git rebase --abort</code></td>
+</tr>
+<tr>
+<td>首次推送</td>
+<td><code>git push -u origin my-fe</code></td>
+</tr>
+<tr>
+<td>变基后推送</td>
+<td><code>git push --force-with-lease origin my-fe</code></td>
+</tr>
+<tr>
+<td>合并后同步</td>
+<td><code>git checkout main &amp;&amp; git pull</code></td>
+</tr>
+<tr>
+<td>删除本地分支</td>
+<td><code>git branch -d my-fe</code> / <code>git branch -D my-fe</code></td>
+</tr>
+<tr>
+<td>清理远端引用</td>
+<td><code>git fetch -p</code></td>
+</tr>
+</tbody>
+</table>
+<p>一句话总结：<strong>分支隔离开发，推之前先 fetch，有更新就 rebase，冲突解决后 force-with-lease，合并后同步 main 并删分支。</strong> 把这五步固定成习惯，多人协作里绝大多数“代码被覆盖”“PR 差异莫名其妙”的问题都不会发生。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lanxone.github.io/2026/11/03/GitHub%E5%A4%9A%E4%BA%BA%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/" data-id="cmw0u0z4900001omaaqq5852x" data-title="GitHub 多人协作开发流程：分支、同步、变基与 PR" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GitHub/" rel="tag">GitHub</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91/" rel="tag">协作开发</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-层序遍历-队列里的层数" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/11/02/%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86-%E9%98%9F%E5%88%97%E9%87%8C%E7%9A%84%E5%B1%82%E6%95%B0/" class="article-date">
+  <time class="dt-published" datetime="2026-11-02T02:00:00.000Z" itemprop="datePublished">2026-11-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/11/02/%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86-%E9%98%9F%E5%88%97%E9%87%8C%E7%9A%84%E5%B1%82%E6%95%B0/">层序遍历：队列里的层数</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>102. 二叉树的层序遍历</h1>
+<blockquote>
+<p>还是老规矩：前面写想法，代码统一放后面。复习时先读想法，哪一步卡住了再往下翻代码。</p>
+</blockquote>
+<p>题目只有一句话：</p>
+<blockquote>
+<p>给你二叉树的根节点 <code>root</code>，返回其节点值的<strong>层序遍历</strong>（即逐层地，从左到右访问所有节点）。</p>
+</blockquote>
+<p>示例输入 <code>root = [3,9,20,null,null,15,7]</code>，输出 <code>[[3],[9,20],[15,7]]</code>。</p>
+<p>前中后序输出的是<strong>一维数组</strong>，层序输出的是<strong>二维数组</strong>——多出来的那一维，就是「层」。所以这道题真正的难点不在「怎么遍历」，而在「怎么在遍历的过程中知道自己换层了」。</p>
+<h2 id="一、队列负责顺序，不负责分组">一、队列负责顺序，不负责分组</h2>
+<p>层序 = 广度优先，容器必然是<strong>队列</strong>。这一点在学二叉树之前就已经被栈和队列那一章埋下伏笔了：</p>
+<table>
+<thead>
+<tr>
+<th>容器</th>
+<th>撑起的遍历</th>
+<th>走法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>栈（系统调用栈也行）</td>
+<td>前 / 中 / 后序</td>
+<td>一条道走到黑，撞墙才回头（DFS）</td>
+</tr>
+<tr>
+<td>队列</td>
+<td>层序</td>
+<td>一圈一圈往外扩（BFS）</td>
+</tr>
+</tbody>
+</table>
+<p>队列的先进先出保证了「先被发现的节点先被处理」，于是同一层的节点会挨在一起出队，从左到右也天然成立——因为我们固定「先压左孩子、再压右孩子」，FIFO 会把这个入队顺序原样保留下来。</p>
+<p><strong>但队列只保证顺序，它不知道「层」在哪里。</strong></p>
+<p>这一点值得说透：在任意时刻，队列里最多只跨越两层的节点——「当前层还没处理完的」加上「下一层已经被放进来排队的」。它从头到尾都不清楚整棵树还剩几层，也不天然知道「我现在在第几层」。所以「层」这个信息，必须由我们自己维护。</p>
+<p>这就是为什么层序的代码看起来比前中后序多了一层 <code>for</code>，也多了一个 <code>int layer = que.size();</code>——<strong>多出来的那一行，就是这道题的全部难点。</strong></p>
+<h2 id="二、que-size-快照，一行解决分层">二、<code>que.size()</code> 快照，一行解决分层</h2>
+<p>整体骨架是：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (!que.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">    <span class="type">int</span> layer = que.<span class="built_in">size</span>();          <span class="comment">// ① 冻结：当前层还剩多少个节点</span></span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; layerC;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; layer; i++) &#123; <span class="comment">// ② 只处理这么多次，绝不越界到下一层</span></span><br><span class="line">        TreeNode* node = que.<span class="built_in">front</span>();</span><br><span class="line">        que.<span class="built_in">pop</span>();</span><br><span class="line">        layerC.<span class="built_in">push_back</span>(node-&gt;val);</span><br><span class="line">        <span class="keyword">if</span> (node-&gt;left  != <span class="literal">NULL</span>) que.<span class="built_in">push</span>(node-&gt;left);</span><br><span class="line">        <span class="keyword">if</span> (node-&gt;right != <span class="literal">NULL</span>) que.<span class="built_in">push</span>(node-&gt;right);</span><br><span class="line">    &#125;</span><br><span class="line">    res.<span class="built_in">push_back</span>(layerC);            <span class="comment">// ③ 这一层收工，整体塞进答案</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关键在于 <strong><code>size</code> 必须在 <code>for</code> 之前读一次，并且读完就不再看它。</strong></p>
+<p>如果直接写 <code>for (int i = 0; i &lt; que.size(); i++)</code>，那 <code>que.size()</code> 每轮都会重新求值：一边出队、一边入队，长度不减反增，于是<strong>下一层的节点会被提前拉进当前层</strong>，输出直接错位。这个坑几乎每个人都踩过一次，而且症状很迷惑——不是崩溃，是「少了一层 / 某一层多了一堆数」。</p>
+<blockquote>
+<p>一句话记忆：<strong>队列会边吃边长，所以在吃之前先把「这顿要吃几口」记下来。</strong></p>
+</blockquote>
+<h2 id="三、为什么-size-「恰好」就是当前层的节点数">三、为什么 <code>size</code> 「恰好」就是当前层的节点数</h2>
+<p>这是我觉得最值得写清楚的一点：它不是巧合，而是一条<strong>循环不变量</strong>。</p>
+<p><strong>不变量</strong>：每次进入 <code>while</code> 循环体时，队列里恰好装着「第 d 层」的全部节点，且按从左到右排列。</p>
+<p><strong>初始</strong>：<code>d = 0</code>，队列里只有 <code>root</code>，而根节点恰好就是第 0 层的全部节点。</p>
+<p><strong>归纳</strong>：假设进入第 d 轮时不变量成立，那么：</p>
+<ol>
+<li><code>size</code> 读到的就是第 d 层的宽度，<code>for</code> 恰好执行 <code>size</code> 次；</li>
+<li>这 <code>size</code> 次里，第 d 层的每个节点都被弹出<strong>恰好一次</strong>；</li>
+<li>每弹出一个节点，就把它左右两个孩子按「先左后右」入队。</li>
+</ol>
+<p>因为二叉树里<strong>每个节点最多有两个孩子、并且只有一个父亲</strong>，所以「第 d 层所有节点的孩子」不多不少正好是「第 d+1 层的全部节点」。也就是说，这一轮结束时，队列被清空又填满了一次，里面装的全是第 d+1 层。</p>
+<p>于是进入下一轮时不变量继续成立。</p>
+<p><strong>所以 <code>size</code> 不是「猜」出来的层数，而是「上一轮刚好把下一层整整齐齐放了进来」这个事实的直接结果。</strong> 这也是我在笔记里反复强调的那句话：二叉树要和队列一起推理，才能推出下一层有多少个节点。</p>
+<p>顺便区分两个容易混的概念：</p>
+<ul>
+<li><strong>层数（深度）</strong>：第几层，是 <code>while</code> 转了几圈的计数；</li>
+<li><strong>层宽（节点数）</strong>：这一层有几个节点，是 <code>que.size()</code> 的值。</li>
+</ul>
+<p>代码里 <code>layer</code> 拿到的是后者，前者根本不需要变量——<code>res.size()</code> 就是层数。</p>
+<h2 id="四、拿示例手跑一遍">四、拿示例手跑一遍</h2>
+<p>树是 <code>[3,9,20,null,null,15,7]</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">  3</span><br><span class="line"> / \</span><br><span class="line">9   20</span><br><span class="line">   /  \</span><br><span class="line">  15   7</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>轮次</th>
+<th>进入 while 时的队列</th>
+<th><code>layer</code></th>
+<th>本轮出队</th>
+<th>本轮入队</th>
+<th><code>layerC</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>[3]</code></td>
+<td>1</td>
+<td>3</td>
+<td>9, 20</td>
+<td><code>[3]</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>[9,20]</code></td>
+<td>2</td>
+<td>9, 20</td>
+<td>15, 7</td>
+<td><code>[9,20]</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>[15,7]</code></td>
+<td>2</td>
+<td>15, 7</td>
+<td>无</td>
+<td><code>[15,7]</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>[]</code></td>
+<td>—</td>
+<td>循环结束</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>结果是 <code>[[3],[9,20],[15,7]]</code>。</p>
+<p>看表格的第 2、3 轮会发现一件事：<code>layer</code> 的值<strong>不是一直增长的</strong>，它只是「这一层的宽度」，所以 <code>while</code> 到底会转几圈，代码事先并不知道，也不需要知道。<strong>层数是转出来之后才有的，不是提前算出来的。</strong> 这也是层序和「按深度递归」最大的思维差异。</p>
+<h2 id="五、递归写法：把层号当参数往下传">五、递归写法：把层号当参数往下传</h2>
+<p>递归是深度优先，走的顺序完全不是一层一层；但<strong>结果的组织方式仍然可以按层来</strong>——只要在递归时把「我现在在第几层」一起带下去。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">order</span><span class="params">(TreeNode* cur, vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; result, <span class="type">int</span> depth)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (cur == <span class="literal">nullptr</span>) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (result.<span class="built_in">size</span>() == depth) result.<span class="built_in">push_back</span>(<span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;());  <span class="comment">// 这一层第一次来，开个新桶</span></span><br><span class="line">    result[depth].<span class="built_in">push_back</span>(cur-&gt;val);                            <span class="comment">// 直接放进对应层</span></span><br><span class="line">    order(cur-&gt;left,  result, depth + <span class="number">1</span>);</span><br><span class="line">    order(cur-&gt;right, result, depth + <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>三个要素对号入座：</p>
+<table>
+<thead>
+<tr>
+<th>递归三要素</th>
+<th>这题填什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>参数</td>
+<td><code>cur</code>（当前节点）、<code>result</code>（结果，传引用）、<code>depth</code>（当前层号）</td>
+</tr>
+<tr>
+<td>终止条件</td>
+<td><code>cur == nullptr</code></td>
+</tr>
+<tr>
+<td>单层逻辑</td>
+<td>需要的话开新层 → 把值放进 <code>result[depth]</code> → 递归左右，<code>depth + 1</code></td>
+</tr>
+</tbody>
+</table>
+<p>几个细节值得单独讲：</p>
+<p><strong>1. 为什么是 <code>result.size() == depth</code> 才开新层</strong></p>
+<p><code>result</code> 里已经有 <code>size</code> 个桶，下标是 <code>0 .. size-1</code>。如果 <code>depth == size</code>，说明「第 depth 层还没有桶」，那就开一个空的。因为 DFS 是逐层往下走的，<strong>不会跳层</strong>，所以第一次到达第 depth 层时 <code>size</code> 一定恰好等于 <code>depth</code>，用 <code>==</code> 就够了，不必写 <code>&gt;=</code>。</p>
+<p><strong>2. 为什么 <code>depth</code> 传值，不传引用</strong></p>
+<p>每一层的层号是这一层自己的事，<code>depth + 1</code> 传给下一层时，当前这一层的 <code>depth</code> 并不会变。回溯回来继续走右子树时，用的还是原来的 <code>depth</code>，刚好正确。</p>
+<p>如果改成 <code>int&amp; depth</code>，就必须写成 <code>++depth</code> 进入、<code>--depth</code> 退出——那已经是<strong>手动回溯</strong>了，容易漏掉一条分支就全错。这正好和<a href="/2026/10/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86%E5%92%8C%E9%80%92%E5%BD%92/">二叉树遍历和递归</a>里说的「信息往下传 → 加参数」对上：这里的 <code>depth</code> 是典型的自顶向下信息。</p>
+<p><strong>3. 递归版和题目要求的顺序其实不一致</strong></p>
+<p>递归的执行顺序是 <code>3 → 9 → 20 → 15 → 7</code>（深度优先），跟层序 <code>3 → 9 → 20 → 15 → 7</code>……在这棵树上恰好一样，但换一棵树就不一样了。<strong>它只是把访问到的节点按层号投递到对应的桶里，桶的顺序才是层序。</strong> 这一点很容易造成误解，以为递归版也是「一层一层走」。</p>
+<h2 id="六、两版对照">六、两版对照</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>迭代（队列 + size）</th>
+<th>递归（depth 参数）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>执行顺序</td>
+<td>真正的宽度优先</td>
+<td>深度优先，只是往对应层投递</td>
+</tr>
+<tr>
+<td>分层依据</td>
+<td>每轮开始前的 <code>que.size()</code></td>
+<td>传下来的 <code>depth</code></td>
+</tr>
+<tr>
+<td>时间</td>
+<td><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span></td>
+<td><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span></td>
+</tr>
+<tr>
+<td>空间</td>
+<td>队列里最多一层的节点数 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>w</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(w)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="mclose">)</span></span></span></span>，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>w</mi></mrow><annotation encoding="application/x-tex">w</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02691em;">w</span></span></span></span> 为最大层宽</td>
+<td>递归栈 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>h</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(h)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit">h</span><span class="mclose">)</span></span></span></span>，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>h</mi></mrow><annotation encoding="application/x-tex">h</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.69444em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">h</span></span></span></span> 为树高</td>
+</tr>
+<tr>
+<td>空树</td>
+<td><code>if (root != NULL)</code> 才入队</td>
+<td>第一层 <code>cur == nullptr</code> 直接返回</td>
+</tr>
+<tr>
+<td>适合</td>
+<td>需要「边遍历边按层做判断」的题</td>
+<td>只要「按层归桶」的题</td>
+</tr>
+</tbody>
+</table>
+<p>空间这一栏值得记一下，两版的极限刚好相反：</p>
+<ul>
+<li><strong>链状树</strong>（每个节点只有一个孩子）：层宽恒为 1，BFS 队列只要 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mn>1</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">O(1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathrm">1</span><span class="mclose">)</span></span></span></span>；但递归深度 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">n</span></span></span></span>，有栈溢出风险。</li>
+<li><strong>完全二叉树</strong>：最后一层接近 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mi mathvariant="normal">/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">n/2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">n</span><span class="mord mathrm">/</span><span class="mord mathrm">2</span></span></span></span> 个节点，BFS 队列要 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span>；而递归栈只要 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>log</mi><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span>。</li>
+</ul>
+<p>所以「层序用迭代还是递归」不是风格问题，而是要看你更怕宽还是更怕深。</p>
+<h2 id="七、另外两种分层写法（知道有这回事就行）">七、另外两种分层写法（知道有这回事就行）</h2>
+<p><code>size</code> 快照不是唯一解法，另外两种也常见：</p>
+<table>
+<thead>
+<tr>
+<th>写法</th>
+<th>怎么知道换层了</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>队列存 <code>pair&lt;TreeNode*, int&gt;</code></td>
+<td>层号跟着节点一起入队，出队时比对</td>
+<td>多存一个 <code>int</code>，判断多一行</td>
+</tr>
+<tr>
+<td>双队列 <code>cur</code> / <code>next</code></td>
+<td>一个队列只放当前层，孩子全放另一个，处理完交换</td>
+<td>两个队列，多一次 <code>swap</code>，但分层最直观</td>
+</tr>
+<tr>
+<td>哨兵 <code>nullptr</code></td>
+<td>每层末尾塞一个空指针，弹出空指针就当换行</td>
+<td>遇到空节点要特判，且空树要单独处理</td>
+</tr>
+</tbody>
+</table>
+<p>102 这种「每层产出一个数组」的题，<code>size</code> 快照是最短的，因为<strong>我们根本不需要知道层号，只需要知道这一层还剩几个</strong>。但到了「锯齿形遍历」「右视图」这类需要「这一层处理完了吗」的题，双队列或者「记录本层最后一个节点」会更好写。</p>
+<h2 id="八、层序能解决的题，其实就是「换一行单层逻辑」">八、层序能解决的题，其实就是「换一行单层逻辑」</h2>
+<p>层序是最像模板的一种遍历：骨架不动，改的只是「每层收完做什么」。</p>
+<table>
+<thead>
+<tr>
+<th>题目</th>
+<th>改动</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>107 自底向上的层序</td>
+<td>最后 <code>reverse(res.begin(), res.end())</code></td>
+</tr>
+<tr>
+<td>199 二叉树的右视图</td>
+<td>每层只取 <code>layerC.back()</code></td>
+</tr>
+<tr>
+<td>637 层平均值</td>
+<td><code>layerC</code> 求和 / <code>layerC.size()</code></td>
+</tr>
+<tr>
+<td>111 最小深度</td>
+<td>第一次遇到叶子就 <code>return res.size()</code></td>
+</tr>
+<tr>
+<td>958 完全二叉树</td>
+<td>层序（空节点也入队），遇到第一个 <code>nullptr</code> 后不能再有非空</td>
+</tr>
+<tr>
+<td>116 / 117 填充 next 指针</td>
+<td>每层内让前一个节点指向后一个</td>
+</tr>
+</tbody>
+</table>
+<p>所以层序真正的价值，不是「能遍历」，而是**「按层」这个语义本身**——它给了你一个天然的「同一层的节点都在一起」的窗口。</p>
+<hr>
+<h1>代码</h1>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"> * struct TreeNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     TreeNode *left;</span></span><br><span class="line"><span class="comment"> *     TreeNode *right;</span></span><br><span class="line"><span class="comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span></span><br><span class="line"><span class="comment"> * &#125;;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">levelOrder</span>(TreeNode* root) &#123;</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; res;</span><br><span class="line">        queue&lt;TreeNode*&gt; que;</span><br><span class="line">        <span class="keyword">if</span> (root != <span class="literal">NULL</span>) que.<span class="built_in">push</span>(root);      <span class="comment">// 空树不入队</span></span><br><span class="line">        <span class="keyword">while</span> (!que.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">            vector&lt;<span class="type">int</span>&gt; layerC;</span><br><span class="line">            <span class="type">int</span> layer = que.<span class="built_in">size</span>();            <span class="comment">// 冻结当前层的节点数，for 里不再求值</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; layer; i++) &#123;</span><br><span class="line">                TreeNode* node = que.<span class="built_in">front</span>();</span><br><span class="line">                que.<span class="built_in">pop</span>();</span><br><span class="line">                <span class="keyword">if</span> (node-&gt;left  != <span class="literal">NULL</span>) que.<span class="built_in">push</span>(node-&gt;left);   <span class="comment">// 先左</span></span><br><span class="line">                <span class="keyword">if</span> (node-&gt;right != <span class="literal">NULL</span>) que.<span class="built_in">push</span>(node-&gt;right);  <span class="comment">// 后右，保证从左到右</span></span><br><span class="line">                layerC.<span class="built_in">push_back</span>(node-&gt;val);</span><br><span class="line">            &#125;</span><br><span class="line">            res.<span class="built_in">push_back</span>(layerC);             <span class="comment">// 一层收完再塞，不能放进 for 里</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>递归版：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">order</span><span class="params">(TreeNode* cur, vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; result, <span class="type">int</span> depth)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (cur == <span class="literal">nullptr</span>) <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">if</span> (result.<span class="built_in">size</span>() == depth) result.<span class="built_in">push_back</span>(<span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;());  <span class="comment">// 该层第一次到达，开新桶</span></span><br><span class="line">        result[depth].<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">        order(cur-&gt;left,  result, depth + <span class="number">1</span>);</span><br><span class="line">        order(cur-&gt;right, result, depth + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">levelOrder</span>(TreeNode* root) &#123;</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; result;</span><br><span class="line">        <span class="type">int</span> depth = <span class="number">0</span>;</span><br><span class="line">        order(root, result, depth);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>递归版里 <code>result</code> 必须是引用。写成 <code>vector&lt;vector&lt;int&gt;&gt; result</code> 传值，每层都在改自己的副本，回溯上去什么都没留下——这和<a href="/2026/10/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86%E5%92%8C%E9%80%92%E5%BD%92/">二叉树遍历和递归</a>里那个「忘写 <code>&amp;</code>」的坑是同一个。</p>
+<h2 id="踩坑清单">踩坑清单</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>坑</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>for (int i = 0; i &lt; que.size(); i++)</code></td>
+<td>循环开始前先 <code>int layer = que.size()</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>layerC</code> 定义在 <code>while</code> 外面</td>
+<td>每层在 <code>while</code> 内部新建一份</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>res.push_back(layerC)</code> 写在 <code>for</code> 里</td>
+<td>一层循环结束之后再推</td>
+</tr>
+<tr>
+<td>4</td>
+<td>先压右再压左</td>
+<td>先左后右，出队才是从左到右</td>
+</tr>
+<tr>
+<td>5</td>
+<td>空树没判就 <code>que.push(root)</code></td>
+<td>入队前 <code>if (root != NULL)</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>递归 <code>depth</code> 初值写成 1</td>
+<td><code>result</code> 下标从 0 开始，<code>depth</code> 也从 0 开始；否则 <code>result[1]</code> 越界</td>
+</tr>
+<tr>
+<td>7</td>
+<td>递归版以为顺序也是层序</td>
+<td>它是 DFS 执行、按层归桶，别拿它当「逐层访问」用</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>que.size()</code> 直接赋给 <code>int</code></td>
+<td>返回值是 <code>size_t</code>，习惯写 <code>int layer = (int)que.size()</code> 或 <code>size_t layer</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<blockquote>
+<p>小结：层序遍历的难点从来不是「怎么遍历」，而是「怎么知道换层了」。队列只负责顺序，层的边界得自己数；而能数得出来，是因为上一轮<strong>恰好</strong>把下一层整整齐齐地放进了队列——这条不变量，才是 <code>que.size()</code> 那行代码真正的底气。</p>
+</blockquote>
+<p>这一篇和<a href="/2026/10/29/%E9%9D%9E%E9%80%92%E5%BD%92%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86/">非递归的二叉树遍历</a>是同一套脉络：前中后序在解决「怎么回头」，层序在解决「怎么换层」。前者靠栈存来路，后者靠队列数边界，都是把「看不见的结构」显式地维护出来。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lanxone.github.io/2026/11/02/%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86-%E9%98%9F%E5%88%97%E9%87%8C%E7%9A%84%E5%B1%82%E6%95%B0/" data-id="cmvyze2ij000008ma23nhbfgg" data-title="层序遍历：队列里的层数" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" rel="tag">二叉树</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%98%9F%E5%88%97/" rel="tag">队列</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-非递归的二叉树遍历" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/10/29/%E9%9D%9E%E9%80%92%E5%BD%92%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86/" class="article-date">
@@ -505,433 +1054,11 @@
 
 
   
-    <article id="post-Godot05-创建史莱姆" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/10/27/Godot05-%E5%88%9B%E5%BB%BA%E5%8F%B2%E8%8E%B1%E5%A7%86/" class="article-date">
-  <time class="dt-published" datetime="2026-10-27T12:30:00.000Z" itemprop="datePublished">2026-10-27</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/27/Godot05-%E5%88%9B%E5%BB%BA%E5%8F%B2%E8%8E%B1%E5%A7%86/">Godot05:创建史莱姆（敌人动画与 Area2D）</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>地图和碰撞都有了，接下来进入战斗部分。第一个敌人是史莱姆：这一篇先照 <code>Godot01</code> 的流程把它立起来，再挂一个 <code>Area2D</code>，作为之后受击判定的区域。</p>
-<h2 id="第一步：创建史莱姆和它的动画">第一步：创建史莱姆和它的动画</h2>
-<p>史莱姆和 <code>player</code> 是同一套搭法，流程不重复截图，直接对照 <a href="/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/">Godot01：创建一个能动的角色</a>：</p>
-<ol>
-<li>新建根节点 <code>CharacterBody2D</code>，重命名为 <code>slime</code>。</li>
-<li>添加 <code>AnimatedSprite2D</code>，在 <code>Sprite Frames</code> 里新建 <code>SpriteFrames</code>，导入史莱姆素材并切帧。</li>
-<li>按动作分别建动画，命名建议直接对应状态：<code>idle</code>、<code>move</code>、<code>hurt</code>、<code>death</code>。每个动画单独导入帧。</li>
-<li>添加 <code>CollisionShape2D</code>，在 <code>Shape</code> 里新建形状（<code>RectangleShape2D</code> 或 <code>CapsuleShape2D</code>），缩到史莱姆身体大小。</li>
-</ol>
-<p>像素素材的模糊问题在 <code>Godot01</code> 里已经通过项目级 <code>Default Texture Filter → Nearest</code> 解决，这是全局设置，新节点直接沿用，不用再改一遍。</p>
-<p>场景面板里节点旁边出现<strong>黄色三角</strong>，是在提醒还有东西没配：<code>AnimatedSprite2D</code> 没有 <code>SpriteFrames</code> 或动画为空，<code>CollisionShape2D</code> 的 <code>Shape</code> 还是 <code>&lt;empty&gt;</code>。全部配好后警告会消失，这个小图标本身就可以当检查清单。</p>
-<h2 id="第二步：给史莱姆添加-Area2D">第二步：给史莱姆添加 Area2D</h2>
-<p>选中 <code>slime</code>，点场景面板左上角的 <code>+</code>，在搜索框输入 <code>area</code>，选中 <strong><code>Area2D</code></strong>，点 <strong>Create</strong>。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step2-add-area2d.png" alt="在 Create New Node 里给 slime 添加 Area2D"></p>
-<p><code>Area2D</code> 和 <code>CharacterBody2D</code> 的分工要说清楚：</p>
-<ul>
-<li><code>CharacterBody2D</code> 负责<strong>物理阻挡和移动</strong>，会被墙、树挡住；</li>
-<li><code>Area2D</code> <strong>不参与物理阻挡</strong>，只负责&quot;有没有东西和我重叠&quot;。</li>
-</ul>
-<p>所以史莱姆的身体用 <code>CharacterBody2D</code> 走碰撞，受击、攻击这类判定另外用 <code>Area2D</code> 框一块区域，两者互不干扰。</p>
-<p>添加后顺手把节点改个名，按用途起：做受击区叫 <code>hurtbox</code>，做侦测范围叫 <code>detection</code>，场景里节点一多才不会认错。</p>
-<h2 id="第三步：给-Area2D-加一个-CollisionShape2D-子节点">第三步：给 Area2D 加一个 CollisionShape2D 子节点</h2>
-<p><code>Area2D</code> 自己是没有形状的，空着它检测不到任何东西——必须再给它挂一个 <code>CollisionShape2D</code> 子节点并设置 <code>Shape</code>，这个形状就是它的<strong>检测范围</strong>：</p>
-<ol>
-<li>选中 <code>Area2D</code>，再点 <code>+</code> 添加 <code>CollisionShape2D</code>。</li>
-<li>在 <code>Shape</code> 里新建形状（多为 <code>RectangleShape2D</code> 或 <code>CircleShape2D</code>）。</li>
-<li>用鼠标拖动控制点缩放到需要的大小。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step3-area2d-collisionshape.png" alt="给 Area2D 加上 CollisionShape2D，用圆把周围的检测范围圈出来"></p>
-<p>截图里用的是 <code>CircleShape2D</code>，半径拉到盖住史莱姆周围一圈；选中 <code>CollisionShape2D</code> 后，<code>Shape</code> 那一栏随时能改。</p>
-<p>范围大小取决于用途：</p>
-<ul>
-<li><strong>当受击区</strong>：贴着史莱姆身体，略大一圈就行，给判定留一点容错，打起来不会太苛刻；</li>
-<li><strong>当侦测范围</strong>：比身体大一两圈，玩家走进这个圈才会被史莱姆发现，圈子太大就会出现&quot;隔着半张地图就追过来&quot;。</li>
-</ul>
-<p><code>Area2D</code> 的碰撞形状只在编辑器里画出来，运行时默认不可见；调试时打开 <strong>调试 → 可见碰撞形状</strong> 就能看到它的实际范围。它和史莱姆本体那个 <code>CollisionShape2D</code> 互不影响：一个管阻挡，一个管检测。</p>
-<h2 id="第四步：设置碰撞图层">第四步：设置碰撞图层</h2>
-<p>到这一步为止，玩家的 <code>Mask</code> 里只有世界障碍那一层，所以史莱姆的 <code>Area2D</code> 根本“看不见”玩家；而只改史莱姆又会出现另一个问题：树也在它的探测范围里。解决办法是先把图层分工定下来：</p>
-<table>
-<thead>
-<tr>
-<th>图层</th>
-<th>放什么</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>世界障碍：树、石头（TileMap 物理层），以后加的墙</td>
-</tr>
-<tr>
-<td>2</td>
-<td>玩家</td>
-</tr>
-</tbody>
-</table>
-<h3 id="史莱姆：只探测玩家">史莱姆：只探测玩家</h3>
-<p>选中 <code>slime</code> 下的 <code>Area2D</code>，展开 <code>CollisionObject2D → Collision</code>：</p>
-<ul>
-<li><code>Layer</code> 勾 <strong>2</strong>：这个区域自身属于第 2 层；</li>
-<li><code>Mask</code> 只勾 <strong>2</strong>：它只关心第 2 层上的东西，也就是玩家。</li>
-</ul>
-<p><code>Mask</code> 里不要勾 1，否则树也满足条件，史莱姆会去追一棵树。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step4-slime-area-layers.png" alt="史莱姆 Area2D 的 Layer/Mask 设置"></p>
-<h3 id="玩家：既被树挡，也被史莱姆发现">玩家：既被树挡，也被史莱姆发现</h3>
-<p>选中 <code>player</code> 的 <code>CharacterBody2D</code>：</p>
-<ul>
-<li><code>Layer</code> 勾 <strong>2</strong>：玩家属于第 2 层，史莱姆的 <code>Mask</code> 才探得到；</li>
-<li><code>Mask</code> 勾 <strong>1</strong>：被 TileMap 物理层上的树、石头挡住；</li>
-<li><code>Mask</code> 再勾 <strong>2</strong>（可选）：和同属第 2 层的实体发生碰撞，而不是互相穿过去。</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step5-player-layers.png" alt="玩家的 Layer/Mask 设置"></p>
-<p><code>Layer</code> 和 <code>Mask</code> 一句话区分：<code>Layer</code> 是“我属于哪一层”，<code>Mask</code> 是“我关心哪一层”。两个物体的 <code>Layer</code> 和 <code>Mask</code> 交叉上了，才会产生碰撞或检测。</p>
-<p>还要确认 TileMap 的物理层在第 1 层——<code>Godot04</code> 里的 <code>Physics Layer 0</code> 默认就是 Layer 1，项目中途改过图层的话这里得对一遍，否则玩家 <code>Mask</code> 勾了 1 也挡不住树。</p>
-<h2 id="第五步：给史莱姆挂脚本，并连接-body-entered-body-exited">第五步：给史莱姆挂脚本，并连接 body_entered / body_exited</h2>
-<p><code>Area2D</code> 自己不会写逻辑，它靠信号通知脚本。这一步先把脚本挂上，再把两个信号连出来。</p>
-<h3 id="挂脚本">挂脚本</h3>
-<p>选中 <code>slime</code>，点场景面板上方的 <strong>Attach Script</strong>（带加号的脚本图标），语言保持 <code>GDScript</code>，路径用默认的 <code>res://slime.gd</code> 即可，模板留默认。创建后 <code>slime</code> 那一行右侧会出现脚本图标，说明脚本已经挂上。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step6-attach-script.png" alt="选中 slime，点击 Attach Script"></p>
-<h3 id="连接信号">连接信号</h3>
-<ol>
-<li>选中 <code>slime</code> 下的 <code>Area2D</code>，切到右上角的 <strong>Signals</strong> 页签。</li>
-<li>找到 <code>body_entered(body: Node2D)</code>，双击（或点右侧的连接按钮）打开 <strong>Connect Signal</strong> 对话框。</li>
-<li>接收节点保持 <code>slime</code>，方法名默认生成 <code>_on_area_2d_body_entered</code>，点 <code>Connect</code> 确认。</li>
-<li>用同样的方式连接 <code>body_exited(body: Node2D)</code>，方法名 <code>_on_area_2d_body_exited</code>。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot05-step7-connect-signals.png" alt="在 Area2D 的 Signals 面板连接 body_entered 和 body_exited"></p>
-<p>连好后 <code>slime.gd</code> 里会自动多出两个空函数，信号列表里对应的条目也会显示为已连接。</p>
-<h3 id="为什么必须在编辑器里连">为什么必须在编辑器里连</h3>
-<p>这一点容易踩坑：<strong>只在脚本里手写一个同名函数是无效的</strong>。Godot 不会因为函数恰好叫 <code>_on_area_2d_body_entered</code> 就自动把它当回调——编辑器连接的记录是写进场景文件（<code>.tscn</code>）的，手写函数只是“定义了”，并没有“接上”。</p>
-<p>如果想让纯代码也生效，必须显式调用 <code>connect()</code>：</p>
-<figure class="highlight gdscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">func </span><span class="function">_ready</span>() -&gt; <span class="keyword">void</span>:</span><br><span class="line">    <span class="variable">$Area2D</span>.body_entered.<span class="function">connect</span>(_on_area_2d_body_entered)</span><br><span class="line">    <span class="variable">$Area2D</span>.body_exited.<span class="function">connect</span>(_on_area_2d_body_exited)</span><br></pre></td></tr></table></figure>
-<p>两种方式二选一即可。跟着编辑器连，就不需要这段 <code>_ready()</code>。</p>
-<h3 id="两个信号分别什么时候发">两个信号分别什么时候发</h3>
-<table>
-<thead>
-<tr>
-<th>信号</th>
-<th>什么时候发出</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>body_entered(body)</code></td>
-<td>物理体（<code>CharacterBody2D</code>、<code>StaticBody2D</code> 等）进入区域</td>
-</tr>
-<tr>
-<td><code>body_exited(body)</code></td>
-<td>物理体离开区域</td>
-</tr>
-</tbody>
-</table>
-<p><code>body</code> 参数就是进入或离开的那个节点。因为史莱姆 <code>Area2D</code> 的 <code>Mask</code> 只勾了第 2 层（玩家），能触发它的一般只有玩家，所以下一步的代码直接把它当玩家用，不再做分组判断。</p>
-<h2 id="第六步：让史莱姆动起来">第六步：让史莱姆动起来</h2>
-<p>脚本内容如下，直接覆盖 <code>slime.gd</code>：</p>
-<figure class="highlight gdscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extends</span> <span class="class">CharacterBody2D</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> speed = <span class="number">25</span>        <span class="comment"># 移动速度（实际上是除数，见下文）</span></span><br><span class="line"><span class="keyword">var</span> chasing = <span class="literal">false</span>   <span class="comment"># 是否在追逐玩家</span></span><br><span class="line"><span class="keyword">var</span> player = <span class="literal">null</span>     <span class="comment"># 目标</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">_physics_process</span>(delta):</span><br><span class="line">    <span class="keyword">if</span> chasing:</span><br><span class="line">        position += (player.position - position) / speed  <span class="comment"># 追逐</span></span><br><span class="line">        <span class="variable">$AnimatedSprite2D</span>.<span class="function">play</span>(<span class="string">&quot;walk&quot;</span>)                    <span class="comment"># 播放行走动画</span></span><br><span class="line">        <span class="keyword">if</span> player.position.x &gt; position.x:</span><br><span class="line">            <span class="variable">$AnimatedSprite2D</span>.flip_h = <span class="literal">false</span>              <span class="comment"># 根据玩家位置翻转精灵</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="variable">$AnimatedSprite2D</span>.flip_h = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="variable">$AnimatedSprite2D</span>.<span class="function">play</span>(<span class="string">&quot;idle&quot;</span>)                    <span class="comment"># 播放待机动画</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## Area2D 节点提供的两个信号函数，分别在有物体进入和离开检测区域时触发。</span></span><br><span class="line"><span class="keyword">func </span><span class="function">_on_area_2d_body_entered</span>(body):</span><br><span class="line">    player = body   <span class="comment"># 有 body 进入检测区域时，把它记为目标，开始追逐</span></span><br><span class="line">    chasing = <span class="literal">true</span>  <span class="comment"># 设置追逐状态为 true</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">_on_area_2d_body_exited</span>(body):</span><br><span class="line">    player = <span class="literal">null</span>   <span class="comment"># 目标离开检测区域，清空目标，停止追逐</span></span><br><span class="line">    chasing = <span class="literal">false</span> <span class="comment"># 设置追逐状态为 false</span></span><br></pre></td></tr></table></figure>
-<p>分成四块看：</p>
-<ol>
-<li><code>extends CharacterBody2D</code>：脚本类型必须和根节点一致，否则挂不上。</li>
-<li>三个变量各管一件事：<code>speed</code> 是逼近速度、<code>chasing</code> 是状态开关、<code>player</code> 存目标（<code>null</code> 表示没人）。</li>
-<li><code>_physics_process(delta)</code> 每个物理帧跑一次。追逐时 <code>position += (player.position - position) / speed</code>，也就是每次只走“剩余距离的 1/25”，越靠近步子越小，最后会贴到玩家身上；<code>flip_h</code> 按玩家在左还是在右翻转精灵，素材默认朝右时 <code>flip_h = false</code> 就是朝右。</li>
-<li>两个信号回调就是第五步在编辑器里连出来的函数：进入时记目标、开追逐，离开时清目标、关追逐。函数名必须和连接时登记的一致。</li>
-</ol>
-<h3 id="几个值得注意的点">几个值得注意的点</h3>
-<ul>
-<li><strong><code>speed</code> 实际是分担距离的除数</strong>：值越大，每帧走掉的比例越小，史莱姆越慢；想让它快，是把 25 改小。名字叫 speed 只是习惯。</li>
-<li><strong>没有乘 <code>delta</code></strong>：位移和帧率挂钩，高刷屏上会更快。想稳定速度，标准写法是算 <code>velocity</code> 再 <code>move_and_slide()</code>。</li>
-<li><strong><code>position</code> 是相对父节点的</strong>：史莱姆和玩家都挂在 <code>world</code> 下，直接相减没问题；以后如果把玩家塞进别的容器，这里要换成 <code>global_position</code>。</li>
-<li><strong>玩家被 <code>queue_free()</code> 之后</strong>，<code>player</code> 还指着已释放的节点，再访问 <code>.position</code> 会报 <code>Invalid access to property 'position' on a null instance</code>。等做伤害和死亡时，要在玩家消失前把 <code>chasing</code> 关掉。</li>
-</ul>
-<h2 id="检查清单">检查清单</h2>
-<table>
-<thead>
-<tr>
-<th>现象</th>
-<th>原因</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>节点旁有黄色三角</td>
-<td><code>SpriteFrames</code> 没建，或 <code>CollisionShape2D</code> 的 <code>Shape</code> 为空</td>
-</tr>
-<tr>
-<td><code>Area2D</code> 什么也检测不到</td>
-<td>没给 <code>Area2D</code> 加 <code>CollisionShape2D</code> 子节点</td>
-</tr>
-<tr>
-<td>史莱姆把玩家挡住了</td>
-<td><code>Area2D</code> 本身不阻挡，检查是不是身体的碰撞形状被删掉或缩放错了</td>
-</tr>
-<tr>
-<td>动画播不出来</td>
-<td>脚本里 <code>play()</code> 的动画名和 <code>SpriteFrames</code> 里不一致</td>
-</tr>
-<tr>
-<td>史莱姆追着树跑</td>
-<td><code>Area2D</code> 的 <code>Mask</code> 勾了 1，把世界障碍也算进检测对象</td>
-</tr>
-<tr>
-<td>史莱姆看不见玩家</td>
-<td>玩家 <code>Layer</code> 没勾 2，或 <code>Area2D</code> 的 <code>Mask</code> 没勾 2</td>
-</tr>
-<tr>
-<td>玩家穿过树</td>
-<td>玩家 <code>Mask</code> 没勾 1，或 TileMap 的物理层不在第 1 层</td>
-</tr>
-<tr>
-<td>玩家和史莱姆互相穿过去</td>
-<td>两边 <code>Layer</code> / <code>Mask</code> 没有交叉上</td>
-</tr>
-<tr>
-<td>连了信号但函数不执行</td>
-<td>函数名被改过，和连接时登记的名字不一致</td>
-</tr>
-<tr>
-<td>只在脚本里写了函数，走进范围没反应</td>
-<td>没在编辑器连接，也没调用 <code>connect()</code></td>
-</tr>
-<tr>
-<td>同一个信号触发了两次</td>
-<td>编辑器连了一次，<code>_ready()</code> 里又 <code>connect()</code> 了一次</td>
-</tr>
-<tr>
-<td>史莱姆站着不动</td>
-<td><code>chasing</code> 一直是 <code>false</code>：信号没连上，或玩家 <code>Layer</code> 和 <code>Area2D</code> 的 <code>Mask</code> 对不上</td>
-</tr>
-<tr>
-<td>史莱姆贴着玩家来回抽搐</td>
-<td>两者重叠后每帧翻转 <code>flip_h</code>，可以在距离很近时停止翻转或停下</td>
-</tr>
-<tr>
-<td>报 <code>Invalid access to property 'position' on a null instance</code></td>
-<td>目标已被释放，<code>chasing</code> 还是 <code>true</code>，访问 <code>player.position</code> 时炸掉</td>
-</tr>
-<tr>
-<td>史莱姆追得越来越慢</td>
-<td>除数式逼近，越近步长越小，属于正常现象；要匀速请改用 <code>velocity</code></td>
-</tr>
-</tbody>
-</table>
-<hr>
-<p>上一篇：<a href="/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/">Godot04：瓦片碰撞与 Y 轴排序</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://lanxone.github.io/2026/10/27/Godot05-%E5%88%9B%E5%BB%BA%E5%8F%B2%E8%8E%B1%E5%A7%86/" data-id="cmvqnu84b00004omab6og9gkb" data-title="Godot05:创建史莱姆（敌人动画与 Area2D）" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Godot/" rel="tag">Godot</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-Godot04-给瓦片加碰撞" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/" class="article-date">
-  <time class="dt-published" datetime="2026-10-27T10:55:00.000Z" itemprop="datePublished">2026-10-27</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/">Godot04:瓦片碰撞与 Y 轴排序（TileSet 物理层）</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>上一篇把地图画出来了，但角色现在能直接穿过树、石头和一切装饰物。这一篇先给瓦片加碰撞（给 <code>TileSet</code> 添加物理层、切到 <code>Paint</code> 选好属性编辑器、逐个塑造图块的碰撞箱），再用 Y 轴排序让树能挡住角色。</p>
-<h2 id="第一步：为-TileMap-添加物理层">第一步：为 TileMap 添加物理层</h2>
-<p>物理层建在 <strong><code>TileSet</code> 资源</strong>里，不是建在 <code>TileMap</code> 节点的 <code>Layers</code> 里，这是最容易走错的一步。</p>
-<ol>
-<li>选中 <code>TileMap</code> 节点，在 Inspector 里点开 <code>Tile Set</code> 属性，展开这个资源。</li>
-<li>找到 <strong><code>Physics Layers</code></strong> 分组，点 <strong>Add Element</strong>。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step1-add-physics-layer.png" alt="在 TileSet 的 Inspector 里给 Physics Layers 添加一项"></p>
-<p>添加后不会立刻看到任何变化，但它是后面所有操作的前提：没有这一项，图块属性里根本不会出现画碰撞的地方，很多人卡在&quot;找不到碰撞选项&quot;就是漏了这一步。</p>
-<p>同时这一项也决定了碰撞体落在哪个 <strong>2D 物理层</strong>：展开它可以看到 <code>Collision Layer</code>，默认 <code>Layer 1</code>。角色的 <code>CharacterBody2D</code> 碰撞掩码默认也是 <code>Layer 1</code>，所以保持默认就能互相检测到。以后要给敌人、子弹单独分组，再回来改这里和节点的掩码。</p>
-<h2 id="第二步：切到-TileSet-页签，选图块集、画笔、属性">第二步：切到 TileSet 页签，选图块集、画笔、属性</h2>
-<p>物理层加好后，底部切到 <strong>TileSet</strong> 页签，按顺序做三件事：</p>
-<ol>
-<li><strong>先选图块集</strong>：左侧 <code>Tile Sources</code> 里选中要改的素材，比如 <code>objects.png</code>。</li>
-<li><strong>再选画笔</strong>：工具栏切到 <strong><code>Paint</code></strong>（不是 <code>Setup</code>，也不是 <code>Select</code>）。</li>
-<li><strong>最后加属性</strong>：左侧 <code>Paint Properties</code> 里点 <strong><code>Select a property editor</code></strong> 下拉，依次选 <strong><code>Physics</code></strong> → <strong><code>Physics Layer 0</code></strong>。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step2-pick-source-paint.png" alt="在 TileSet 面板选图块集、切到 Paint、添加物理层属性"></p>
-<p>下拉里同级的还有 <code>Rendering</code>、<code>Terrain</code>、<code>Navigation</code>、<code>Custom Data</code>，物理层只是其中一项。<code>Physics Layer 0</code> 对应第一步里 Add Element 加出来的第一项。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step3-choose-property.png" alt="在 Paint Properties 下拉里选中刚添加的 Physics Layer 0"></p>
-<p>选完之后，左侧就变成碰撞形状的编辑区：上面是放大的图块预览，下面是物理属性（<code>linear_velocity</code>、<code>angular_velocity</code>、<code>polygon 0</code> 等）。前两项是给会动的图块（比如移动平台）用的，静态地图不用管。</p>
-<h2 id="第三步：选中瓦片，塑造碰撞箱">第三步：选中瓦片，塑造碰撞箱</h2>
-<p>在右侧 <code>Base Tiles</code> 网格里点一下要挡人的图块（截图里是那棵树），左侧编辑区会切到它。编辑区里有一个带四个白色控制点的矩形，用鼠标拖动这四个点，把矩形缩到真正该挡人的范围：树干和底部那一段，树冠留给角色叠上来。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step4-draw-collision.png" alt="拖动控制点把碰撞矩形缩到树干范围"></p>
-<p>改完一块再看下一块。<strong>只给实心的图块加碰撞</strong>：树、石头、墙、围栏。草地、路面、装饰这些小图块不要加，否则角色会被地面卡住。</p>
-<blockquote>
-<p><strong>只框住该挡的部分</strong>：碰撞箱画得越大，角色离树越远就被挡住，在俯视角游戏里会显得很硬。一般贴着树干和树根画，树冠完全放开，角色能走进树冠下面，视觉上也更自然。</p>
-</blockquote>
-<p>大图块（比如 2×2 的树）的碰撞是在<strong>图块自己的坐标系</strong>里画的，图块占多大，坐标范围就有多大，不用管它在地图上的位置。</p>
-<h2 id="第四步：Y-轴排序，让树能挡住角色">第四步：Y 轴排序，让树能挡住角色</h2>
-<p>碰撞管的是&quot;能不能过去&quot;，Y 轴排序管的是&quot;谁盖住谁&quot;。不打开它，角色永远画在树的上面，从树根前走过也不会被树挡住。</p>
-<p>先开节点级的开关：</p>
-<ol>
-<li>选中参与排序的节点，Inspector 顶部 <strong><code>CanvasItem</code> → <code>Ordering</code></strong>，勾上 <strong><code>Y Sort Enabled</code></strong>（截图里默认是 Off）。</li>
-<li>这一层管的是&quot;节点与节点之间&quot;的排序：树和角色要挂在同一个也开了 <code>Y Sort Enabled</code> 的父节点下（比如 <code>world</code>），否则图块只在自己内部排序，根本不会和角色比大小。</li>
-<li><code>TileMap</code> 的每个图层在 <code>Layers</code> 里还有独立的 <code>Y Sort Enabled</code>（上一篇提过），要挡住角色的那一层保持开启。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step5-y-sort-enabled.png" alt="在 CanvasItem → Ordering 里打开 Y Sort Enabled"></p>
-<p>再给单个图块定&quot;排序中心&quot;：</p>
-<ol>
-<li>底部切到 <strong>TileSet</strong> 页签，工具选 <code>Paint</code>。</li>
-<li><code>Paint Properties</code> 下拉里选 <strong><code>Rendering</code></strong>。</li>
-<li>展开 <strong><code>Y Sort Origin</code></strong>，把中心点拖到树根、图块底部那一行。</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/LANXone/imagebed/images/godot04-step6-y-sort-origin.png" alt="在 Paint Properties → Rendering 里设置 Y Sort Origin"></p>
-<p><code>Y Sort Origin</code> 是<strong>像素偏移</strong>，决定这块图块拿纵坐标上的哪一点去和角色比大小。截图里那棵树把中心放在树干底部：</p>
-<ul>
-<li>玩家站在中心<strong>上方</strong>（Y 更小）时，图块画在玩家前面，树把人挡住；</li>
-<li>玩家走到中心<strong>下方</strong>时，玩家画在上层，盖住树的下半截。</li>
-</ul>
-<blockquote>
-<p>排序中心别随手丢在图块正中。像素角色的原点在脚底，中心太靠上会让人离树老远就被挡住，太靠下则几乎永远不会被树盖住。贴着树干和树根那一行最稳。</p>
-</blockquote>
-<h2 id="验证：让角色去撞一下，再绕到树后">验证：让角色去撞一下，再绕到树后</h2>
-<ol>
-<li>顶部菜单 <strong>调试 → 可见碰撞形状</strong>，运行后地图上会显示碰撞多边形，画没画上、位置对不对一眼就能看出来。</li>
-<li>按 <code>F5</code> 运行，走向树和石头，角色应该被挡住；贴着墙走能滑过去，这是 <code>move_and_slide()</code> 自带的滑动处理。</li>
-<li>再从树的上方和下方各走一遍，看角色和树的先后顺序有没有跟着换。</li>
-</ol>
-<p>角色能挡住的前提是它自己也有碰撞形状。<code>Godot01</code> 里加的 <code>CollisionShape2D</code> 在这里要顺手确认一下：<code>Shape</code> 不是 <code>&lt;empty&gt;</code>，并且位置对齐<strong>脚底</strong>而不是整张立绘，否则会感觉&quot;人还离着树老远就被挡住&quot;。</p>
-<h2 id="碰撞或遮挡不对，按这个顺序排查">碰撞或遮挡不对，按这个顺序排查</h2>
-<table>
-<thead>
-<tr>
-<th>现象</th>
-<th>最可能的原因</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>图块属性里完全没有 <code>Physics</code> 项</td>
-<td><code>TileSet</code> 的 <code>Physics Layers</code> 没加元素</td>
-</tr>
-<tr>
-<td>有碰撞矩形，但角色照穿</td>
-<td><code>TileMap</code> 的 <code>Layers</code> 里这一层没勾 <code>Collision Enabled</code></td>
-</tr>
-<tr>
-<td>只有部分图块挡人</td>
-<td>只给选中的图块画了碰撞，同类的其他图块没画</td>
-</tr>
-<tr>
-<td>角色被地面卡住、走不动</td>
-<td>地面、草地这些图块也加了碰撞</td>
-</tr>
-<tr>
-<td>角色离障碍物老远就被挡住</td>
-<td>碰撞矩形画得比图块大，或者角色的 <code>CollisionShape2D</code> 偏移了</td>
-</tr>
-<tr>
-<td>撞上去抖动、被弹开</td>
-<td>相邻图块的碰撞矩形互相重叠</td>
-</tr>
-<tr>
-<td>角色永远盖在树上面</td>
-<td>节点没开 <code>Y Sort Enabled</code>，或角色和 tilemap 不在同一个开了排序的父节点下</td>
-</tr>
-<tr>
-<td>角色永远被树盖住</td>
-<td>图块的 <code>Y Sort Origin</code> 设得太靠上，排序点高过了角色脚底</td>
-</tr>
-<tr>
-<td>只在图块之间排序，角色不参与</td>
-<td><code>TileMap</code> 图层的 <code>Y Sort Enabled</code> 和父节点的开关只开了一个</td>
-</tr>
-</tbody>
-</table>
-<h2 id="三个-层-别搞混">三个&quot;层&quot;别搞混</h2>
-<table>
-<thead>
-<tr>
-<th>名字</th>
-<th>在哪</th>
-<th>管什么</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Physics Layers</code>（TileSet）</td>
-<td><code>TileSet</code> 资源 Inspector</td>
-<td>允许图块有碰撞，决定碰撞体归哪个 2D 物理层</td>
-</tr>
-<tr>
-<td><code>Collision Enabled</code>（图层的）</td>
-<td><code>TileMap</code> 的 <code>Layers</code> / <code>TileMapLayer</code> 节点</td>
-<td>这一层画的图块要不要真的生成碰撞体</td>
-</tr>
-<tr>
-<td><code>Collision Layer</code> / <code>Mask</code>（节点的）</td>
-<td>各节点自己的 <code>Collision</code> 分组</td>
-<td>谁和谁互相检测</td>
-</tr>
-</tbody>
-</table>
-<p>前两个管&quot;图块有没有碰撞&quot;，第三个管&quot;碰撞和谁发生关系&quot;。改完没反应，九成是前两个之一漏了。</p>
-<h2 id="如果用的是-TileMapLayer">如果用的是 TileMapLayer</h2>
-<p><code>TileMapLayer</code> 流程完全一样：物理层还是建在 <code>TileSet</code> 资源里，碰撞箱还是用 <code>Paint</code> 加 <code>Physics Layer 0</code> 来画，<code>Y Sort Origin</code> 也还是在 <code>Paint Properties → Rendering</code> 里拖。区别只在开关位置——原来 <code>TileMap</code> 里 <code>Layers</code> 数组的 <code>Collision Enabled</code> 和 <code>Y Sort Enabled</code>，现在变成 <code>TileMapLayer</code> 节点自己 Inspector 上的同名属性。</p>
-<hr>
-<p>上一篇：<a href="/2026/10/26/Godot03-%E5%88%B6%E4%BD%9C%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE/">Godot03：制作瓦片地图（TileMap 与 TileSet）</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://lanxone.github.io/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/" data-id="cmvqkjazy0000bomabe2dgi5f" data-title="Godot04:瓦片碰撞与 Y 轴排序（TileSet 物理层）" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Godot/" rel="tag">Godot</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
     
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/">下一页 &raquo;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/2/">下一页 &raquo;</a>
   </nav>
 
 </section>
@@ -945,7 +1072,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 11.67px;">C++学习笔记</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 18.33px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/Godot/" style="font-size: 16.67px;">Godot</a> <a href="/tags/OpenGL/" style="font-size: 11.67px;">OpenGL</a> <a href="/tags/SDL/" style="font-size: 10px;">SDL</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 11.67px;">二叉树</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 11.67px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 13.33px;">学习规划</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E6%89%A7%E8%A1%8C%E8%A1%A8-6%E5%91%A8%E8%AE%A1%E5%88%92/" style="font-size: 10px;">学习路线,执行表,6周计划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 13.33px;">快速</a> <a href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" style="font-size: 11.67px;">栈和队列</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 15px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%84%9A%E6%9C%AC%E5%BC%80%E5%8F%91/" style="font-size: 10px;">脚本开发</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a> <a href="/tags/%E9%80%92%E5%BD%92/" style="font-size: 10px;">递归</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 10px;">随笔</a>
+      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 11.67px;">C++学习笔记</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 18.33px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/GitHub/" style="font-size: 10px;">GitHub</a> <a href="/tags/Godot/" style="font-size: 16.67px;">Godot</a> <a href="/tags/OpenGL/" style="font-size: 11.67px;">OpenGL</a> <a href="/tags/SDL/" style="font-size: 10px;">SDL</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 13.33px;">二叉树</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 11.67px;">功能测试</a> <a href="/tags/%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91/" style="font-size: 10px;">协作开发</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 13.33px;">学习规划</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E6%89%A7%E8%A1%8C%E8%A1%A8-6%E5%91%A8%E8%AE%A1%E5%88%92/" style="font-size: 10px;">学习路线,执行表,6周计划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 13.33px;">快速</a> <a href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" style="font-size: 11.67px;">栈和队列</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 15px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%84%9A%E6%9C%AC%E5%BC%80%E5%8F%91/" style="font-size: 10px;">脚本开发</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a> <a href="/tags/%E9%80%92%E5%BD%92/" style="font-size: 10px;">递归</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 10px;">随笔</a>
     </div>
   </div>
 
@@ -954,7 +1081,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/10/">十月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/09/">九月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/08/">八月 2026</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/11/">十一月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/10/">十月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/09/">九月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/08/">八月 2026</a></li></ul>
     </div>
   </div>
 
@@ -967,6 +1094,14 @@
       <ul>
         
           <li>
+            <a href="/2026/11/03/GitHub%E5%A4%9A%E4%BA%BA%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/">GitHub 多人协作开发流程：分支、同步、变基与 PR</a>
+          </li>
+        
+          <li>
+            <a href="/2026/11/02/%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86-%E9%98%9F%E5%88%97%E9%87%8C%E7%9A%84%E5%B1%82%E6%95%B0/">层序遍历：队列里的层数</a>
+          </li>
+        
+          <li>
             <a href="/2026/10/29/%E9%9D%9E%E9%80%92%E5%BD%92%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86/">非递归的二叉树遍历</a>
           </li>
         
@@ -976,14 +1111,6 @@
         
           <li>
             <a href="/2026/10/27/%E9%BA%BB%E6%9C%A8%E5%A6%82%E4%BD%95%E6%91%A7%E6%AF%81%E4%BD%A0%E7%9A%84%E6%A2%A6%E6%83%B3/">麻木如何摧毁你的梦想</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/27/Godot05-%E5%88%9B%E5%BB%BA%E5%8F%B2%E8%8E%B1%E5%A7%86/">Godot05:创建史莱姆（敌人动画与 Area2D）</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/">Godot04:瓦片碰撞与 Y 轴排序（TileSet 物理层）</a>
           </li>
         
       </ul>
@@ -1044,152 +1171,6 @@
 
   </div>
 <!-- hexo injector body_end start -->
-<style>
-  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
-  .lanx-sidebar-sticky {
-    display: flex; flex-direction: column; gap: 12px;
-    margin: 0 0 50px 0;
-    width: 100%;
-  }
-
-  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
-  .lanx-card {
-    box-sizing: border-box; width: 100%;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.94);
-    border: 1px solid #e8e8e8; border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    font-size: 12px; color: #666; text-align: center;
-    line-height: 1.6; user-select: none;
-    transition: box-shadow 0.2s ease;
-  }
-  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
-
-  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
-  .lanx-clock .clock-time {
-    font-size: 36px; font-weight: 700; color: #1a365d;
-    font-variant-numeric: tabular-nums; letter-spacing: 1px;
-    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
-      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
-      "Courier New", monospace;
-  }
-  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
-  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
-
-  /* 语录 */
-  .lanx-quote .quote-body {
-    font-size: 13px; color: #444; line-height: 1.75;
-    text-align: left; padding: 2px 0;
-  }
-  .lanx-quote .quote-meta {
-    font-size: 11px; color: #999; margin-top: 8px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
-  .lanx-quote .quote-author { color: #888; }
-  .lanx-quote .quote-type {
-    font-size: 10px; padding: 1px 8px; border-radius: 10px;
-    background: #f0f0f0; color: #888;
-  }
-  .lanx-quote .quote-refresh {
-    cursor: pointer; padding: 2px 6px; border-radius: 4px;
-    color: #aaa; transition: all 0.2s;
-  }
-  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
-  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
-
-  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
-  @media (max-width: 767px) {
-    .lanx-sidebar-sticky { display: none; }
-    .lanx-sidebar-sticky.lanx-mobile-only {
-      display: flex; margin: 50px 0; width: 100%;
-    }
-  }
-</style>
-
-<script>
-window.addEventListener('load', function(){
-  setTimeout(function(){
-    var sidebar = document.querySelector('#sidebar');
-    if (!sidebar) return;
-
-    var wrap = document.createElement('div');
-    wrap.className = 'lanx-sidebar-sticky';
-
-    var weekdays = ['日','一','二','三','四','五','六'];
-
-    // 检测是否手机端(与 CSS 媒体查询断点一致)
-    var isMobile = window.innerWidth < 768;
-
-    // 时钟(上)
-    var clock = document.createElement('div');
-    clock.className = 'lanx-card lanx-clock';
-    clock.innerHTML =
-      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
-      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
-      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
-    wrap.appendChild(clock);
-
-    // 语录(下)
-    var quote = document.createElement('div');
-    quote.className = 'lanx-card lanx-quote';
-    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
-    wrap.appendChild(quote);
-
-    if (isMobile) {
-      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
-      wrap.classList.add('lanx-mobile-only');
-      sidebar.appendChild(wrap);
-    } else {
-      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
-      sidebar.insertBefore(wrap, sidebar.firstChild);
-      var firstInner = document.querySelector('article .article-inner');
-      if (firstInner) {
-        wrap.style.marginTop =
-          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
-      }
-    }
-
-    // 时钟
-    function tick(){
-      var d = new Date();
-      var p = function(n){ return n<10?'0'+n:n; };
-      document.getElementById('lanx_clock_time').textContent =
-        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
-      document.getElementById('lanx_clock_date').textContent =
-        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
-      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
-    }
-    tick();
-    setInterval(tick, 1000);
-
-    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
-    function loadQuotes(){
-      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
-        show(window.LANX_EXCERPTS);
-        return;
-      }
-      fetch('/excerpts.json')
-        .then(function(r){ return r.json(); })
-        .then(function(d){ show(d||[]); })
-        .catch(function(){ show([]); });
-    }
-    loadQuotes();
-    function show(data){
-      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
-      var it = data[Math.floor(Math.random()*data.length)];
-      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
-      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
-      quote.innerHTML =
-        '<div class="quote-body">'+it.content+'</div>' +
-        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
-        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
-      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
-    }
-  }, 500);
-});
-</script>
-  
 <style>
   #lanx-chess-root {
     --lanx-light: #f0d9b5;
@@ -3250,246 +3231,151 @@ function undo(){
   window.__LANX_LIKE_COUNT__ = count;
 })();
 </script>
-  <script src="/js/pin.js?v=b15fc202" defer></script>
-<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
+  
 <style>
-  /* --- Toast 提示 --- */
-  .lanx-toast {
-    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
-    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
-    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  }
-  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .lanx-toast.success { background: #38a169; }
-  .lanx-toast.error { background: #e53e3e; }
-
-  /* --- Twikoo 评论区整体容器 --- */
-  #twikoo-comments {
-    margin-top: 48px; padding: 28px 28px 20px;
-    background: #fff; border-radius: 14px;
-    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
-  }
-  #twikoo-comments > h3 {
-    margin: 0 0 20px 0; padding-bottom: 14px;
-    font-size: 16px; font-weight: 600; color: #333;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  /* 留言板:不同的标题和背景 */
-  body.page-guestbook #twikoo-comments {
-    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
-    border: 1px solid #dbeafe;
-  }
-  body.page-guestbook #twikoo-comments > h3 {
-    border-bottom-color: #dbeafe;
-    color: #2563eb;
+  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
+  .lanx-sidebar-sticky {
+    display: flex; flex-direction: column; gap: 12px;
+    margin: 0 0 50px 0;
+    width: 100%;
   }
 
-  /* --- Twikoo 内部组件美化 --- */
-  .tk-comment-box {
-    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
-    padding: 14px 16px !important; margin-bottom: 16px !important;
-    transition: border-color 0.2s !important;
+  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
+  .lanx-card {
+    box-sizing: border-box; width: 100%;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid #e8e8e8; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    font-size: 12px; color: #666; text-align: center;
+    line-height: 1.6; user-select: none;
+    transition: box-shadow 0.2s ease;
   }
-  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
-  .tk-comment-box .el-textarea__inner {
-    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
-    font-size: 14px !important; line-height: 1.6 !important;
+  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+
+  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
+  .lanx-clock .clock-time {
+    font-size: 36px; font-weight: 700; color: #1a365d;
+    font-variant-numeric: tabular-nums; letter-spacing: 1px;
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
+      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
+      "Courier New", monospace;
   }
-  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
-  .tk-btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-    border: none !important; border-radius: 20px !important;
-    padding: 8px 22px !important; font-weight: 500 !important;
+  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
+  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
+
+  /* 语录 */
+  .lanx-quote .quote-body {
+    font-size: 13px; color: #444; line-height: 1.75;
+    text-align: left; padding: 2px 0;
   }
-  .tk-btn-primary:hover { opacity: 0.9; }
-
-  /* 评论列表卡片化 */
-  .tk-comment-item {
-    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
-    padding: 16px 18px !important; margin-bottom: 12px !important;
-    background: #fafbfc !important; transition: box-shadow 0.2s !important;
+  .lanx-quote .quote-meta {
+    font-size: 11px; color: #999; margin-top: 8px;
+    display: flex; align-items: center; justify-content: space-between;
   }
-  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-
-  /* 博主标识 */
-  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
-
-  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
-  .tk-powered-by,
-  .tk-comment-powered,
-  [class*="powered-by"],
-  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
-
-  /* 评论区底部工具条 */
-  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
-
-  /* 点赞/踩按钮 */
-  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
-
-  /* 头像 */
-  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
-
-  /* --- 分享按钮改复制链接 --- */
-  .article-share-link { cursor: pointer; }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
-
-<script>
-(function(){
-  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
-  var path = location.pathname;
-  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
-  // 访客明细页也是一篇文章的形态,但它不需要评论区
-  var isPost = document.querySelectorAll('article.article').length === 1
-    && path.indexOf('/visitors') === -1
-    && path.indexOf('/photos') === -1;
-  var isGuestbook = path.indexOf('/guestbook') !== -1;
-
-  // ============ Toast 工具 ============
-  function showToast(msg, type) {
-    var t = document.createElement('div');
-    t.className = 'lanx-toast' + (type ? ' ' + type : '');
-    t.textContent = msg;
-    document.body.appendChild(t);
-    requestAnimationFrame(function(){ t.classList.add('show'); });
-    setTimeout(function(){
-      t.classList.remove('show');
-      setTimeout(function(){ t.remove(); }, 300);
-    }, 1800);
+  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
+  .lanx-quote .quote-author { color: #888; }
+  .lanx-quote .quote-type {
+    font-size: 10px; padding: 1px 8px; border-radius: 10px;
+    background: #f0f0f0; color: #888;
   }
-
-  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
-  function copyShareLink() {
-    var links = document.querySelectorAll('.article-share-link');
-    if (!links.length) return;
-    links.forEach(function(link) {
-      link.href = 'javascript:void(0)';
-      // 移除旧监听(防重复绑定)
-      link.replaceWith(link.cloneNode(true));
-    });
-    // 重新获取(因为 cloneNode 替换了)
-    links = document.querySelectorAll('.article-share-link');
-    links.forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault(); e.stopPropagation();
-        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
-        var url;
-        if (link.dataset.url) {
-          try { url = new URL(link.dataset.url, location.origin).href; }
-          catch(err) { url = location.origin + location.pathname; }
-        } else {
-          url = location.origin + location.pathname;
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(url).then(function(){
-            showToast('📋 链接已复制到剪贴板');
-          }).catch(function(){ fallbackCopy(url); });
-        } else {
-          fallbackCopy(url);
-        }
-      }, true);
-    });
+  .lanx-quote .quote-refresh {
+    cursor: pointer; padding: 2px 6px; border-radius: 4px;
+    color: #aaa; transition: all 0.2s;
   }
-  function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
-    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
-    ta.remove();
-  }
+  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
+  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
 
-  // ============ 2. 文章页访问量 + 评论容器 ============
-  if (isGuestbook) document.body.classList.add('page-guestbook');
-
-  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
-  copyShareLink();
-
-  if (isPost) {
-    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
-    setTimeout(function(){
-      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
-      var af = document.querySelector('.article-footer');
-      if (!af) return;
-      // 👁️ 阅读 + 👍 点赞 内联显示
-      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
-        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
-        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
-      '</span>';
-      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
-      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
-    }, 200);
-  }
-
-  if (isPost || isGuestbook) {
-    var commentDiv = document.createElement('div');
-    commentDiv.id = 'twikoo-comments';
-    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
-    var collapsible = !isGuestbook;
-    commentDiv.innerHTML =
-      (collapsible
-        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
-        : ''
-      ) +
-      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
-        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
-      '</div>';
-    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
-    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
-
-    // 折叠按钮点击
-    if (collapsible) {
-      var btn = document.getElementById('twikoo-toggle-btn');
-      var body = document.getElementById('twikoo-comments-body');
-      btn.addEventListener('click', function() {
-        if (body.style.display === 'none') {
-          body.style.display = '';
-          btn.textContent = '🙈 收起评论区';
-          btn.style.background = '#f5f5f5';
-          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
-          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
-        } else {
-          body.style.display = 'none';
-          btn.textContent = '💬 展开评论区';
-          btn.style.background = '#fff';
-        }
-      });
+  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
+  @media (max-width: 767px) {
+    .lanx-sidebar-sticky { display: none; }
+    .lanx-sidebar-sticky.lanx-mobile-only {
+      display: flex; margin: 50px 0; width: 100%;
     }
   }
+</style>
 
-  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
-  function initTwikooBody() {
-    var commentBox = document.getElementById('tcomments');
-    if (!commentBox) return;
-    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
-    var pinger = new Promise(function(resolve){
-      var timer = setTimeout(function(){ resolve(false); }, 5000);
-      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
-        .then(function(){ clearTimeout(timer); resolve(true); })
-        .catch(function(){ clearTimeout(timer); resolve(false); });
-    });
-    pinger.then(function(ok){
-      if (!ok) {
-        commentBox.innerHTML =
-          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
-            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
-            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
-          '</div>';
+<script>
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    var sidebar = document.querySelector('#sidebar');
+    if (!sidebar) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'lanx-sidebar-sticky';
+
+    var weekdays = ['日','一','二','三','四','五','六'];
+
+    // 检测是否手机端(与 CSS 媒体查询断点一致)
+    var isMobile = window.innerWidth < 768;
+
+    // 时钟(上)
+    var clock = document.createElement('div');
+    clock.className = 'lanx-card lanx-clock';
+    clock.innerHTML =
+      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
+      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
+      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
+    wrap.appendChild(clock);
+
+    // 语录(下)
+    var quote = document.createElement('div');
+    quote.className = 'lanx-card lanx-quote';
+    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
+    wrap.appendChild(quote);
+
+    if (isMobile) {
+      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
+      wrap.classList.add('lanx-mobile-only');
+      sidebar.appendChild(wrap);
+    } else {
+      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
+      sidebar.insertBefore(wrap, sidebar.firstChild);
+      var firstInner = document.querySelector('article .article-inner');
+      if (firstInner) {
+        wrap.style.marginTop =
+          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
+      }
+    }
+
+    // 时钟
+    function tick(){
+      var d = new Date();
+      var p = function(n){ return n<10?'0'+n:n; };
+      document.getElementById('lanx_clock_time').textContent =
+        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+      document.getElementById('lanx_clock_date').textContent =
+        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
+      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
+    function loadQuotes(){
+      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
+        show(window.LANX_EXCERPTS);
         return;
       }
-      function waitTwikoo(){
-        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
-        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
-          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
-      }
-      waitTwikoo();
-    });
-  }
-  // 留言板:立即初始化;文章页:等用户点展开按钮
-  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
-})();
+      fetch('/excerpts.json')
+        .then(function(r){ return r.json(); })
+        .then(function(d){ show(d||[]); })
+        .catch(function(){ show([]); });
+    }
+    loadQuotes();
+    function show(data){
+      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
+      var it = data[Math.floor(Math.random()*data.length)];
+      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
+      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
+      quote.innerHTML =
+        '<div class="quote-body">'+it.content+'</div>' +
+        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
+        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
+      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
+    }
+  }, 500);
+});
 </script>
   
 <style>
@@ -3941,5 +3827,246 @@ body.lanx-todo-active .article-inner > *:not(.article-entry) { display: none !im
 }
 </style>
 <script src="/js/todolist-app.js"></script>
-<script src="/js/visitor.js?v=23e542bf" defer></script><!-- hexo injector body_end end --></body>
+<script src="/js/pin.js?v=b15fc202" defer></script>
+<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
+<style>
+  /* --- Toast 提示 --- */
+  .lanx-toast {
+    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
+    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lanx-toast.success { background: #38a169; }
+  .lanx-toast.error { background: #e53e3e; }
+
+  /* --- Twikoo 评论区整体容器 --- */
+  #twikoo-comments {
+    margin-top: 48px; padding: 28px 28px 20px;
+    background: #fff; border-radius: 14px;
+    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
+  }
+  #twikoo-comments > h3 {
+    margin: 0 0 20px 0; padding-bottom: 14px;
+    font-size: 16px; font-weight: 600; color: #333;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  /* 留言板:不同的标题和背景 */
+  body.page-guestbook #twikoo-comments {
+    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
+    border: 1px solid #dbeafe;
+  }
+  body.page-guestbook #twikoo-comments > h3 {
+    border-bottom-color: #dbeafe;
+    color: #2563eb;
+  }
+
+  /* --- Twikoo 内部组件美化 --- */
+  .tk-comment-box {
+    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
+    padding: 14px 16px !important; margin-bottom: 16px !important;
+    transition: border-color 0.2s !important;
+  }
+  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
+  .tk-comment-box .el-textarea__inner {
+    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
+    font-size: 14px !important; line-height: 1.6 !important;
+  }
+  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
+  .tk-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    border: none !important; border-radius: 20px !important;
+    padding: 8px 22px !important; font-weight: 500 !important;
+  }
+  .tk-btn-primary:hover { opacity: 0.9; }
+
+  /* 评论列表卡片化 */
+  .tk-comment-item {
+    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
+    padding: 16px 18px !important; margin-bottom: 12px !important;
+    background: #fafbfc !important; transition: box-shadow 0.2s !important;
+  }
+  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+  /* 博主标识 */
+  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
+
+  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
+  .tk-powered-by,
+  .tk-comment-powered,
+  [class*="powered-by"],
+  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
+
+  /* 评论区底部工具条 */
+  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
+
+  /* 点赞/踩按钮 */
+  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
+
+  /* 头像 */
+  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
+
+  /* --- 分享按钮改复制链接 --- */
+  .article-share-link { cursor: pointer; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
+
+<script>
+(function(){
+  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
+  var path = location.pathname;
+  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
+  // 访客明细页也是一篇文章的形态,但它不需要评论区
+  var isPost = document.querySelectorAll('article.article').length === 1
+    && path.indexOf('/visitors') === -1
+    && path.indexOf('/photos') === -1;
+  var isGuestbook = path.indexOf('/guestbook') !== -1;
+
+  // ============ Toast 工具 ============
+  function showToast(msg, type) {
+    var t = document.createElement('div');
+    t.className = 'lanx-toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 1800);
+  }
+
+  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
+  function copyShareLink() {
+    var links = document.querySelectorAll('.article-share-link');
+    if (!links.length) return;
+    links.forEach(function(link) {
+      link.href = 'javascript:void(0)';
+      // 移除旧监听(防重复绑定)
+      link.replaceWith(link.cloneNode(true));
+    });
+    // 重新获取(因为 cloneNode 替换了)
+    links = document.querySelectorAll('.article-share-link');
+    links.forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
+        var url;
+        if (link.dataset.url) {
+          try { url = new URL(link.dataset.url, location.origin).href; }
+          catch(err) { url = location.origin + location.pathname; }
+        } else {
+          url = location.origin + location.pathname;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function(){
+            showToast('📋 链接已复制到剪贴板');
+          }).catch(function(){ fallbackCopy(url); });
+        } else {
+          fallbackCopy(url);
+        }
+      }, true);
+    });
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
+    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
+    ta.remove();
+  }
+
+  // ============ 2. 文章页访问量 + 评论容器 ============
+  if (isGuestbook) document.body.classList.add('page-guestbook');
+
+  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
+  copyShareLink();
+
+  if (isPost) {
+    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
+    setTimeout(function(){
+      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
+      var af = document.querySelector('.article-footer');
+      if (!af) return;
+      // 👁️ 阅读 + 👍 点赞 内联显示
+      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
+        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
+        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
+      '</span>';
+      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
+      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
+    }, 200);
+  }
+
+  if (isPost || isGuestbook) {
+    var commentDiv = document.createElement('div');
+    commentDiv.id = 'twikoo-comments';
+    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
+    var collapsible = !isGuestbook;
+    commentDiv.innerHTML =
+      (collapsible
+        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
+        : ''
+      ) +
+      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
+        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
+      '</div>';
+    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
+    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
+
+    // 折叠按钮点击
+    if (collapsible) {
+      var btn = document.getElementById('twikoo-toggle-btn');
+      var body = document.getElementById('twikoo-comments-body');
+      btn.addEventListener('click', function() {
+        if (body.style.display === 'none') {
+          body.style.display = '';
+          btn.textContent = '🙈 收起评论区';
+          btn.style.background = '#f5f5f5';
+          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
+          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
+        } else {
+          body.style.display = 'none';
+          btn.textContent = '💬 展开评论区';
+          btn.style.background = '#fff';
+        }
+      });
+    }
+  }
+
+  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
+  function initTwikooBody() {
+    var commentBox = document.getElementById('tcomments');
+    if (!commentBox) return;
+    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
+    var pinger = new Promise(function(resolve){
+      var timer = setTimeout(function(){ resolve(false); }, 5000);
+      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
+        .then(function(){ clearTimeout(timer); resolve(true); })
+        .catch(function(){ clearTimeout(timer); resolve(false); });
+    });
+    pinger.then(function(ok){
+      if (!ok) {
+        commentBox.innerHTML =
+          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
+            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
+            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
+          '</div>';
+        return;
+      }
+      function waitTwikoo(){
+        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
+        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
+          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
+      }
+      waitTwikoo();
+    });
+  }
+  // 留言板:立即初始化;文章页:等用户点展开按钮
+  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
+})();
+</script>
+  <script src="/js/visitor.js?v=23e542bf" defer></script><!-- hexo injector body_end end --></body>
 </html>

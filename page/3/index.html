@@ -84,6 +84,340 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Godot02-角色移动脚本" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/25/Godot02-%E8%A7%92%E8%89%B2%E7%A7%BB%E5%8A%A8%E8%84%9A%E6%9C%AC/" class="article-date">
+  <time class="dt-published" datetime="2026-10-25T11:24:04.000Z" itemprop="datePublished">2026-10-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/10/25/Godot02-%E8%A7%92%E8%89%B2%E7%A7%BB%E5%8A%A8%E8%84%9A%E6%9C%AC/">Godot02:角色移动脚本（GDScript 语法复习）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>上一篇 <a href="/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/">Godot01：创建一个能动的角色</a> 搭好了节点和动画，这一篇把 <code>player.gd</code> 按注释逐段拆开，方便以后快速复习 GDScript 的写法和这段移动逻辑。</p>
+<h2 id="完整代码">完整代码</h2>
+<figure class="highlight gdscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##这是一个Godot脚本文件,有大量的注释帮助我快速回忆GDScript的语法和用法</span></span><br><span class="line"><span class="comment">##这里包含extends、const、var、func、if、else、elif、while、for等语法</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">extends</span> <span class="class">CharacterBody2D</span></span><br><span class="line"><span class="comment">##这是类似于Unity中的Rigidbody2D的东西，继承了这个类就可以使用move_and_slide()方法来移动角色</span></span><br><span class="line"><span class="comment">##extends就类似C++里的#include &quot;CharacterBody2D.h&quot;</span></span><br><span class="line"><span class="comment">##这个语言很像Python，继承类的语法是extends，</span></span><br><span class="line"><span class="comment">##函数定义是func，变量定义是var，类型标注是:类型名</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="constant">SPEED</span> = <span class="number">100.0</span></span><br><span class="line"><span class="comment">###定义一个常量SPEED，表示角色的移动速度</span></span><br><span class="line"><span class="keyword">var</span> current_direction = <span class="string">&quot;none&quot;</span></span><br><span class="line"><span class="comment">###定义一个变量current_direction，表示角色当前的移动方向，初始值为&quot;none&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">_ready</span>():</span><br><span class="line">	<span class="comment">##_ready()是Godot中节点准备就绪时调用的函数，类似于Unity中的Start()函数</span></span><br><span class="line">	<span class="variable">$AnimatedSprite2D</span>.<span class="function">play</span>(<span class="string">&quot;front_idle&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">_physics_process</span>(delta):</span><br><span class="line">	<span class="comment">##_physics_process是Godot中每帧调用的函数，delta是上一帧到这一帧的时间间隔</span></span><br><span class="line">	<span class="comment">##_下划线开头的函数是Godot的内置函数，类似于Unity中的Update()函数</span></span><br><span class="line">	<span class="comment">##pass这个是一个占位符，表示这个函数暂时没有实现任何功能</span></span><br><span class="line">	<span class="function">player_movement</span>(delta)</span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">player_movement</span>(delta):</span><br><span class="line">	<span class="keyword">if</span> <span class="class">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">&quot;ui_right&quot;</span>):</span><br><span class="line">		<span class="comment">##Input是Godot中处理输入的类，is_action_pressed是判断某个输入动作是否被按下</span></span><br><span class="line">		<span class="comment">##&quot;ui_right&quot;是Godot中默认的向右移动的输入动作，可以在项目设置中修改</span></span><br><span class="line">		<span class="function">play_animation</span>(<span class="number">1</span>)<span class="comment">##调用play_animation()函数来播放角色的动画</span></span><br><span class="line">		velocity.x = <span class="constant">SPEED</span></span><br><span class="line">		current_direction = <span class="string">&quot;right&quot;</span></span><br><span class="line">		<span class="comment">##velocity是CharacterBody2D类的一个属性，表示角色的速度</span></span><br><span class="line">		velocity.y = <span class="number">0</span></span><br><span class="line">	<span class="keyword">elif</span> <span class="class">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">&quot;ui_left&quot;</span>):</span><br><span class="line">		<span class="function">play_animation</span>(<span class="number">1</span>)<span class="comment">##调用play_animation()函数来播放角色的动画</span></span><br><span class="line">		velocity.x = -<span class="constant">SPEED</span></span><br><span class="line">		current_direction = <span class="string">&quot;left&quot;</span></span><br><span class="line">		velocity.y = <span class="number">0</span></span><br><span class="line">	<span class="keyword">elif</span> <span class="class">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">&quot;ui_down&quot;</span>):</span><br><span class="line">		<span class="function">play_animation</span>(<span class="number">1</span>)<span class="comment">##调用play_animation()函数来播放角色的动画</span></span><br><span class="line">		velocity.y = <span class="constant">SPEED</span></span><br><span class="line">		current_direction = <span class="string">&quot;down&quot;</span></span><br><span class="line">		velocity.x = <span class="number">0</span></span><br><span class="line">	<span class="keyword">elif</span> <span class="class">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">&quot;ui_up&quot;</span>):</span><br><span class="line">		<span class="function">play_animation</span>(<span class="number">1</span>)<span class="comment">##调用play_animation()函数来播放角色的动画</span></span><br><span class="line">		velocity.y = -<span class="constant">SPEED</span></span><br><span class="line">		current_direction = <span class="string">&quot;up&quot;</span></span><br><span class="line">		velocity.x = <span class="number">0</span></span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		<span class="function">play_animation</span>(<span class="number">0</span>)<span class="comment">##调用play_animation()函数来播放角色的动画</span></span><br><span class="line">		velocity.x = <span class="number">0</span></span><br><span class="line">		velocity.y = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">	<span class="function">move_and_slide</span>()<span class="comment">##这个方法是CharacterBody2D类的一个方法，用于移动角色并处理碰撞</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">func </span><span class="function">play_animation</span>(movement):</span><br><span class="line">	<span class="comment">##这个函数是用来播放角色的动画的</span></span><br><span class="line">	<span class="keyword">var</span> anim = <span class="variable">$AnimatedSprite2D</span><span class="comment">##$AnimatedSprite2D是Godot中获取节点的语法，表示获取当前节点下的AnimatedSprite2D节点</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> current_direction == <span class="string">&quot;right&quot;</span>:</span><br><span class="line">		anim.flip_h = <span class="literal">false</span></span><br><span class="line">		<span class="comment">##anim.flip_h是AnimatedSprite2D类的一个属性，</span></span><br><span class="line">		<span class="comment">##表示是否水平翻转动画,</span></span><br><span class="line">		<span class="comment">##因为我们只有一个左右通用的动画</span></span><br><span class="line">		<span class="keyword">if</span> movement == <span class="number">1</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;side_walk&quot;</span>)</span><br><span class="line">			<span class="comment">##anim.play()是AnimatedSprite2D类的一个方法，用于播放动画，参数是动画的名称</span></span><br><span class="line">		<span class="keyword">elif</span> movement == <span class="number">0</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;side_idle&quot;</span>)</span><br><span class="line">	<span class="keyword">elif</span> current_direction == <span class="string">&quot;left&quot;</span>:</span><br><span class="line">		anim.flip_h = <span class="literal">true</span></span><br><span class="line">		<span class="keyword">if</span> movement == <span class="number">1</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;side_walk&quot;</span>)</span><br><span class="line">		<span class="keyword">elif</span> movement == <span class="number">0</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;side_idle&quot;</span>)</span><br><span class="line">	<span class="keyword">elif</span> current_direction == <span class="string">&quot;down&quot;</span>:</span><br><span class="line">		<span class="keyword">if</span> movement == <span class="number">1</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;front_walk&quot;</span>)</span><br><span class="line">		<span class="keyword">elif</span> movement == <span class="number">0</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;front_idle&quot;</span>)</span><br><span class="line">	<span class="keyword">elif</span> current_direction == <span class="string">&quot;up&quot;</span>:</span><br><span class="line">		<span class="keyword">if</span> movement == <span class="number">1</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;back_walk&quot;</span>)</span><br><span class="line">		<span class="keyword">elif</span> movement == <span class="number">0</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;back_idle&quot;</span>)</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		<span class="keyword">if</span> current_direction == <span class="string">&quot;none&quot;</span> || current_direction == <span class="string">&quot;up&quot;</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;back_idle&quot;</span>)</span><br><span class="line">		<span class="keyword">elif</span> current_direction == <span class="string">&quot;down&quot;</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;front_idle&quot;</span>)</span><br><span class="line">		<span class="keyword">elif</span> current_direction == <span class="string">&quot;left&quot;</span> || current_direction == <span class="string">&quot;right&quot;</span>:</span><br><span class="line">			anim.<span class="function">play</span>(<span class="string">&quot;side_idle&quot;</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="语法速记">语法速记</h2>
+<ul>
+<li><code>extends CharacterBody2D</code>：继承节点类型，作用类似 Unity 里的 <code>Rigidbody2D</code>，继承后才有 <code>move_and_slide()</code>；可以类比 C++ 的 <code>#include &quot;CharacterBody2D.h&quot;</code>。</li>
+<li>GDScript 像 Python：继承用 <code>extends</code>，函数用 <code>func</code>，变量用 <code>var</code>，常量用 <code>const</code>，类型标注写成 <code>变量名:类型名</code>。</li>
+<li><code>$AnimatedSprite2D</code>：获取当前节点下的子节点，等价于 <code>get_node(&quot;AnimatedSprite2D&quot;)</code>。</li>
+<li><code>_</code> 开头的函数是 Godot 的内置回调：<code>_ready()</code> 对应 Unity 的 <code>Start()</code>，<code>_physics_process(delta)</code> 对应 <code>Update()</code>，<code>delta</code> 是上一帧到这一帧的时间间隔。</li>
+<li><code>pass</code> 是占位符，表示函数暂时不实现任何功能。</li>
+</ul>
+<h2 id="逻辑说明">逻辑说明</h2>
+<h3 id="常量与状态">常量与状态</h3>
+<figure class="highlight gdscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="constant">SPEED</span> = <span class="number">100.0</span></span><br><span class="line"><span class="keyword">var</span> current_direction = <span class="string">&quot;none&quot;</span></span><br></pre></td></tr></table></figure>
+<p><code>SPEED</code> 是移动速度常量；<code>current_direction</code> 记录当前朝向，初始为 <code>&quot;none&quot;</code>，供动画播放时判断用哪个方向的动画。</p>
+<h3 id="ready-：初始动画"><code>_ready()</code>：初始动画</h3>
+<figure class="highlight gdscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">func </span><span class="function">_ready</span>():</span><br><span class="line">	<span class="variable">$AnimatedSprite2D</span>.<span class="function">play</span>(<span class="string">&quot;front_idle&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>节点准备就绪时先播放正面待机动画。</p>
+<h3 id="player-movement-delta-：读取输入并设置速度"><code>player_movement(delta)</code>：读取输入并设置速度</h3>
+<p>用 <code>Input.is_action_pressed(&quot;ui_right&quot;)</code> 这类方法判断输入动作是否按下，<code>ui_right</code> 等是 Godot 默认的输入动作，可以在项目设置里改。</p>
+<ul>
+<li>方向判断用 <code>if / elif</code> 链，所以同时按多个键时只有一个方向生效，优先级是：右 → 左 → 下 → 上。</li>
+<li>有输入时把 <code>velocity</code> 对应轴设为 <code>±SPEED</code>，另一轴清零；没有输入时两轴都清零，并播放待机动画（<code>play_animation(0)</code>）。</li>
+<li><code>velocity</code> 是 <code>CharacterBody2D</code> 的属性，表示角色速度。</li>
+<li>最后统一调用 <code>move_and_slide()</code>，让角色按速度移动并处理碰撞。</li>
+</ul>
+<h3 id="play-animation-movement-：按朝向和状态选动画"><code>play_animation(movement)</code>：按朝向和状态选动画</h3>
+<p>参数 <code>movement</code> 表示状态：<code>1</code> 是移动，<code>0</code> 是静止。<code>anim.flip_h</code> 控制水平翻转，因为左右共用同一套动画。</p>
+<table>
+<thead>
+<tr>
+<th>朝向</th>
+<th>移动</th>
+<th>静止</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>right</code></td>
+<td><code>side_walk</code>（<code>flip_h = false</code>）</td>
+<td><code>side_idle</code></td>
+</tr>
+<tr>
+<td><code>left</code></td>
+<td><code>side_walk</code>（<code>flip_h = true</code>）</td>
+<td><code>side_idle</code></td>
+</tr>
+<tr>
+<td><code>down</code></td>
+<td><code>front_walk</code></td>
+<td><code>front_idle</code></td>
+</tr>
+<tr>
+<td><code>up</code></td>
+<td><code>back_walk</code></td>
+<td><code>back_idle</code></td>
+</tr>
+<tr>
+<td><code>none</code></td>
+<td>—</td>
+<td><code>back_idle</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>anim.play()</code> 的参数就是动画名称，要和 <code>SpriteFrames</code> 里的命名一致。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lanxone.github.io/2026/10/25/Godot02-%E8%A7%92%E8%89%B2%E7%A7%BB%E5%8A%A8%E8%84%9A%E6%9C%AC/" data-id="cmvp90fcs000rd8ma74nvbwhv" data-title="Godot02:角色移动脚本（GDScript 语法复习）" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Godot/" rel="tag">Godot</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-栈与队列-章节总结" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/10/25/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97-%E7%AB%A0%E8%8A%82%E6%80%BB%E7%BB%93/" class="article-date">
+  <time class="dt-published" datetime="2026-10-25T02:00:00.000Z" itemprop="datePublished">2026-10-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/10/25/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97-%E7%AB%A0%E8%8A%82%E6%80%BB%E7%BB%93/">栈与队列-章节总结</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="一、理论基础：先搞清-它们到底是什么">一、理论基础：先搞清&quot;它们到底是什么&quot;</h2>
+<p>C++ 里 <code>stack</code> 和 <code>queue</code> 都不是容器，而是<strong>容器适配器</strong>（container adaptor）：它们不自己管理内存，只是给底层容器套了一层受限的接口。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>stack</th>
+<th>queue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>规则</td>
+<td>后进先出 LIFO</td>
+<td>先进先出 FIFO</td>
+</tr>
+<tr>
+<td>默认底层</td>
+<td><code>deque</code></td>
+<td><code>deque</code></td>
+</tr>
+<tr>
+<td>常用操作</td>
+<td><code>push / pop / top / empty / size</code></td>
+<td><code>push / pop / front / back / empty / size</code></td>
+</tr>
+<tr>
+<td>迭代器</td>
+<td><strong>没有</strong></td>
+<td><strong>没有</strong></td>
+</tr>
+</tbody>
+</table>
+<p>由此引出两个高频面试陷阱：</p>
+<ol>
+<li><strong>栈里的元素在内存中连续吗？</strong>——不一定。栈是适配器，换成 <code>vector</code> 就连续，换成 <code>deque</code> 就不连续。默认恰好是 <code>deque</code>，而 <code>deque</code> 是分段连续的。</li>
+<li><strong>能用 <code>for</code> 遍历 <code>stack</code> / <code>queue</code> 吗？</strong>——不能。它们不提供迭代器，想遍历只能一边 <code>pop</code> 一边取，或者换用底层容器。</li>
+</ol>
+<blockquote>
+<p>判断用哪个：<strong>&quot;就近匹配、嵌套、回退&quot;用栈</strong>；<strong>&quot;按序排队、窗口滑动、先进先出&quot;用队列</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="二、栈的四类经典模型">二、栈的四类经典模型</h2>
+<h3 id="1-括号匹配（20）">1. 括号匹配（20）</h3>
+<p><strong>先枚举失败，再写代码</strong>。只有三种不匹配：</p>
+<ul>
+<li>左括号多余：遍历完栈里还有东西</li>
+<li>类型不匹配：栈顶和当前右括号不是一对</li>
+<li>右括号多余：栈空时来了右括号</li>
+</ul>
+<p>所以模板永远是三连：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 遇左括号入栈；遇右括号：</span></span><br><span class="line"><span class="keyword">if</span> (st.<span class="built_in">empty</span>() || st.<span class="built_in">top</span>() != 期望的左括号) <span class="keyword">return</span> <span class="literal">false</span>; <span class="comment">// 判空 + 比对</span></span><br><span class="line">st.<span class="built_in">pop</span>();                                                 <span class="comment">// 匹配成功必须弹</span></span><br><span class="line"><span class="comment">// 循环结束：</span></span><br><span class="line"><span class="keyword">return</span> st.<span class="built_in">empty</span>();                                        <span class="comment">// 别忘了查残留</span></span><br></pre></td></tr></table></figure>
+<p><strong>优化技巧</strong>：遇到左括号时，把<strong>对应的右括号</strong>压栈。这样后面无论遇到什么字符，只要 <code>st.empty() || st.top() != c</code> 就失败，否则 <code>pop</code>。少写一整套 <code>if/else if</code>。</p>
+<h3 id="2-相邻消除-表达式求值（1047、150）">2. 相邻消除 / 表达式求值（1047、150）</h3>
+<ul>
+<li><strong>1047 删除相邻重复项</strong>：字符依次入栈，栈顶和当前字符相同就弹出，否则压入。</li>
+<li><strong>150 逆波兰表达式</strong>：数字入栈；遇运算符弹出两个数，算完再压回。</li>
+</ul>
+<p>两者本质相同：<strong>栈里存的是&quot;还没被结算的东西&quot;，栈顶是唯一的对手</strong>。能当场消掉的就当场消掉，不要留到后面。</p>
+<blockquote>
+<p>逆波兰的坑：先弹出的是<strong>右操作数</strong>。<code>a - b</code> 要写成 <code>int b = st.top(); st.pop(); int a = st.top(); st.pop();</code>。</p>
+</blockquote>
+<h3 id="3-栈在系统里的影子">3. 栈在系统里的影子</h3>
+<p>编译器词法分析处理括号、<code>cd a/b/c/../../</code> 的路径回退（LeetCode 71 简化路径）、<strong>递归调用栈</strong>，底层都是栈。数据结构往往藏在看不见的地方。</p>
+<h3 id="4-用栈实现队列（232）">4. 用栈实现队列（232）</h3>
+<p>两个栈：<code>in</code> 负责进，<code>out</code> 负责出。</p>
+<ul>
+<li><code>push</code>：只往 <code>in</code> 压</li>
+<li><code>pop / peek</code>：<strong><code>out</code> 为空时，才把 <code>in</code> 全部倒进 <code>out</code></strong>；<code>out</code> 不空就直接取</li>
+</ul>
+<p>&quot;一次全倒&quot;是关键。倒一半、或 <code>out</code> 非空还继续倒，顺序都会乱。均摊复杂度 O(1)。</p>
+<hr>
+<h2 id="三、队列的两种-加强版">三、队列的两种&quot;加强版&quot;</h2>
+<h3 id="1-单调队列（239-滑动窗口最大值）">1. 单调队列（239 滑动窗口最大值）</h3>
+<p>普通队列每个窗口重扫一遍是 O(n·k)，必然超时。单调队列只做一件事：<strong>丢弃永远不可能成为答案的元素</strong>。</p>
+<p>两条不变量：</p>
+<ol>
+<li><strong>单调</strong>：队头到队尾递减，<code>front()</code> 就是窗口最大值</li>
+<li><strong>时效</strong>：队内元素都还在当前窗口内</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">push</span><span class="params">(<span class="type">int</span> v)</span> </span>&#123; <span class="keyword">while</span> (!q.<span class="built_in">empty</span>() &amp;&amp; v &gt; q.<span class="built_in">back</span>()) q.<span class="built_in">pop_back</span>(); q.<span class="built_in">push_back</span>(v); &#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pop</span><span class="params">(<span class="type">int</span> v)</span>  </span>&#123; <span class="keyword">if</span> (!q.<span class="built_in">empty</span>() &amp;&amp; v == q.<span class="built_in">front</span>()) q.<span class="built_in">pop_front</span>(); &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>push</code>：新元素比队尾大，队尾就永远没机会了（更小、还更早离开），直接弹掉</li>
+<li><code>pop</code>：<strong>不是无脑 <code>pop_front()</code></strong>，而是核对&quot;要离开的值是否恰好是队头&quot;。因为有些元素早在 <code>push</code> 时就被淘汰了，无脑弹会误伤当前最大值</li>
+</ul>
+<p>每个元素最多进一次、出一次，所以整体 <strong>O(n)</strong>。</p>
+<blockquote>
+<p>注意：它不是排序；它的 <code>push/pop</code> 规则只适用于本题。也可以存下标，用 <code>front() &lt;= i - k</code> 判断过期。</p>
+</blockquote>
+<h3 id="2-优先级队列（347-前-K-个高频元素）">2. 优先级队列（347 前 K 个高频元素）</h3>
+<p><strong>优先级队列就是披着队列外衣的堆</strong>，默认是大顶堆（底层 <code>vector</code> 实现的完全二叉树）。</p>
+<ul>
+<li>求<strong>前 K 大</strong>：用<strong>小顶堆</strong>，堆里只留 k 个候选，超了就弹堆顶（当前最小的）</li>
+<li>求<strong>前 K 小</strong>：用<strong>大顶堆</strong></li>
+<li>只对 k 个候选排序，复杂度 <strong>O(n log k)</strong>，而不是全排序 O(n log n)</li>
+</ul>
+<p>比较器方向是高频坑：<code>priority_queue</code> 的比较器返回 <code>true</code> 表示&quot;优先级更低&quot;，所以 <code>lhs.second &gt; rhs.second</code> 才是小顶堆。</p>
+<hr>
+<h2 id="四、常见陷阱清单">四、常见陷阱清单</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>陷阱</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>空栈调用 <code>top()</code> / <code>pop()</code></td>
+<td>未定义行为，可能直接崩</td>
+</tr>
+<tr>
+<td>2</td>
+<td>右括号匹配成功却忘了 <code>pop()</code></td>
+<td>栈内残留，后续比对全错</td>
+</tr>
+<tr>
+<td>3</td>
+<td>循环结束不检查 <code>empty()</code></td>
+<td>多余的左括号被放过</td>
+</tr>
+<tr>
+<td>4</td>
+<td>逆波兰先弹的数当左操作数</td>
+<td>减法和除法结果反了</td>
+</tr>
+<tr>
+<td>5</td>
+<td>用栈实现队列时只倒一半 / <code>out</code> 非空还倒</td>
+<td>顺序错乱</td>
+</tr>
+<tr>
+<td>6</td>
+<td>单调队列 <code>pop</code> 直接 <code>pop_front()</code></td>
+<td>误删最大值</td>
+</tr>
+<tr>
+<td>7</td>
+<td>单调队列先 <code>push</code> 后 <code>pop</code>，或下标写成 <code>i-k±1</code></td>
+<td>窗口长度错、旧元素提前参与比较</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>priority_queue</code> 比较器方向写反</td>
+<td>该留的被弹掉</td>
+</tr>
+<tr>
+<td>9</td>
+<td>每个窗口重新扫描求最值</td>
+<td>O(n·k) TLE</td>
+</tr>
+<tr>
+<td>10</td>
+<td>用 <code>map[key]</code> 读一个&quot;本该存在&quot;的 key</td>
+<td>不存在时会插入并可能 rehash，迭代器失效</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="五、我踩过的坑与改法">五、我踩过的坑与改法</h2>
+<h3 id="坑-1：把-括号匹配-做成了-回文判断">坑 1：把&quot;括号匹配&quot;做成了&quot;回文判断&quot;</h3>
+<p>第一次写有效括号，我一次性把所有字符压栈，再从头和栈顶逐字比对。</p>
+<p><strong>根因</strong>：没先分析题目要校验的是什么。括号匹配校验的是<strong>结构嵌套</strong>，不是<strong>序列对称</strong>。<code>&quot;()&quot;</code> 在第一轮就会被我判错。</p>
+<p><strong>改法</strong>：写代码前先列出三种失败情形；栈里只放&quot;<strong>还没被匹配的左括号</strong>&quot;，只有遇到右括号才触发比对。</p>
+<h3 id="坑-2：方向对了，但三个细节全漏">坑 2：方向对了，但三个细节全漏</h3>
+<p>第二次已经会用栈了，却同时犯了三个错：匹配后不 <code>pop</code>、<code>top()</code> 前不判空、结尾不检查栈空。</p>
+<p><strong>根因</strong>：把栈当成了&quot;看一眼就行&quot;的结构，没有固定操作顺序。</p>
+<p><strong>改法</strong>：固化成一个模板，不再即兴发挥——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">右括号 → 先判空 → 再比栈顶 → 匹配就 pop</span><br><span class="line">遍历结束 → return st.empty()</span><br></pre></td></tr></table></figure>
+<p>这三个检查不是&quot;额外的防御&quot;，而是算法本身的一部分。</p>
+<h3 id="坑-3：滑动窗口最大值，第一版-O-n·k-超时">坑 3：滑动窗口最大值，第一版 O(n·k) 超时</h3>
+<p>我的第一版用普通队列维护窗口，每个窗口都拷贝一份队列、从头扫一遍求最大值，初始值还写死成 <code>-99999</code>。</p>
+<p><strong>根因</strong>：把&quot;每滑一步就重新算&quot;当成了唯一做法，忽略了相邻窗口有 k-1 个元素重叠——最大值信息本来可以复用。</p>
+<p><strong>改法</strong>：换成单调队列，只保留&quot;还有可能成为最大值&quot;的候选，<code>front()</code> 直接 O(1) 取值，整体 O(n)。初始值改用 <code>INT_MIN</code> 或首元素。</p>
+<p><strong>教训</strong>：先问&quot;上一步算出的信息，这一步还能不能用&quot;。</p>
+<h3 id="坑-4：前-K-高频，手写扫描模拟堆，12722-ms">坑 4：前 K 高频，手写扫描模拟堆，12722 ms</h3>
+<p>我在循环里用 <code>getS()</code> 线性扫描 <code>res</code> 找频次最小的元素，而且一次循环调用两遍，最坏 O(n·k)。</p>
+<p><strong>根因</strong>：不是逻辑写错，而是<strong>用线性扫描手工实现了一个堆的 <code>top()</code></strong>。需要&quot;反复取最值&quot;时，我没有先想&quot;哪个容器能直接给我&quot;。</p>
+<p><strong>改法</strong>：改用 <code>priority_queue</code> 小顶堆，<code>push</code> 后 <code>if (size &gt; k) pop()</code>，由容器负责维护，实测 29 ms。</p>
+<p>附带改掉一个隐患：<code>getS</code> 里用 <code>hash[a[i]]</code> 读一个本该存在的 key，这次没炸只是因为数据恰好命中。改成参数 <code>const</code> + <code>at()</code>，让<strong>编译器</strong>帮我堵住这个坑，而不是靠记性。</p>
+<p><strong>教训</strong>：该用容器的地方不要手写；能交给类型系统检查的，不要交给记忆。</p>
+<h3 id="三条共性">三条共性</h3>
+<ol>
+<li><strong>先写不变量，再写代码</strong>——栈里只放什么、队列里只放什么、什么必须始终成立。</li>
+<li><strong>先估复杂度，再动手</strong>——O(n·k) 的直觉写法，在 1e5 数据下基本等于 TLE。</li>
+<li><strong>让语言帮我防错</strong>——<code>empty()</code> 模板、<code>const</code>、<code>at()</code>，比&quot;下次注意&quot;可靠。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lanxone.github.io/2026/10/25/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97-%E7%AB%A0%E8%8A%82%E6%80%BB%E7%BB%93/" data-id="cmvp90fd20032d8mahzk75dze" data-title="栈与队列-章节总结" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" rel="tag">栈和队列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-Godot01-创建一个能动的角色" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/10/24/Godot01-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%83%BD%E5%8A%A8%E7%9A%84%E8%A7%92%E8%89%B2/" class="article-date">
@@ -602,388 +936,11 @@
 
 
   
-    <article id="post-快速地静态编译" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/10/17/%E5%BF%AB%E9%80%9F%E5%9C%B0%E9%9D%99%E6%80%81%E7%BC%96%E8%AF%91/" class="article-date">
-  <time class="dt-published" datetime="2026-10-17T15:33:52.000Z" itemprop="datePublished">2026-10-17</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/17/%E5%BF%AB%E9%80%9F%E5%9C%B0%E9%9D%99%E6%80%81%E7%BC%96%E8%AF%91/">快速地静态编译</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1>SDL3 静态编译指南（Windows + MinGW）</h1>
-<h2 id="一、怎么做：三步搞定">一、怎么做：三步搞定</h2>
-<h3 id="第-1-步：拿到-SDL3-源码">第 1 步：拿到 SDL3 源码</h3>
-<p>从官网下载源码 tar.gz（不用带 MinGW 的预编译包，因为官方那个只有动态库导入库 <code>.dll.a</code>，没有真正的静态库 <code>.a</code>）：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://www.libsdl.org/release/SDL3-3.4.18.tar.gz</span><br></pre></td></tr></table></figure>
-<p>解压后得到 <code>SDL3-3.4.18</code> 目录。</p>
-<h3 id="第-2-步：用-CMake-把-SDL3-编成静态库">第 2 步：用 CMake 把 SDL3 编成静态库</h3>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 确保 PATH 里有 MinGW 的 gcc/g++/cmake</span></span><br><span class="line"><span class="variable">$env:PATH</span> = <span class="string">&quot;C:/ccccc/cppenviro/w64devkit/bin;&quot;</span> + <span class="variable">$env:PATH</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 新建构建目录</span></span><br><span class="line"><span class="built_in">New-Item</span> <span class="literal">-ItemType</span> Directory <span class="literal">-Force</span> <span class="literal">-Path</span> <span class="string">&quot;SDL3-3.4.18/build_static&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># CMake 配置（关键参数：SDL_STATIC=ON, SDL_SHARED=OFF）</span></span><br><span class="line"><span class="built_in">cd</span> SDL3<span class="literal">-3</span>.<span class="number">4.18</span>/build_static</span><br><span class="line">cmake <span class="literal">-G</span> <span class="string">&quot;MinGW Makefiles&quot;</span> `</span><br><span class="line">      <span class="literal">-DCMAKE_C_COMPILER</span>=C:/ccccc/cppenviro/w64devkit/bin/gcc.exe `</span><br><span class="line">      <span class="literal">-DCMAKE_CXX_COMPILER</span>=C:/ccccc/cppenviro/w64devkit/bin/g++.exe `</span><br><span class="line">      <span class="literal">-DSDL_STATIC</span>=ON `</span><br><span class="line">      <span class="literal">-DSDL_SHARED</span>=OFF `</span><br><span class="line">      <span class="literal">-DSDL_TEST</span>=OFF `</span><br><span class="line">      <span class="literal">-DSDL_TESTS</span>=OFF `</span><br><span class="line">      ..</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译（并行 8 任务，加快速度）</span></span><br><span class="line">cmake <span class="literal">--build</span> . <span class="literal">--config</span> Release <span class="literal">--parallel</span> <span class="number">8</span></span><br></pre></td></tr></table></figure>
-<p>编译完成后，<code>build_static/</code> 目录里会出现 <code>libSDL3.a</code> —— 这就是我们要的静态库。</p>
-<h3 id="第-3-步：用静态库链接你的程序">第 3 步：用静态库链接你的程序</h3>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">g++ <span class="literal">-static</span> <span class="literal">-mwindows</span> <span class="literal">-std</span>=c++<span class="number">17</span> `</span><br><span class="line">    <span class="literal">-I</span> SDL/include `</span><br><span class="line">    main.cpp `</span><br><span class="line">    <span class="literal">-o</span> DEEPLAN.exe `</span><br><span class="line">    <span class="literal">-L</span> SDL3<span class="literal">-3</span>.<span class="number">4.18</span>/build_static `</span><br><span class="line">    <span class="literal">-lSDL3</span> `</span><br><span class="line">    <span class="literal">-lkernel32</span> <span class="literal">-luser32</span> <span class="literal">-lgdi32</span> <span class="literal">-lwinmm</span> <span class="literal">-limm32</span> `</span><br><span class="line">    <span class="literal">-lole32</span> <span class="literal">-loleaut32</span> <span class="literal">-lversion</span> <span class="literal">-luuid</span> <span class="literal">-ladvapi32</span> `</span><br><span class="line">    <span class="literal">-lsetupapi</span> <span class="literal">-lshell32</span> <span class="literal">-ldinput8</span> <span class="literal">-ldxgi</span> <span class="literal">-ld3d11</span></span><br></pre></td></tr></table></figure>
-<p>编译出来的 <code>DEEPLAN.exe</code> 就是<strong>无 SDL3.dll 依赖</strong>的独立可执行文件。</p>
-<blockquote>
-<p><strong>提示</strong>：上面那串 <code>-lkernel32 ... -ld3d11</code> 是 SDL3 在 Windows 上依赖的系统库，按需链接即可（如果没用到对应功能，减几个也不会报错）。最稳妥的办法是编一次看缺什么补什么。</p>
-</blockquote>
-<hr>
-<h2 id="★-捷径：静态库只编一次，以后复制粘贴就行">★ 捷径：静态库只编一次，以后复制粘贴就行</h2>
-<p><strong>上面第 1、2 步是&quot;一次性工作&quot;。</strong> 把 SDL3 源码 + CMake 编译这一整套做完之后，<code>libSDL3.a</code> 就永久躺在 <code>SDL3-3.4.18/build_static/</code> 里了。</p>
-<p>以后不管你写多少个 SDL3 项目，<strong>再也不用编 SDL3 源码</strong>，直接跳到第 3 步链接即可。你甚至可以把 <code>build_static/libSDL3.a</code> 拷贝到任何一个新项目的某个目录里，比如：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MyGame/</span><br><span class="line">  ├─ src/</span><br><span class="line">  │   └─ main.cpp</span><br><span class="line">  ├─ include/          ← SDL3 的头文件</span><br><span class="line">  ├─ lib/</span><br><span class="line">  │   └─ libSDL3.a     ← 上次编好的静态库（复制过来）</span><br><span class="line">  └─ build/</span><br></pre></td></tr></table></figure>
-<p>然后编译命令就变成：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">g++ <span class="literal">-static</span> <span class="literal">-mwindows</span> <span class="literal">-std</span>=c++<span class="number">17</span> `</span><br><span class="line">    <span class="literal">-I</span> include `</span><br><span class="line">    src/main.cpp `</span><br><span class="line">    <span class="literal">-o</span> MyGame.exe `</span><br><span class="line">    <span class="literal">-L</span> lib `</span><br><span class="line">    <span class="literal">-lSDL3</span> `</span><br><span class="line">    <span class="literal">-lkernel32</span> <span class="literal">-luser32</span> <span class="literal">-lgdi32</span> <span class="literal">-lwinmm</span> <span class="literal">-limm32</span> `</span><br><span class="line">    <span class="literal">-lole32</span> <span class="literal">-loleaut32</span> <span class="literal">-lversion</span> <span class="literal">-luuid</span> <span class="literal">-ladvapi32</span> `</span><br><span class="line">    <span class="literal">-lsetupapi</span> <span class="literal">-lshell32</span> <span class="literal">-ldinput8</span> <span class="literal">-ldxgi</span> <span class="literal">-ld3d11</span></span><br></pre></td></tr></table></figure>
-<p><strong>和上次一模一样</strong>——因为 SDL3 静态库本身没变，链接命令就不用变。</p>
-<h3 id="什么时候需要重新编静态库？">什么时候需要重新编静态库？</h3>
-<p>只有以下几种情况需要重新走第 1、2 步：</p>
-<table>
-<thead>
-<tr>
-<th>情况</th>
-<th>怎么做</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>SDL3 出了新版本（比如 v3.5.0）</td>
-<td>下载新源码 → 重新 CMake 编译</td>
-</tr>
-<tr>
-<td>换了编译器（比如从 MinGW 换 MSVC）</td>
-<td>静态库和编译器/平台强相关，必须用对应工具链重新编</td>
-</tr>
-<tr>
-<td>想关掉某些功能模块（比如不需要音频）</td>
-<td>CMake 时加参数 <code>-DSDL_AUDIO=OFF</code>，重编</td>
-</tr>
-</tbody>
-</table>
-<p>其他时候，<strong>一次编译，终身享用</strong>。</p>
-<hr>
-<h2 id="二、静态链接-vs-动态链接：到底差在哪">二、静态链接 vs 动态链接：到底差在哪</h2>
-<h3 id="1-核心概念">1. 核心概念</h3>
-<p><strong>链接</strong>是编译的最后一步：编译器把你写的源码变成一堆机器码（<code>.o</code> 目标文件），然后<strong>链接器</strong>把这些分散的机器码&quot;粘起来&quot;变成一个完整的 <code>.exe</code>。粘的时候，链接器还要解决一个问题——<strong>&quot;你调用的那些函数，谁来提供？&quot;</strong></p>
-<p>这些&quot;被调用的函数&quot;分两种：</p>
-<table>
-<thead>
-<tr>
-<th>类型</th>
-<th>例子</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>你自己写的函数</td>
-<td><code>void DrawBall() &#123; ... &#125;</code></td>
-</tr>
-<tr>
-<td>库提供的函数</td>
-<td><code>SDL_Init()</code>、<code>printf()</code>、<code>MessageBoxW()</code></td>
-</tr>
-</tbody>
-</table>
-<p>静态链接和动态链接的分歧就在<strong>如何处理&quot;库提供的函数&quot;</strong>。</p>
-<hr>
-<h3 id="2-动态链接（你之前的做法）">2. 动态链接（你之前的做法）</h3>
-<p><strong>做法</strong>：链接时只在 exe 里留一个&quot;借条&quot;——&quot;我需要 SDL3.dll 里的 SDL_Init 这个函数&quot;。真正的函数代码<strong>不</strong>编进 exe。</p>
-<p><strong>运行时发生的事</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">你双击 main.exe</span><br><span class="line">    │</span><br><span class="line">    ▼</span><br><span class="line">Windows 加载 main.exe 进内存</span><br><span class="line">    │</span><br><span class="line">    ▼</span><br><span class="line">发现借条上说&quot;需要 SDL3.dll&quot;</span><br><span class="line">    │</span><br><span class="line">    ▼</span><br><span class="line">Windows 去磁盘上找 SDL3.dll（exe 同目录、System32、PATH 里）</span><br><span class="line">    │</span><br><span class="line">    ▼</span><br><span class="line">找到 → 加载进内存 → 把 exe 里对 SDL_Init 的引用指向 DLL 里的真实地址</span><br><span class="line">没找到 → 弹窗报错 &quot;找不到 SDL3.dll&quot; → 程序启动失败</span><br></pre></td></tr></table></figure>
-<p><strong>优点</strong>：</p>
-<ul>
-<li>exe 体积小（你的 main.exe 可能才几十 KB）</li>
-<li>多个程序可以<strong>共享同一份 DLL</strong>——内存里只需要加载一份 SDL3.dll，节省内存</li>
-<li>更新库很方便：只要 DLL 向后兼容，直接替换 DLL 文件就能升级，不用重新编译程序</li>
-</ul>
-<p><strong>缺点</strong>：</p>
-<ul>
-<li><strong>发布时必须携带 DLL</strong>——你不能只给别人一个 exe</li>
-<li><strong>DLL 地狱（DLL Hell）</strong>——假设你的程序要 SDL3 v3.4.18，但另一程序装了 SDL3 v3.4.17 在 System32 里，Windows 优先用 System32 那个，你的程序可能崩</li>
-<li><strong>加载速度略慢</strong>——启动时要额外花时间加载 DLL</li>
-</ul>
-<p><strong>Windows 上常见的动态链接 DLL</strong>：</p>
-<table>
-<thead>
-<tr>
-<th>DLL</th>
-<th>提供者</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>SDL3.dll</td>
-<td>你自己要带上</td>
-</tr>
-<tr>
-<td>libgcc_s_seh-1.dll</td>
-<td>MinGW 运行时（如果没加 <code>-static</code>）</td>
-</tr>
-<tr>
-<td>libstdc++-6.dll</td>
-<td>MinGW C++ 运行时</td>
-</tr>
-<tr>
-<td>KERNEL32.dll</td>
-<td>Windows 系统自带 ✅</td>
-</tr>
-<tr>
-<td>USER32.dll</td>
-<td>Windows 系统自带 ✅</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h3 id="3-静态链接（这次做的事）">3. 静态链接（这次做的事）</h3>
-<p><strong>做法</strong>：链接时把库的<strong>全部机器码</strong>直接&quot;拷贝粘贴&quot;进 exe 里。链接器<strong>不留借条</strong>，exe 里包含了所有它需要的函数实现。</p>
-<p><strong>运行时发生的事</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">你双击 DEEPLAN.exe</span><br><span class="line">    │</span><br><span class="line">    ▼</span><br><span class="line">Windows 加载 DEEPLAN.exe 进内存</span><br><span class="line">    │</span><br><span class="line">    ▼</span><br><span class="line">发现：所有需要的函数都在 exe 里了 ✓</span><br><span class="line">    │</span><br><span class="line">    ▼</span><br><span class="line">直接开始运行，不需要加载任何第三方 DLL</span><br></pre></td></tr></table></figure>
-<p><strong>优点</strong>：</p>
-<ul>
-<li><strong>单文件就能跑</strong>——拷到任何 Windows 电脑上双击就行，零外部依赖</li>
-<li><strong>启动速度略快</strong>——没有运行时加载 DLL 的开销</li>
-<li><strong>版本锁定</strong>——不会出现&quot;别人的 DLL 版本不对导致我崩&quot;的问题</li>
-<li><strong>分发简单</strong>——发给别人就一个 exe，不用打包整个文件夹</li>
-</ul>
-<p><strong>缺点</strong>：</p>
-<ul>
-<li><strong>exe 体积大</strong>——你的 DEEPLAN.exe 有 23.5MB，而原来的 main.exe 可能才几百 KB。因为 SDL3 的整个实现（音频、视频、输入、渲染……）全都塞进去了</li>
-<li><strong>内存浪费</strong>——如果同时开多个 SDL3 程序，每个进程里都有一份 SDL3 代码，不像动态链接那样可以共享</li>
-<li><strong>更新麻烦</strong>——SDL3 出了新版本，你得重新编译再分发新的 exe（不能像动态那样只换个 DLL）</li>
-</ul>
-<hr>
-<h3 id="4-MinGW-下三种常见的链接场景">4. MinGW 下三种常见的链接场景</h3>
-<h4 id="场景-A：纯动态（你最初的配置）">场景 A：纯动态（你最初的配置）</h4>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ main.cpp -o app.exe -lSDL3 -lws2_32</span><br></pre></td></tr></table></figure>
-<ul>
-<li>依赖 <code>SDL3.dll</code>、<code>libgcc_s_seh-1.dll</code>、<code>libstdc++-6.dll</code></li>
-<li>体积小</li>
-<li>需要打包一堆 DLL 一起发</li>
-</ul>
-<h4 id="场景-B：半静态（MinGW-运行时静态，SDL-动态）">场景 B：半静态（MinGW 运行时静态，SDL 动态）</h4>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -static-libgcc -static-libstdc++ main.cpp -o app.exe -lSDL3</span><br></pre></td></tr></table></figure>
-<ul>
-<li>只依赖 <code>SDL3.dll</code></li>
-<li>不用再打包 <code>libgcc</code>/<code>libstdc++</code> 那两个运行时 DLL</li>
-<li>很多人用这种方式</li>
-</ul>
-<h4 id="场景-C：全静态（本次的做法）">场景 C：全静态（本次的做法）</h4>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -static main.cpp -o app.exe -lSDL3（静态库版本） ...</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-static</code> 等价于 <code>-static-libgcc -static-libstdc++</code>（更全，还包括其他 C 运行时组件）</li>
-<li>依赖 SDL3 本身也要是静态库（<code>.a</code>），不能是导入库（<code>.dll.a</code>）</li>
-<li>只依赖 Windows 系统自带 DLL</li>
-<li>一个 exe 搞定</li>
-</ul>
-<hr>
-<h3 id="5-关键文件类型一览（MinGW）">5. 关键文件类型一览（MinGW）</h3>
-<table>
-<thead>
-<tr>
-<th>扩展名</th>
-<th>含义</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>.dll.a</code></td>
-<td><strong>导入库（import library）</strong></td>
-<td>告诉链接器&quot;去哪个 DLL 里找符号&quot;，本身没有函数实现。<strong>用它 = 动态链接</strong></td>
-</tr>
-<tr>
-<td><code>.a</code></td>
-<td><strong>静态库（archive）</strong></td>
-<td>真正包含函数实现。<strong>用它 = 静态链接</strong></td>
-</tr>
-<tr>
-<td><code>.dll</code></td>
-<td><strong>动态链接库</strong></td>
-<td>运行时加载的共享代码</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>⚠️ <strong>最容易搞混的一点</strong>：MinGW 下用 <code>-lSDL3</code> 时，链接器会按以下顺序找：</p>
-<ol>
-<li>先找 <code>libSDL3.a</code>（静态库）</li>
-<li>再找 <code>libSDL3.dll.a</code>（导入库）</li>
-</ol>
-<p>所以如果你目录里<strong>同时放了</strong> <code>.a</code> 和 <code>.dll.a</code>，链接器会优先选 <code>.a</code>（静态）。想强制动态，就得把 <code>.a</code> 移走或改名。</p>
-</blockquote>
-<hr>
-<h3 id="6-一句话总结什么时候用哪种">6. 一句话总结什么时候用哪种</h3>
-<table>
-<thead>
-<tr>
-<th>场景</th>
-<th>推荐</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>自己写的小工具、测试程序</td>
-<td>✅ 静态（一个 exe 扔 U 盘就能跑）</td>
-</tr>
-<tr>
-<td>游戏发行、大应用</td>
-<td>✅ 动态（节省空间，方便模块化）</td>
-</tr>
-<tr>
-<td>需要让用户可以独立升级某个组件</td>
-<td>✅ 动态</td>
-</tr>
-<tr>
-<td>嵌入式/离线环境</td>
-<td>✅ 静态</td>
-</tr>
-</tbody>
-</table>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://lanxone.github.io/2026/10/17/%E5%BF%AB%E9%80%9F%E5%9C%B0%E9%9D%99%E6%80%81%E7%BC%96%E8%AF%91/" data-id="cmvp90fcw001jd8ma56ow1vh1" data-title="快速地静态编译" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag">C++学习笔记</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F/" rel="tag">快速</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-栈与队列-栈有什么用处-括号合法" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/10/15/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97-%E6%A0%88%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%E5%A4%84-%E6%8B%AC%E5%8F%B7%E5%90%88%E6%B3%95/" class="article-date">
-  <time class="dt-published" datetime="2026-10-15T07:29:19.000Z" itemprop="datePublished">2026-10-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/10/15/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97-%E6%A0%88%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%E5%A4%84-%E6%8B%AC%E5%8F%B7%E5%90%88%E6%B3%95/">栈与队列:栈有什么用处:括号合法</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="💡解答">💡解答</h2>
-<h1><a target="_blank" rel="noopener" href="http://xn--uvz335a.md">笔记.md</a></h1>
-<h2 id="题目：有效的括号">题目：有效的括号</h2>
-<blockquote>
-<p>给定一个只包括 <code>'('</code>，<code>')'</code>，<code>'&#123;'</code>，<code>'&#125;'</code>，<code>'['</code>，<code>']'</code> 的字符串 <code>s</code> ，判断字符串是否有效。<br>
-有效字符串需满足：</p>
-</blockquote>
-<ol>
-<li>左括号必须用相同类型的右括号闭合。</li>
-<li>左括号必须以正确的顺序闭合。</li>
-<li>每个右括号都有一个对应的相同类型的左括号。</li>
-</ol>
-<p>示例：</p>
-<ul>
-<li>输入：<code>s = &quot;()&quot;</code> → 输出：<code>true</code></li>
-<li>输入：<code>s = &quot;()[]&#123;&#125;&quot;</code> → 输出：<code>true</code></li>
-<li>输入：<code>s = &quot;(]&quot;</code> → 输出：<code>false</code></li>
-<li>输入：<code>s = &quot;([])&quot;</code> → 输出：<code>true</code></li>
-</ul>
-<hr>
-<h2 id="第一次错误代码">第一次错误代码</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isValid</span><span class="params">(string s)</span> </span>&#123;</span><br><span class="line">        stack&lt;<span class="type">char</span>&gt; input;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">char</span> a : s)&#123;</span><br><span class="line">            input.<span class="built_in">push</span>(a);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">char</span> b : s)&#123;</span><br><span class="line">            <span class="keyword">if</span>(b != input.<span class="built_in">top</span>())&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            input.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h3 id="❌-错误分析">❌ 错误分析</h3>
-<p><strong>理解错题目逻辑</strong>：这段代码实现的是<strong>判断回文字符串</strong>，不是括号匹配。<br>
-逻辑：把所有字符一次性压栈，再从头遍历原字符串，和栈顶对比。<br>
-例如 <code>&quot;()&quot;</code>：栈内是 <code>'('</code> <code>')'</code>，第一轮比较 <code>b='('</code> 和栈顶 <code>')'</code>，直接返回 false，但 <code>&quot;()&quot;</code> 应该是 true。</p>
-<hr>
-<h2 id="第二次错误代码">第二次错误代码</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isValid</span><span class="params">(string s)</span> </span>&#123;</span><br><span class="line">        stack&lt;<span class="type">char</span>&gt; input;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">char</span> a : s)&#123;</span><br><span class="line">            <span class="keyword">if</span>(a==<span class="string">&#x27;[&#x27;</span>||a==<span class="string">&#x27;&#123;&#x27;</span>||a==<span class="string">&#x27;(&#x27;</span>)&#123;</span><br><span class="line">                input.<span class="built_in">push</span>(a);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(a==<span class="string">&#x27;]&#x27;</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(input.<span class="built_in">top</span>()!=<span class="string">&#x27;[&#x27;</span>)&#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(a==<span class="string">&#x27;)&#x27;</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(input.<span class="built_in">top</span>()!=<span class="string">&#x27;(&#x27;</span>)&#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(a==<span class="string">&#x27;&#125;&#x27;</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(input.<span class="built_in">top</span>()!=<span class="string">&#x27;&#123;&#x27;</span>)&#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h3 id="❌-3个致命问题">❌ 3个致命问题</h3>
-<ol>
-<li>
-<p><strong>匹配成功没有 pop()</strong><br>
-匹配成功后没有弹出栈顶，栈里的左括号会一直保留，后续比对错乱。<br>
-比如 <code>&quot;()&quot;</code>，读到 <code>)</code> 判断匹配成功，但不弹出，栈内一直留有 <code>(</code>。</p>
-</li>
-<li>
-<p><strong>访问 top() 前没有判断栈是否为空</strong><br>
-如果第一个字符就是右括号，栈是空栈，调用 <code>input.top()</code> 会直接程序崩溃（未定义行为）。<br>
-例：输入 <code>s=&quot;)&quot;</code> 会报错。</p>
-</li>
-<li>
-<p><strong>循环结束没有检查栈是否为空</strong><br>
-如果输入 <code>&quot;(&quot;</code>，左括号入栈，循环结束栈不为空（存在没有匹配的左括号），应该返回false，但是代码直接return true。</p>
-</li>
-</ol>
-<hr>
-<h2 id="✅-正确C-代码">✅ 正确C++代码</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isValid</span><span class="params">(string s)</span> </span>&#123;</span><br><span class="line">        stack&lt;<span class="type">char</span>&gt; input;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">char</span> a : s)&#123;</span><br><span class="line">            <span class="comment">// 左括号，入栈</span></span><br><span class="line">            <span class="keyword">if</span>(a==<span class="string">&#x27;[&#x27;</span>||a==<span class="string">&#x27;&#123;&#x27;</span>||a==<span class="string">&#x27;(&#x27;</span>)&#123;</span><br><span class="line">                input.<span class="built_in">push</span>(a);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(a==<span class="string">&#x27;]&#x27;</span>)&#123;</span><br><span class="line">                <span class="comment">// 右括号：栈空 或者 栈顶不匹配，返回false</span></span><br><span class="line">                <span class="keyword">if</span>(input.<span class="built_in">empty</span>() || input.<span class="built_in">top</span>()!=<span class="string">&#x27;[&#x27;</span>)&#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                input.<span class="built_in">pop</span>(); <span class="comment">// 匹配成功，弹出栈顶</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(a==<span class="string">&#x27;)&#x27;</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(input.<span class="built_in">empty</span>() || input.<span class="built_in">top</span>()!=<span class="string">&#x27;(&#x27;</span>)&#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                input.<span class="built_in">pop</span>();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(a==<span class="string">&#x27;&#125;&#x27;</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(input.<span class="built_in">empty</span>() || input.<span class="built_in">top</span>()!=<span class="string">&#x27;&#123;&#x27;</span>)&#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                input.<span class="built_in">pop</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 遍历结束，栈必须为空，代表所有左括号都匹配完毕</span></span><br><span class="line">        <span class="keyword">return</span> input.<span class="built_in">empty</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="💡-核心思路">💡 核心思路</h2>
-<p>栈：<strong>后进先出</strong>，刚好满足括号就近匹配规则</p>
-<ol>
-<li>遇到<strong>左括号</strong>：压入栈</li>
-<li>遇到<strong>右括号</strong>
-<ul>
-<li>栈为空：没有左括号和它匹配 → false</li>
-<li>栈顶不是对应的左括号 → false</li>
-<li>匹配成功：弹出栈顶元素</li>
-</ul>
-</li>
-<li>遍历完字符串，<strong>栈必须是空</strong>。如果栈里面还有元素，说明存在多余左括号，返回false</li>
-</ol>
-<h2 id="⚠️-做题必记坑点">⚠️ 做题必记坑点</h2>
-<ol>
-<li>空栈不能调用 <code>.top()</code>，必须先 <code>empty()</code> 判断</li>
-<li>右括号匹配成功一定要 <code>.pop()</code></li>
-<li>最后一定要 return <code>栈.empty()</code></li>
-<li>不要一次性把所有字符全部压栈再比对（回文思路是错的）</li>
-</ol>
-<hr>
-<p>要不要我帮你再加一个<strong>手动模拟栈</strong>的例子（比如 <code>s=&quot;([])&quot;</code>）放到笔记里？</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://lanxone.github.io/2026/10/15/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97-%E6%A0%88%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%E5%A4%84-%E6%8B%AC%E5%8F%B7%E5%90%88%E6%B3%95/" data-id="cmvp90fcx001nd8maa2op8iov" data-title="栈与队列:栈有什么用处:括号合法" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" rel="tag">栈和队列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" rel="tag">算法感悟</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
     
-    <a class="extend prev" rel="prev" href="/page/2/">&laquo; 上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/4/">下一页 &raquo;</a>
+    <a class="extend prev" rel="prev" href="/page/2/">&laquo; 上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/4/">下一页 &raquo;</a>
   </nav>
 
 </section>
@@ -997,7 +954,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 11.67px;">C++学习笔记</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 18.33px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/Godot/" style="font-size: 16.67px;">Godot</a> <a href="/tags/OpenGL/" style="font-size: 11.67px;">OpenGL</a> <a href="/tags/SDL/" style="font-size: 10px;">SDL</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 11.67px;">二叉树</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 11.67px;">功能测试</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 13.33px;">学习规划</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E6%89%A7%E8%A1%8C%E8%A1%A8-6%E5%91%A8%E8%AE%A1%E5%88%92/" style="font-size: 10px;">学习路线,执行表,6周计划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 13.33px;">快速</a> <a href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" style="font-size: 11.67px;">栈和队列</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 15px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%84%9A%E6%9C%AC%E5%BC%80%E5%8F%91/" style="font-size: 10px;">脚本开发</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a> <a href="/tags/%E9%80%92%E5%BD%92/" style="font-size: 10px;">递归</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 10px;">随笔</a>
+      <a href="/tags/ACGN/" style="font-size: 10px;">ACGN</a> <a href="/tags/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 11.67px;">C++学习笔记</a> <a href="/tags/C-%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/" style="font-size: 18.33px;">C++开发笔记</a> <a href="/tags/Chess/" style="font-size: 10px;">Chess</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/GitHub/" style="font-size: 10px;">GitHub</a> <a href="/tags/Godot/" style="font-size: 16.67px;">Godot</a> <a href="/tags/OpenGL/" style="font-size: 11.67px;">OpenGL</a> <a href="/tags/SDL/" style="font-size: 10px;">SDL</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 13.33px;">二叉树</a> <a href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/" style="font-size: 11.67px;">功能测试</a> <a href="/tags/%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91/" style="font-size: 10px;">协作开发</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%A7%84%E5%88%92/" style="font-size: 13.33px;">学习规划</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E6%89%A7%E8%A1%8C%E8%A1%A8-6%E5%91%A8%E8%AE%A1%E5%88%92/" style="font-size: 10px;">学习路线,执行表,6周计划</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%96%B9%E6%A1%88/" style="font-size: 10px;">开发方案</a> <a href="/tags/%E5%BF%AB%E9%80%9F/" style="font-size: 13.33px;">快速</a> <a href="/tags/%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" style="font-size: 11.67px;">栈和队列</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/" style="font-size: 10px;">游戏开发日志</a> <a href="/tags/%E7%81%B5%E6%84%9F/" style="font-size: 15px;">灵感</a> <a href="/tags/%E7%AE%97%E6%B3%95%E6%84%9F%E6%82%9F/" style="font-size: 20px;">算法感悟</a> <a href="/tags/%E8%84%9A%E6%9C%AC%E5%BC%80%E5%8F%91/" style="font-size: 10px;">脚本开发</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E8%B5%9B%E5%8D%9A%E6%9C%8B%E5%85%8B/" style="font-size: 10px;">赛博朋克</a> <a href="/tags/%E9%80%92%E5%BD%92/" style="font-size: 10px;">递归</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 10px;">随笔</a>
     </div>
   </div>
 
@@ -1006,7 +963,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/10/">十月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/09/">九月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/08/">八月 2026</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/11/">十一月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/10/">十月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/09/">九月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/08/">八月 2026</a></li></ul>
     </div>
   </div>
 
@@ -1019,6 +976,14 @@
       <ul>
         
           <li>
+            <a href="/2026/11/03/GitHub%E5%A4%9A%E4%BA%BA%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/">GitHub 多人协作开发流程：分支、同步、变基与 PR</a>
+          </li>
+        
+          <li>
+            <a href="/2026/11/02/%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86-%E9%98%9F%E5%88%97%E9%87%8C%E7%9A%84%E5%B1%82%E6%95%B0/">层序遍历：队列里的层数</a>
+          </li>
+        
+          <li>
             <a href="/2026/10/29/%E9%9D%9E%E9%80%92%E5%BD%92%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86/">非递归的二叉树遍历</a>
           </li>
         
@@ -1028,14 +993,6 @@
         
           <li>
             <a href="/2026/10/27/%E9%BA%BB%E6%9C%A8%E5%A6%82%E4%BD%95%E6%91%A7%E6%AF%81%E4%BD%A0%E7%9A%84%E6%A2%A6%E6%83%B3/">麻木如何摧毁你的梦想</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/27/Godot05-%E5%88%9B%E5%BB%BA%E5%8F%B2%E8%8E%B1%E5%A7%86/">Godot05:创建史莱姆（敌人动画与 Area2D）</a>
-          </li>
-        
-          <li>
-            <a href="/2026/10/27/Godot04-%E7%BB%99%E7%93%A6%E7%89%87%E5%8A%A0%E7%A2%B0%E6%92%9E/">Godot04:瓦片碰撞与 Y 轴排序（TileSet 物理层）</a>
           </li>
         
       </ul>
@@ -1096,152 +1053,6 @@
 
   </div>
 <!-- hexo injector body_end start -->
-<style>
-  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
-  .lanx-sidebar-sticky {
-    display: flex; flex-direction: column; gap: 12px;
-    margin: 0 0 50px 0;
-    width: 100%;
-  }
-
-  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
-  .lanx-card {
-    box-sizing: border-box; width: 100%;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.94);
-    border: 1px solid #e8e8e8; border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    font-size: 12px; color: #666; text-align: center;
-    line-height: 1.6; user-select: none;
-    transition: box-shadow 0.2s ease;
-  }
-  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
-
-  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
-  .lanx-clock .clock-time {
-    font-size: 36px; font-weight: 700; color: #1a365d;
-    font-variant-numeric: tabular-nums; letter-spacing: 1px;
-    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
-      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
-      "Courier New", monospace;
-  }
-  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
-  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
-
-  /* 语录 */
-  .lanx-quote .quote-body {
-    font-size: 13px; color: #444; line-height: 1.75;
-    text-align: left; padding: 2px 0;
-  }
-  .lanx-quote .quote-meta {
-    font-size: 11px; color: #999; margin-top: 8px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
-  .lanx-quote .quote-author { color: #888; }
-  .lanx-quote .quote-type {
-    font-size: 10px; padding: 1px 8px; border-radius: 10px;
-    background: #f0f0f0; color: #888;
-  }
-  .lanx-quote .quote-refresh {
-    cursor: pointer; padding: 2px 6px; border-radius: 4px;
-    color: #aaa; transition: all 0.2s;
-  }
-  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
-  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
-
-  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
-  @media (max-width: 767px) {
-    .lanx-sidebar-sticky { display: none; }
-    .lanx-sidebar-sticky.lanx-mobile-only {
-      display: flex; margin: 50px 0; width: 100%;
-    }
-  }
-</style>
-
-<script>
-window.addEventListener('load', function(){
-  setTimeout(function(){
-    var sidebar = document.querySelector('#sidebar');
-    if (!sidebar) return;
-
-    var wrap = document.createElement('div');
-    wrap.className = 'lanx-sidebar-sticky';
-
-    var weekdays = ['日','一','二','三','四','五','六'];
-
-    // 检测是否手机端(与 CSS 媒体查询断点一致)
-    var isMobile = window.innerWidth < 768;
-
-    // 时钟(上)
-    var clock = document.createElement('div');
-    clock.className = 'lanx-card lanx-clock';
-    clock.innerHTML =
-      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
-      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
-      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
-    wrap.appendChild(clock);
-
-    // 语录(下)
-    var quote = document.createElement('div');
-    quote.className = 'lanx-card lanx-quote';
-    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
-    wrap.appendChild(quote);
-
-    if (isMobile) {
-      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
-      wrap.classList.add('lanx-mobile-only');
-      sidebar.appendChild(wrap);
-    } else {
-      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
-      sidebar.insertBefore(wrap, sidebar.firstChild);
-      var firstInner = document.querySelector('article .article-inner');
-      if (firstInner) {
-        wrap.style.marginTop =
-          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
-      }
-    }
-
-    // 时钟
-    function tick(){
-      var d = new Date();
-      var p = function(n){ return n<10?'0'+n:n; };
-      document.getElementById('lanx_clock_time').textContent =
-        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
-      document.getElementById('lanx_clock_date').textContent =
-        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
-      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
-    }
-    tick();
-    setInterval(tick, 1000);
-
-    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
-    function loadQuotes(){
-      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
-        show(window.LANX_EXCERPTS);
-        return;
-      }
-      fetch('/excerpts.json')
-        .then(function(r){ return r.json(); })
-        .then(function(d){ show(d||[]); })
-        .catch(function(){ show([]); });
-    }
-    loadQuotes();
-    function show(data){
-      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
-      var it = data[Math.floor(Math.random()*data.length)];
-      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
-      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
-      quote.innerHTML =
-        '<div class="quote-body">'+it.content+'</div>' +
-        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
-        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
-      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
-    }
-  }, 500);
-});
-</script>
-  
 <style>
   #lanx-chess-root {
     --lanx-light: #f0d9b5;
@@ -3302,246 +3113,151 @@ function undo(){
   window.__LANX_LIKE_COUNT__ = count;
 })();
 </script>
-  <script src="/js/pin.js?v=b15fc202" defer></script>
-<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
+  
 <style>
-  /* --- Toast 提示 --- */
-  .lanx-toast {
-    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
-    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
-    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  }
-  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .lanx-toast.success { background: #38a169; }
-  .lanx-toast.error { background: #e53e3e; }
-
-  /* --- Twikoo 评论区整体容器 --- */
-  #twikoo-comments {
-    margin-top: 48px; padding: 28px 28px 20px;
-    background: #fff; border-radius: 14px;
-    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
-  }
-  #twikoo-comments > h3 {
-    margin: 0 0 20px 0; padding-bottom: 14px;
-    font-size: 16px; font-weight: 600; color: #333;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  /* 留言板:不同的标题和背景 */
-  body.page-guestbook #twikoo-comments {
-    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
-    border: 1px solid #dbeafe;
-  }
-  body.page-guestbook #twikoo-comments > h3 {
-    border-bottom-color: #dbeafe;
-    color: #2563eb;
+  /* --- 卡片容器:顶部由 JS 动态对齐第一篇 .article-inner --- */
+  .lanx-sidebar-sticky {
+    display: flex; flex-direction: column; gap: 12px;
+    margin: 0 0 50px 0;
+    width: 100%;
   }
 
-  /* --- Twikoo 内部组件美化 --- */
-  .tk-comment-box {
-    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
-    padding: 14px 16px !important; margin-bottom: 16px !important;
-    transition: border-color 0.2s !important;
+  /* --- 卡片样式:白底 + 12px 圆角 + 柔和阴影 --- */
+  .lanx-card {
+    box-sizing: border-box; width: 100%;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid #e8e8e8; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    font-size: 12px; color: #666; text-align: center;
+    line-height: 1.6; user-select: none;
+    transition: box-shadow 0.2s ease;
   }
-  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
-  .tk-comment-box .el-textarea__inner {
-    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
-    font-size: 14px !important; line-height: 1.6 !important;
+  .lanx-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+
+  /* 时钟 - 时分秒:等宽字体(Linux终端风格)+ 加粗大蓝黑色 */
+  .lanx-clock .clock-time {
+    font-size: 36px; font-weight: 700; color: #1a365d;
+    font-variant-numeric: tabular-nums; letter-spacing: 1px;
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono",
+      "Consolas", "Menlo", "Monaco", "SF Mono", "Source Code Pro",
+      "Courier New", monospace;
   }
-  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
-  .tk-btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-    border: none !important; border-radius: 20px !important;
-    padding: 8px 22px !important; font-weight: 500 !important;
+  .lanx-clock .clock-date { color: #888; margin-top: 4px; font-size: 11px; }
+  .lanx-clock .clock-week { color: #6366f1; font-size: 11px; margin-top: 2px; }
+
+  /* 语录 */
+  .lanx-quote .quote-body {
+    font-size: 13px; color: #444; line-height: 1.75;
+    text-align: left; padding: 2px 0;
   }
-  .tk-btn-primary:hover { opacity: 0.9; }
-
-  /* 评论列表卡片化 */
-  .tk-comment-item {
-    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
-    padding: 16px 18px !important; margin-bottom: 12px !important;
-    background: #fafbfc !important; transition: box-shadow 0.2s !important;
+  .lanx-quote .quote-meta {
+    font-size: 11px; color: #999; margin-top: 8px;
+    display: flex; align-items: center; justify-content: space-between;
   }
-  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-
-  /* 博主标识 */
-  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
-
-  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
-  .tk-powered-by,
-  .tk-comment-powered,
-  [class*="powered-by"],
-  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
-
-  /* 评论区底部工具条 */
-  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
-
-  /* 点赞/踩按钮 */
-  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
-
-  /* 头像 */
-  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
-
-  /* --- 分享按钮改复制链接 --- */
-  .article-share-link { cursor: pointer; }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
-
-<script>
-(function(){
-  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
-  var path = location.pathname;
-  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
-  // 访客明细页也是一篇文章的形态,但它不需要评论区
-  var isPost = document.querySelectorAll('article.article').length === 1
-    && path.indexOf('/visitors') === -1
-    && path.indexOf('/photos') === -1;
-  var isGuestbook = path.indexOf('/guestbook') !== -1;
-
-  // ============ Toast 工具 ============
-  function showToast(msg, type) {
-    var t = document.createElement('div');
-    t.className = 'lanx-toast' + (type ? ' ' + type : '');
-    t.textContent = msg;
-    document.body.appendChild(t);
-    requestAnimationFrame(function(){ t.classList.add('show'); });
-    setTimeout(function(){
-      t.classList.remove('show');
-      setTimeout(function(){ t.remove(); }, 300);
-    }, 1800);
+  .lanx-quote .quote-source { color: #6366f1; font-weight: 500; }
+  .lanx-quote .quote-author { color: #888; }
+  .lanx-quote .quote-type {
+    font-size: 10px; padding: 1px 8px; border-radius: 10px;
+    background: #f0f0f0; color: #888;
   }
-
-  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
-  function copyShareLink() {
-    var links = document.querySelectorAll('.article-share-link');
-    if (!links.length) return;
-    links.forEach(function(link) {
-      link.href = 'javascript:void(0)';
-      // 移除旧监听(防重复绑定)
-      link.replaceWith(link.cloneNode(true));
-    });
-    // 重新获取(因为 cloneNode 替换了)
-    links = document.querySelectorAll('.article-share-link');
-    links.forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault(); e.stopPropagation();
-        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
-        var url;
-        if (link.dataset.url) {
-          try { url = new URL(link.dataset.url, location.origin).href; }
-          catch(err) { url = location.origin + location.pathname; }
-        } else {
-          url = location.origin + location.pathname;
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(url).then(function(){
-            showToast('📋 链接已复制到剪贴板');
-          }).catch(function(){ fallbackCopy(url); });
-        } else {
-          fallbackCopy(url);
-        }
-      }, true);
-    });
+  .lanx-quote .quote-refresh {
+    cursor: pointer; padding: 2px 6px; border-radius: 4px;
+    color: #aaa; transition: all 0.2s;
   }
-  function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
-    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
-    ta.remove();
-  }
+  .lanx-quote .quote-refresh:hover { color: #6366f1; background: #f5f3ff; }
+  .lanx-quote .quote-loading { font-size: 12px; color: #bbb; padding: 8px 0; }
 
-  // ============ 2. 文章页访问量 + 评论容器 ============
-  if (isGuestbook) document.body.classList.add('page-guestbook');
-
-  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
-  copyShareLink();
-
-  if (isPost) {
-    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
-    setTimeout(function(){
-      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
-      var af = document.querySelector('.article-footer');
-      if (!af) return;
-      // 👁️ 阅读 + 👍 点赞 内联显示
-      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
-        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
-        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
-      '</span>';
-      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
-      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
-    }, 200);
-  }
-
-  if (isPost || isGuestbook) {
-    var commentDiv = document.createElement('div');
-    commentDiv.id = 'twikoo-comments';
-    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
-    var collapsible = !isGuestbook;
-    commentDiv.innerHTML =
-      (collapsible
-        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
-        : ''
-      ) +
-      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
-        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
-      '</div>';
-    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
-    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
-
-    // 折叠按钮点击
-    if (collapsible) {
-      var btn = document.getElementById('twikoo-toggle-btn');
-      var body = document.getElementById('twikoo-comments-body');
-      btn.addEventListener('click', function() {
-        if (body.style.display === 'none') {
-          body.style.display = '';
-          btn.textContent = '🙈 收起评论区';
-          btn.style.background = '#f5f5f5';
-          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
-          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
-        } else {
-          body.style.display = 'none';
-          btn.textContent = '💬 展开评论区';
-          btn.style.background = '#fff';
-        }
-      });
+  /* --- 手机端(<768px):隐藏顶部那份,走 JS 追加到 sidebar 末尾 --- */
+  @media (max-width: 767px) {
+    .lanx-sidebar-sticky { display: none; }
+    .lanx-sidebar-sticky.lanx-mobile-only {
+      display: flex; margin: 50px 0; width: 100%;
     }
   }
+</style>
 
-  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
-  function initTwikooBody() {
-    var commentBox = document.getElementById('tcomments');
-    if (!commentBox) return;
-    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
-    var pinger = new Promise(function(resolve){
-      var timer = setTimeout(function(){ resolve(false); }, 5000);
-      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
-        .then(function(){ clearTimeout(timer); resolve(true); })
-        .catch(function(){ clearTimeout(timer); resolve(false); });
-    });
-    pinger.then(function(ok){
-      if (!ok) {
-        commentBox.innerHTML =
-          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
-            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
-            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
-          '</div>';
+<script>
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    var sidebar = document.querySelector('#sidebar');
+    if (!sidebar) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'lanx-sidebar-sticky';
+
+    var weekdays = ['日','一','二','三','四','五','六'];
+
+    // 检测是否手机端(与 CSS 媒体查询断点一致)
+    var isMobile = window.innerWidth < 768;
+
+    // 时钟(上)
+    var clock = document.createElement('div');
+    clock.className = 'lanx-card lanx-clock';
+    clock.innerHTML =
+      '<div id="lanx_clock_time" class="clock-time">--:--:--</div>' +
+      '<div id="lanx_clock_date" class="clock-date">----/--/--</div>' +
+      '<div id="lanx_clock_week" class="clock-week">星期-</div>';
+    wrap.appendChild(clock);
+
+    // 语录(下)
+    var quote = document.createElement('div');
+    quote.className = 'lanx-card lanx-quote';
+    quote.innerHTML = '<div class="quote-loading">加载中...</div>';
+    wrap.appendChild(quote);
+
+    if (isMobile) {
+      // 手机端:追加到 sidebar 末尾(跟随标签/归档那些 widget),不做顶部对齐
+      wrap.classList.add('lanx-mobile-only');
+      sidebar.appendChild(wrap);
+    } else {
+      // PC 端:插到 sidebar 最前面 + 动态对齐文章卡片顶边
+      sidebar.insertBefore(wrap, sidebar.firstChild);
+      var firstInner = document.querySelector('article .article-inner');
+      if (firstInner) {
+        wrap.style.marginTop =
+          (firstInner.getBoundingClientRect().top - sidebar.getBoundingClientRect().top) + 'px';
+      }
+    }
+
+    // 时钟
+    function tick(){
+      var d = new Date();
+      var p = function(n){ return n<10?'0'+n:n; };
+      document.getElementById('lanx_clock_time').textContent =
+        p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+      document.getElementById('lanx_clock_date').textContent =
+        d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate());
+      document.getElementById('lanx_clock_week').textContent = '星期'+weekdays[d.getDay()];
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // 摘录:优先读内联 window.LANX_EXCERPTS(0 网络请求),兜底 fetch
+    function loadQuotes(){
+      if (window.LANX_EXCERPTS && window.LANX_EXCERPTS.length) {
+        show(window.LANX_EXCERPTS);
         return;
       }
-      function waitTwikoo(){
-        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
-        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
-          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
-      }
-      waitTwikoo();
-    });
-  }
-  // 留言板:立即初始化;文章页:等用户点展开按钮
-  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
-})();
+      fetch('/excerpts.json')
+        .then(function(r){ return r.json(); })
+        .then(function(d){ show(d||[]); })
+        .catch(function(){ show([]); });
+    }
+    loadQuotes();
+    function show(data){
+      if (!data.length) { quote.innerHTML = '<div class="quote-loading" style="color:#ccc;">暂无内容</div>'; return; }
+      var it = data[Math.floor(Math.random()*data.length)];
+      var src = it.source ? '<span class="quote-source">'+it.source+'</span>' : '';
+      var aut = it.author ? '<span class="quote-author">— '+it.author+'</span>' : '';
+      quote.innerHTML =
+        '<div class="quote-body">'+it.content+'</div>' +
+        '<div class="quote-meta"><span>'+src+(src&&aut?' · ':'')+aut+'</span>' +
+        '<span><span class="quote-type">语录</span> <span class="quote-refresh" title="换一条">🔄</span></span></div>';
+      quote.querySelector('.quote-refresh').addEventListener('click', function(e){ e.stopPropagation(); show(data); });
+    }
+  }, 500);
+});
 </script>
   
 <style>
@@ -3993,5 +3709,246 @@ body.lanx-todo-active .article-inner > *:not(.article-entry) { display: none !im
 }
 </style>
 <script src="/js/todolist-app.js"></script>
-<script src="/js/visitor.js?v=23e542bf" defer></script><!-- hexo injector body_end end --></body>
+<script src="/js/pin.js?v=b15fc202" defer></script>
+<!-- ======= 全局样式:Toast + Twikoo 美化 + 留言板特殊化 ======= -->
+<style>
+  /* --- Toast 提示 --- */
+  .lanx-toast {
+    position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    padding: 10px 24px; border-radius: 22px; background: #333; color: #fff; font-size: 14px;
+    opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .lanx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lanx-toast.success { background: #38a169; }
+  .lanx-toast.error { background: #e53e3e; }
+
+  /* --- Twikoo 评论区整体容器 --- */
+  #twikoo-comments {
+    margin-top: 48px; padding: 28px 28px 20px;
+    background: #fff; border-radius: 14px;
+    border: 1px solid #eee; box-shadow: 0 2px 14px rgba(0,0,0,0.04);
+  }
+  #twikoo-comments > h3 {
+    margin: 0 0 20px 0; padding-bottom: 14px;
+    font-size: 16px; font-weight: 600; color: #333;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  /* 留言板:不同的标题和背景 */
+  body.page-guestbook #twikoo-comments {
+    background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
+    border: 1px solid #dbeafe;
+  }
+  body.page-guestbook #twikoo-comments > h3 {
+    border-bottom-color: #dbeafe;
+    color: #2563eb;
+  }
+
+  /* --- Twikoo 内部组件美化 --- */
+  .tk-comment-box {
+    border: 1px solid #e8e8e8 !important; border-radius: 10px !important;
+    padding: 14px 16px !important; margin-bottom: 16px !important;
+    transition: border-color 0.2s !important;
+  }
+  .tk-comment-box:focus-within { border-color: #6366f1 !important; }
+  .tk-comment-box .el-textarea__inner {
+    border: none !important; box-shadow: none !important; padding: 4px 0 !important;
+    font-size: 14px !important; line-height: 1.6 !important;
+  }
+  .tk-comment-box .el-textarea__inner:focus { box-shadow: none !important; }
+  .tk-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    border: none !important; border-radius: 20px !important;
+    padding: 8px 22px !important; font-weight: 500 !important;
+  }
+  .tk-btn-primary:hover { opacity: 0.9; }
+
+  /* 评论列表卡片化 */
+  .tk-comment-item {
+    border: 1px solid #f0f0f0 !important; border-radius: 10px !important;
+    padding: 16px 18px !important; margin-bottom: 12px !important;
+    background: #fafbfc !important; transition: box-shadow 0.2s !important;
+  }
+  .tk-comment-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+  /* 博主标识 */
+  .tk-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border-radius: 10px !important; }
+
+  /* 隐藏 Powered by Twikoo(所有含 twikoo 的链接,只要在评论容器里) */
+  .tk-powered-by,
+  .tk-comment-powered,
+  [class*="powered-by"],
+  #twikoo-comments a[href*="twikoo"] { display: none !important; visibility: hidden !important; }
+
+  /* 评论区底部工具条 */
+  .tk-comment-footer { border-top: none !important; padding-top: 8px !important; }
+
+  /* 点赞/踩按钮 */
+  .tk-like, .tk-dislike { border-radius: 14px !important; padding: 2px 10px !important; }
+
+  /* 头像 */
+  .tk-avatar, .tk-avatar img { border-radius: 50% !important; }
+
+  /* --- 分享按钮改复制链接 --- */
+  .article-share-link { cursor: pointer; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script>
+
+<script>
+(function(){
+  var envId = 'https://anxone.netlify.app/.netlify/functions/twikoo';
+  var path = location.pathname;
+  // 只在【单文章详情页】处理评论功能(首页/归档/标签页跳过)
+  // 访客明细页也是一篇文章的形态,但它不需要评论区
+  var isPost = document.querySelectorAll('article.article').length === 1
+    && path.indexOf('/visitors') === -1
+    && path.indexOf('/photos') === -1;
+  var isGuestbook = path.indexOf('/guestbook') !== -1;
+
+  // ============ Toast 工具 ============
+  function showToast(msg, type) {
+    var t = document.createElement('div');
+    t.className = 'lanx-toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 1800);
+  }
+
+  // ============ 1. 分享按钮 → 一键复制真实链接(支持首页多个文章) ============
+  function copyShareLink() {
+    var links = document.querySelectorAll('.article-share-link');
+    if (!links.length) return;
+    links.forEach(function(link) {
+      link.href = 'javascript:void(0)';
+      // 移除旧监听(防重复绑定)
+      link.replaceWith(link.cloneNode(true));
+    });
+    // 重新获取(因为 cloneNode 替换了)
+    links = document.querySelectorAll('.article-share-link');
+    links.forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        // 优先用 data-url(每篇文章自己的链接),fallback 到当前页面地址
+        var url;
+        if (link.dataset.url) {
+          try { url = new URL(link.dataset.url, location.origin).href; }
+          catch(err) { url = location.origin + location.pathname; }
+        } else {
+          url = location.origin + location.pathname;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function(){
+            showToast('📋 链接已复制到剪贴板');
+          }).catch(function(){ fallbackCopy(url); });
+        } else {
+          fallbackCopy(url);
+        }
+      }, true);
+    });
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('📋 链接已复制到剪贴板'); }
+    catch(err) { showToast('复制失败,请手动复制地址栏', 'error'); }
+    ta.remove();
+  }
+
+  // ============ 2. 文章页访问量 + 评论容器 ============
+  if (isGuestbook) document.body.classList.add('page-guestbook');
+
+  // 所有页面都绑定分享按钮(首页有多个,详情页有一个)
+  copyShareLink();
+
+  if (isPost) {
+    // 延迟读取 likes.js 设置的 __LANX_LIKE_COUNT__,避免 injector 执行顺序导致竞态
+    setTimeout(function(){
+      var likeCountInline = window.__LANX_LIKE_COUNT__ || 0;
+      var af = document.querySelector('.article-footer');
+      if (!af) return;
+      // 👁️ 阅读 + 👍 点赞 内联显示
+      var statsHTML = '<span style="margin-left:12px;font-size:13px;color:#999;">' +
+        '👁️ 阅读 <span id="twikoo_visitors">0</span>' +
+        ' &nbsp; 👍 点赞 <span id="lanx_like_inline" style="color:#ff6b6b;font-weight:600;' + (likeCountInline > 0 ? '' : 'display:none') + '">' + likeCountInline + '</span>' +
+      '</span>';
+      var wrapper = document.createElement('div'); wrapper.innerHTML = statsHTML;
+      af.insertBefore(wrapper.firstChild, af.querySelector('.article-comment-link') || null);
+    }, 200);
+  }
+
+  if (isPost || isGuestbook) {
+    var commentDiv = document.createElement('div');
+    commentDiv.id = 'twikoo-comments';
+    // 折叠按钮 + 评论区(默认隐藏,留言板不折叠)
+    var collapsible = !isGuestbook;
+    commentDiv.innerHTML =
+      (collapsible
+        ? '<div id="twikoo-toggle-bar" style="text-align:center;margin-bottom:18px;"><button id="twikoo-toggle-btn" style="padding:10px 28px;border:1px solid #e0e0e0;border-radius:22px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor=&quot;#6366f1&quot;;this.style.color=&quot;#6366f1&quot;" onmouseout="this.style.borderColor=&quot;#e0e0e0&quot;;this.style.color=&quot;#666&quot;">💬 展开评论区</button></div>'
+        : ''
+      ) +
+      '<div id="twikoo-comments-body"' + (collapsible ? ' style="display:none;"' : '') + '>' +
+        '<h3>' + (isGuestbook ? '💌 留下你的足迹' : '💬 说点什么吧') + '</h3><div id="tcomments"></div>' +
+      '</div>';
+    var target = isPost ? (document.querySelector('.like-wrap') || document.querySelector('.article-footer')) : document.querySelector('.page-article');
+    if (target) { target.after(commentDiv); } else { document.body.appendChild(commentDiv); }
+
+    // 折叠按钮点击
+    if (collapsible) {
+      var btn = document.getElementById('twikoo-toggle-btn');
+      var body = document.getElementById('twikoo-comments-body');
+      btn.addEventListener('click', function() {
+        if (body.style.display === 'none') {
+          body.style.display = '';
+          btn.textContent = '🙈 收起评论区';
+          btn.style.background = '#f5f5f5';
+          // 展开后再 init Twikoo(避免隐藏时初始化有问题)
+          if (!window.__twikooInited__) { initTwikooBody(); window.__twikooInited__ = true; }
+        } else {
+          body.style.display = 'none';
+          btn.textContent = '💬 展开评论区';
+          btn.style.background = '#fff';
+        }
+      });
+    }
+  }
+
+  // ============ 3. 检测后端连通性 → 再初始化 Twikoo ============
+  function initTwikooBody() {
+    var commentBox = document.getElementById('tcomments');
+    if (!commentBox) return;
+    // 先 ping 后端(no-cors 模式只要请求能发出去就说明 DNS 通了)
+    var pinger = new Promise(function(resolve){
+      var timer = setTimeout(function(){ resolve(false); }, 5000);
+      fetch(envId, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
+        .then(function(){ clearTimeout(timer); resolve(true); })
+        .catch(function(){ clearTimeout(timer); resolve(false); });
+    });
+    pinger.then(function(ok){
+      if (!ok) {
+        commentBox.innerHTML =
+          '<div style="padding:20px;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;color:#92400e;font-size:14px;line-height:1.8;">' +
+            '⏳ 评论服务暂时不可用,请稍后刷新页面再试~<br>' +
+            '<small style="color:#b45309">首次部署 Vercel 后端需要几分钟生效</small>' +
+          '</div>';
+        return;
+      }
+      function waitTwikoo(){
+        if (typeof twikoo === 'undefined') { setTimeout(waitTwikoo, 200); return; }
+        twikoo.init({ envId: envId, el: '#tcomments', lang: 'zh-CN', path: path })
+          .catch(function(err){ console.warn('[Twikoo]', err.message || err); });
+      }
+      waitTwikoo();
+    });
+  }
+  // 留言板:立即初始化;文章页:等用户点展开按钮
+  if (isGuestbook) { initTwikooBody(); window.__twikooInited__ = true; }
+})();
+</script>
+  <script src="/js/visitor.js?v=23e542bf" defer></script><!-- hexo injector body_end end --></body>
 </html>
